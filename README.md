@@ -66,7 +66,7 @@ less-specific directory.
 
 The installer processes files in `<appname>` directories in the following order:
 
-1. **`configure`** *(executable file)*
+1. **`configure`** (must be an executable file)
 
    Called by the installer. The absolute path of each applicable `<appname>`
    directory is passed as an argument, e.g. on Linux host "bamm-bamm" the
@@ -104,11 +104,11 @@ The installer processes files in `<appname>` directories in the following order:
                └── files
                    └── .config
                        └── git
-                           └── config
+                           └── config       ; This is the target
    ```
 
    But if a directory has a `<dirname>.symlink` sidecar file, a symbolic link to
-   the **directory** is created instead, e.g.
+   the *directory* is created instead, e.g.
 
    ```
    ~
@@ -119,13 +119,12 @@ The installer processes files in `<appname>` directories in the following order:
          └── Git
                └── files
                   └── .config
-                     ├── git
+                     ├── git                ; Now this is the target
                      │   └── config
-                     └── git.symlink
+                     └── git.symlink        ; Because this file exists
    ```
 
-   > Sidecar files aren't special. They can be created with `touch <filename>`
-   > or in some other way.
+   The content of a sidecar file is not specified.
 
 
 [by-host]: by-host
