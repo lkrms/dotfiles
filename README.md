@@ -79,6 +79,15 @@ The installer processes files in `<appname>` directories in the following order:
        by-default/Git
    ```
 
+   The following environment variables are passed to `configure`:
+
+   - **`df_root`:** the absolute path of the `dotfiles` repository's top-level
+     directory, e.g. `/home/lkrms/.dotfiles`.
+   - **`friendly_df_root`:** a copy of `df_root` where the user's `HOME`
+     directory is replaced with a literal tilde (`~`), e.g. `~/.dotfiles`.
+   - **`df_dryrun`:** non-empty if the installer is running in dry-run mode,
+     otherwise unset or empty.
+
    `configure` must exit as follows:
 
    | Exit code | Meaning                       | Installer should             |
