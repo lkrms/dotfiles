@@ -18,13 +18,28 @@ BEGIN {
 	if (seen[path]++ || icount) {
 		next
 	}
-	if (path == "configure") {
-		print 1, path, $0
-		next
-	}
-	if (sub(/^files\//, "", path)) {
-		print 0, path, $0
-	}
+	sort_by = 0
+}
+
+path == "target" {
+	sort_by = -2
+}
+
+path == "configure" {
+	sort_by = -1
+}
+
+path == "apply" {
+	sort_by = 1
+}
+
+sort_by {
+	print sort_by, path, $0
+	next
+}
+
+sub(/^files\//, "", path) {
+	print 0, path, $0
 }
 
 
