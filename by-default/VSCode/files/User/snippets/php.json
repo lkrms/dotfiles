@@ -1,0 +1,50 @@
+{
+	"Class file": {
+		"prefix": "<?php",
+		"body": [
+			"<?php declare(strict_types=1);",
+			"",
+			"namespace Lkrms${TM_DIRECTORY/^.*\\\\/src|^.*\\\\/(tests)|\\\\/([A-Z][a-zA-Z0-9]*)/${1:+\\\\Tests}${2:+\\\\}$2/g};",
+			"",
+			"/**",
+			" * ${1:Summary}",
+			" *",
+			" */",
+			"class ${TM_FILENAME_BASE/[^a-zA-Z0-9]+//g} {",
+			"    $0",
+			"}"
+		]
+	},
+	"PHPDoc: @deprecated": {
+		"prefix": "@deprecated",
+		"body": "@deprecated Use {@see $0} instead"
+	},
+	"PHPDoc: @inheritDoc (unofficial usage)": {
+		"prefix": "@inheritDoc",
+		"body": [
+			"/**",
+			" * {@inheritDoc}",
+			" */"
+		]
+	},
+	"PHPDoc: @inheritDoc": {
+		"prefix": "@inheritDoc",
+		"body": [
+			"/**",
+			" * ${1:Summary}",
+			" *",
+			" * {@inheritDoc}",
+			" *",
+			" * ${2:Extended description}",
+			" */"
+		]
+	},
+	"PHPStan: ignore next line": {
+		"prefix": "@phpstan",
+		"body": "@phpstan-ignore-next-line"
+	},
+	"PHPStan: dump type": {
+		"prefix": "\\PHPStan\\",
+		"body": "\\PHPStan\\dumpType($0);"
+	}
+}
