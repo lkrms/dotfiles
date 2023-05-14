@@ -32,3 +32,54 @@ function link_file() {
     fi
     maybe ln -s "$source" "$target" || die "error creating symbolic link: $target"
 }
+
+# maybe_replace <file> <command> [<arg>]...
+#
+# Pipe <file> to "<command> [<arg>]..." and replace <file> if the output is
+# different.
+function maybe_replace() {
+    [[ -w ${df_temp-} ]] || df_temp=$(mktemp) || return
+    local file=$1
+    shift
+    "$@" <"$file" >"$df_temp" || return
+    ! diff -q "$file" "$df_temp" >/dev/null || return 0
+    echo " -> Replacing: $file"
+    maybe cp "$df_temp" "$file" || return
+    if [[ -n ${df_dryrun:+1} ]]; then
+        ! diff "$file" "$df_temp" || return 0
+    fi
+}
+
+# with_each <glob> <command> [<arg>]...
+#
+# Expand <glob> in each <appname> directory passed to the script, then run the
+# command once per match after replacing "{}" in "<command> [<arg>]..." with the
+# matched pathname.
+#
+# The `extglob` and `nullglob` options are set when expanding <glob>.
+function with_each() {
+    local IFS=$'\n' glob=$1 command dir
+    shift
+    command=("$@")
+    for dir in ${df_argv+"${df_argv[@]}"}; do
+        (shopt -s extglob nullglob &&
+            cd "$dir" &&
+            set -- $(eval printf '%s\\n' "$glob!(?)") &&
+            while (($#)); do
+                "${command[@]//"{}"/$1}" || exit
+                shift
+            done) || return
+    done
+}
+
+# safe_jq [<arg>]...
+function safe_jq() { (
+    set -o pipefail
+    # Given JSON or JSONC that is legal aside from trailing commas, strip
+    # comments and trailing commas
+    perl -p0777e \
+        's/\G(?:([^",\/]*+|"(?:[^"\\]++|\\.)*+"|,(?!\s*[]},]))|,|\/\/.*?$|\/\*.*?\*\/)/\1/msg' |
+        jq "$@"
+); }
+
+df_argv=("$@")
