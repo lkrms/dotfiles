@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# fail [<status>]
+function fail() {
+    local s
+    ((s = ${1-})) && return "$s" || return 1
+}
+
+# die [<message>]
+function die() {
+    local s=$?
+    printf '%s: %s\n' "${0##*/}" "${1-command failed}" >&2
+    fail "$s" || exit
+}
+
+type -P realpath >/dev/null ||
+    # realpath <filename>
+    function realpath() {
+        local file=$1 dir
+        while [[ -L $file ]]; do
+            dir=$(dirname "$file") &&
+                file=$(readlink "$file") || return
+            [[ $file == /* ]] || file=$dir/$file
+        done
+        dir=$(dirname "$file") &&
+            dir=$(cd -P "$dir" &>/dev/null && pwd) &&
+            printf '%s/%s' "$dir" "${file##*/}"
+    }
+
+df_root=$(realpath "${BASH_SOURCE[0]}") &&
+    df_root=${df_root%/*/*} &&
+    [[ ${BASH_SOURCE[0]} -ef "$df_root/bin/dotfiles" ]] ||
+    die "error resolving ${BASH_SOURCE[0]}"
+
+friendly_df_root=${df_root#"$HOME"}
+[[ $friendly_df_root == "$df_root" ]] || friendly_df_root="~$friendly_df_root"
+
+case "$OSTYPE" in
+linux-gnu)
+    df_platform=linux
+    ;;
+darwin*)
+    df_platform=macos
+    ;;
+*)
+    die "unsupported OS: $OSTYPE"
+    ;;
+esac
+
+export df_root friendly_df_root df_platform
+
+. "$df_root/bin/lib/bash-helpers.sh"
+
+case "${0##*/}" in
+*install)
+    . "$df_root/bin/lib/install.sh"
+    ;;
+*add | *add-by-long-host | *add-by-host | *add-by-platform | *add-by-default)
+    . "$df_root/bin/lib/add.sh"
+    ;;
+esac

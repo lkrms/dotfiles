@@ -159,6 +159,7 @@ The following environment variables are passed to `target`, `configure` and
   directory, e.g. `/home/lkrms/.dotfiles`.
 - **`friendly_df_root`:** the location of the `dotfiles` repository for display
   purposes, e.g. `~/.dotfiles` (with a literal `~`).
+- **`df_platform`:** either `linux` or `macos`.
 - **`df_dryrun`:** non-empty if the installer is running in dry-run mode,
   otherwise unset or empty.
 - **`df_target`:** the absolute path where symbolic links to the application's

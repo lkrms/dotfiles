@@ -1,67 +1,6 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
 shopt -s extglob nullglob
-
-# fail [<status>]
-function fail() {
-    local s
-    ((s = ${1-})) && return "$s" || return 1
-}
-
-# die [<message>]
-function die() {
-    local s=$?
-    printf '%s: %s\n' "${0##*/}" "${1-command failed}" >&2
-    fail "$s" || exit
-}
-
-type -P realpath >/dev/null ||
-    # realpath <filename>
-    function realpath() {
-        local file=$1 dir
-        while [[ -L $file ]]; do
-            dir=$(dirname "$file") &&
-                file=$(readlink "$file") || return
-            [[ $file == /* ]] || file=$dir/$file
-        done
-        dir=$(dirname "$file") &&
-            dir=$(cd -P "$dir" &>/dev/null && pwd) &&
-            printf '%s/%s' "$dir" "${file##*/}"
-    }
-
-# maybe <command> [<arg>]...
-function maybe() {
-    if [[ -n ${df_dryrun:+1} ]]; then
-        echo "  - would have run:$(printf ' %q' "$@")"
-        return
-    fi
-    "$@"
-}
-
-# link_file <source> <target>
-function link_file() {
-    local source=$1 target=$2
-    [[ ! $target -ef $source ]] || return 0
-    echo " -> Creating symbolic link: $target -> $friendly_df_root${source#"$df_root"}"
-    if [[ -L $target ]]; then
-        maybe rm "$target" || die "error removing existing symlink: $target"
-    fi
-    if [[ -e $target ]]; then
-        local j=-1 backup
-        while j=$((j + 1)); do
-            backup=$target.bak-$(printf '%03d\n' "$j")
-            [[ ! -e $backup ]] && [[ ! -L $backup ]] || continue
-            break
-        done
-        maybe mv -nv "$target" "$backup" || die "error renaming existing file: $target"
-    fi
-    local dir=${target%/*}
-    if [[ ! -d $dir ]]; then
-        maybe command -p install -d "$dir" || die "error creating directory: $dir"
-    fi
-    maybe ln -s "$source" "$target" || die "error creating symbolic link: $target"
-}
 
 # find_installable <app> <app_dir>...
 function find_installable() {
@@ -77,39 +16,16 @@ function find_installable() {
         #    -  '0' otherwise
         # 3. In column 2, print the path name of the file relative to `app_dir/files`
         # 4. In column 3, print the absolute path name of the file
-        awk -v df_root_len=${#df_root} -v app_len=${#app} -f "$df_root/bin/lib/filter-installable.awk" |
+        awk -v df_root_len=${#df_root} -v app_len=${#app} -f "$df_root/bin/lib/awk/filter-installable.awk" |
         # Move `target` and `configure` scripts to the top of the list, `apply` to the end, and sort remaining
         # entries by relative path
         LC_ALL=C sort -t $'\t' -k1,1n -k2,2
 }
 
-df_root=$(realpath "${BASH_SOURCE[0]}") &&
-    df_root=${df_root%/*/*} &&
-    [[ ${BASH_SOURCE[0]} -ef "$df_root/bin/install" ]] ||
-    die "error resolving ${BASH_SOURCE[0]}"
-
-friendly_df_root=${df_root#"$HOME"}
-[[ $friendly_df_root == "$df_root" ]] || friendly_df_root="~$friendly_df_root"
-
-case "$OSTYPE" in
-linux-gnu)
-    platform=linux
-    ;;
-darwin*)
-    platform=macos
-    ;;
-*)
-    die "unsupported OS: $OSTYPE"
-    ;;
-esac
-
-export df_root friendly_df_root
 if [[ ${1-} == --check ]]; then
     export df_dryrun=1
     shift
 fi
-
-link_file "$df_root/bin/install" ~/.local/bin/dotfiles-install
 
 # Match qualified (i.e. more specific) hostnames first
 IFS=$'\n'
@@ -120,11 +36,17 @@ host=($(
 
 app_roots=(
     "${host[@]/#/$df_root/by-host/}"
-    "$df_root/by-platform/$platform"
+    "$df_root/by-platform/$df_platform"
     "$df_root/by-default"
 )
 
-apps=($(eval basename -a $(printf '%q/*\n' "${app_roots[@]}") | sort -u))
+apps=($(eval printf '%s\\n' $(printf '%q/*\n' "${app_roots[@]}") | xargs -r basename -a | sort -u))
+
+link_file "$df_root/bin/add" ~/.local/bin/dotfiles-add-by-long-host
+link_file "$df_root/bin/add" ~/.local/bin/dotfiles-add-by-host
+link_file "$df_root/bin/add" ~/.local/bin/dotfiles-add-by-platform
+link_file "$df_root/bin/add" ~/.local/bin/dotfiles-add-by-default
+link_file "$df_root/bin/install" ~/.local/bin/dotfiles-install
 
 i=0
 count=${#apps[@]}
@@ -174,10 +96,10 @@ done
 ((!i)) || echo
 
 if [[ -z ${error_apps+1} ]]; then
-    echo "Successfully applied dotfiles in $friendly_df_root to $count app(s)"
+    echo "Successfully applied dotfiles in $friendly_df_root to $count application(s)"
     exit
 fi
 
-echo "Could not apply dotfiles in $friendly_df_root to ${#error_apps[@]} of $count app(s):"
+echo "Could not apply dotfiles in $friendly_df_root to ${#error_apps[@]} of $count application(s):"
 printf -- '- %s\n' "${error_apps[@]}"
 exit 1
