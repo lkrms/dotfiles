@@ -46,6 +46,7 @@ link_file "$df_root/bin/add" ~/.local/bin/dotfiles-add-by-long-host
 link_file "$df_root/bin/add" ~/.local/bin/dotfiles-add-by-host
 link_file "$df_root/bin/add" ~/.local/bin/dotfiles-add-by-platform
 link_file "$df_root/bin/add" ~/.local/bin/dotfiles-add-by-default
+link_file "$df_root/bin/clean" ~/.local/bin/dotfiles-clean
 link_file "$df_root/bin/install" ~/.local/bin/dotfiles-install
 
 i=0
