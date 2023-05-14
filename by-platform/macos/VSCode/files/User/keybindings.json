@@ -287,6 +287,42 @@
         "command": "-thunder-client.import-curl"
     },
     {
+        "key": "alt+a",
+        "command": "toggle",
+        "when": "editorTextFocus",
+        "args": {
+            "id": "rulers",
+            "value": [
+                {
+                    "editor.rulers": [
+                        {
+                            "color": "#6662",
+                            "column": 80
+                        },
+                        120,
+                        0
+                    ]
+                },
+                {
+                    "editor.rulers": [
+                        {
+                            "color": "#6662",
+                            "column": 72
+                        },
+                        120,
+                        0
+                    ]
+                },
+                {
+                    "editor.rulers": [
+                        120,
+                        0
+                    ]
+                }
+            ]
+        }
+    },
+    {
         "key": "ctrl+shift+space",
         "command": "toggle.diff.ignoreTrimWhitespace",
         "when": "isInDiffEditor"
