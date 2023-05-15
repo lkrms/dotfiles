@@ -38,7 +38,7 @@ done
 set_local_app_roots
 
 IFS=$'\n'
-apps=($(eval printf '%s\\n' $(printf '%q/*\n' "${local_app_roots[@]}") | xargs -r basename -a | sort -u))
+apps=($(eval printf '%s\\n' $(printf '%q/*\n' "${local_app_roots[@]}") | xargs -r basename -a -- | sort -u))
 
 if ((!by_app)); then
     link_file "$df_root/bin/add" ~/.local/bin/dotfiles-add-by-long-host
@@ -51,7 +51,7 @@ fi
 
 [[ ! -e $df_root/by-app ]] || {
     maybe chmod -R +w "$df_root/by-app" &&
-        maybe rm -rf "$df_root/by-app" || die "error removing $df_root/by-app"
+        maybe rm -rf -- "$df_root/by-app" || die "error removing $df_root/by-app"
 }
 
 i=0

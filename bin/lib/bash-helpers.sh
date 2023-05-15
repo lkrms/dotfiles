@@ -42,7 +42,7 @@ function link_file() {
     [[ ! $target -ef $source ]] || return 0
     echo " -> Creating symbolic link: $target -> $friendly_df_root${source#"$df_root"}"
     if [[ -L $target ]]; then
-        maybe rm "$target" || die "error removing existing symlink: $target"
+        maybe rm -- "$target" || die "error removing existing symlink: $target"
     fi
     if [[ -e $target ]]; then
         local j=-1 backup
@@ -51,13 +51,13 @@ function link_file() {
             [[ ! -e $backup ]] && [[ ! -L $backup ]] || continue
             break
         done
-        maybe mv -nv "$target" "$backup" || die "error renaming existing file: $target"
+        maybe mv -nv -- "$target" "$backup" || die "error renaming existing file: $target"
     fi
     local dir=${target%/*}
     if [[ ! -d $dir ]]; then
-        maybe command -p install -d "$dir" || die "error creating directory: $dir"
+        maybe command -p install -d -- "$dir" || die "error creating directory: $dir"
     fi
-    maybe ln -s "$source" "$target" || die "error creating symbolic link: $target"
+    maybe ln -s -- "$source" "$target" || die "error creating symbolic link: $target"
 }
 
 # replace_file <file> <command> [<arg>]...
@@ -69,11 +69,11 @@ function replace_file() {
     local file=$1
     shift
     "$@" <"$file" >"$df_temp" || die "command failed in $FUNCNAME:$(printf ' %q' "$@")"
-    ! diff -q "$file" "$df_temp" >/dev/null || return 0
+    ! diff -q -- "$file" "$df_temp" >/dev/null || return 0
     echo " -> Replacing: $file"
-    maybe cp "$df_temp" "$file" || die "error replacing file: $file"
+    maybe cp -- "$df_temp" "$file" || die "error replacing file: $file"
     if [[ -n ${df_dryrun:+1} ]]; then
-        ! diff "$file" "$df_temp" || return 0
+        ! diff -- "$file" "$df_temp" || return 0
     fi
 }
 
@@ -90,7 +90,7 @@ function with_each() {
     command=("$@")
     for dir in ${df_argv+"${df_argv[@]}"}; do
         (shopt -s extglob nullglob &&
-            cd "$dir" &&
+            cd -- "$dir" &&
             set -- $(eval printf '%s\\n' "$glob!(?)") &&
             while (($#)); do
                 "${command[@]//"{}"/$1}" || exit
