@@ -32,7 +32,7 @@ type -P realpath >/dev/null ||
 
 df_root=$(realpath -- "${BASH_SOURCE[0]}") &&
     df_root=${df_root%/*/*} &&
-    [[ ${BASH_SOURCE[0]} -ef "$df_root/bin/dotfiles" ]] ||
+    [[ ${BASH_SOURCE[0]} -ef $df_root/bin/dotfiles ]] ||
     die "error resolving ${BASH_SOURCE[0]}"
 
 friendly_df_root=${df_root#"$HOME"}

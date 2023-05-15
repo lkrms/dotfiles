@@ -22,22 +22,37 @@ function find_installable() {
         LC_ALL=C sort -t $'\t' -k1,1n -k2,2
 }
 
-if [[ ${1-} == --check ]]; then
-    export df_dryrun=1
+by_app=0
+while [[ ${1-} == --* ]]; do
+    case "$1" in
+    --check)
+        export df_dryrun=1
+        ;;
+    --by-app)
+        by_app=1
+        ;;
+    esac
     shift
-fi
+done
 
 set_local_app_roots
 
 IFS=$'\n'
 apps=($(eval printf '%s\\n' $(printf '%q/*\n' "${local_app_roots[@]}") | xargs -r basename -a | sort -u))
 
-link_file "$df_root/bin/add" ~/.local/bin/dotfiles-add-by-long-host
-link_file "$df_root/bin/add" ~/.local/bin/dotfiles-add-by-host
-link_file "$df_root/bin/add" ~/.local/bin/dotfiles-add-by-platform
-link_file "$df_root/bin/add" ~/.local/bin/dotfiles-add-by-default
-link_file "$df_root/bin/clean" ~/.local/bin/dotfiles-clean
-link_file "$df_root/bin/install" ~/.local/bin/dotfiles-install
+if ((!by_app)); then
+    link_file "$df_root/bin/add" ~/.local/bin/dotfiles-add-by-long-host
+    link_file "$df_root/bin/add" ~/.local/bin/dotfiles-add-by-host
+    link_file "$df_root/bin/add" ~/.local/bin/dotfiles-add-by-platform
+    link_file "$df_root/bin/add" ~/.local/bin/dotfiles-add-by-default
+    link_file "$df_root/bin/clean" ~/.local/bin/dotfiles-clean
+    link_file "$df_root/bin/install" ~/.local/bin/dotfiles-install
+fi
+
+[[ ! -e $df_root/by-app ]] || {
+    maybe chmod -R +w "$df_root/by-app" &&
+        maybe rm -rf "$df_root/by-app" || die "error removing $df_root/by-app"
+}
 
 i=0
 count=${#apps[@]}
@@ -51,6 +66,18 @@ for app in ${apps+"${apps[@]}"}; do
     [[ -n ${app_dirs+1} ]] || continue
     export df_target=~
     while IFS=$'\t' read -r run rel_path path; do
+        # rel_path can't be used under by-app/ because it doesn't include files/
+        by_app_path=${path#"$df_root/by-host"/*/"$app"/}
+        [[ $by_app_path != "$path" ]] || {
+            by_app_path=${path#"$df_root/by-platform"/*/"$app"/}
+            [[ $by_app_path != "$path" ]] || {
+                by_app_path=${path#"$df_root/by-default/$app"/}
+            }
+        }
+        [[ $by_app_path != "$path" ]] || die "invalid pathname: $path"
+        by_app_path=$df_root/by-app/$app/$by_app_path
+        link_file "$path" "$by_app_path" >/dev/null
+        ((!by_app)) || continue
         if ((run)); then
             [[ -f $path ]] && [[ -x $path ]] || die "not executable: $path"
             echo " -> Running: $path"
@@ -84,7 +111,11 @@ for app in ${apps+"${apps[@]}"}; do
         link_file "$path" "$target"
     done < <(find_installable "$app" "${app_dirs[@]}")
 done
-((!i)) || echo
+
+((!i)) || {
+    maybe chmod -R a-w "$df_root/by-app" || die "error making $df_root/by-app unwritable"
+    echo
+}
 
 if [[ -z ${error_apps+1} ]]; then
     echo "Successfully applied dotfiles in $friendly_df_root to $count application(s)"
