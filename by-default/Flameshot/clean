@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+with_each files/.config/flameshot/flameshot.ini \
+    replace_file '{}' sed -E '/^(drawFontSize|drawThickness|savePath)=/d'

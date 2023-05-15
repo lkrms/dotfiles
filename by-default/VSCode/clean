@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
-
 . "$df_root/bin/lib/bash-helpers.sh" || exit
 
 with_each files/User/keybindings.json \
@@ -9,7 +7,7 @@ with_each files/User/keybindings.json \
 with_each files/User/settings.json \
     replace_file '{}' jq_safe --indent 4 -S '
 walk(
-  if type == "array" and ([ .[] | select(type == "array" or type == "object") ] | length == 0)
-  then sort_by(tostring | ascii_downcase)
-  else . end
+    if type == "array" and ([ .[] | select(type == "array" or type == "object") ] | length == 0)
+    then sort_by(tostring | ascii_downcase)
+    else . end
 )'
