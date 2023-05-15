@@ -9,6 +9,8 @@ function paths_exist() {
     done
 }
 
+set_local_app_roots
+
 (($# > 1)) && paths_exist "${@:2}" ||
     { echo "Usage: ${0##*/} <appname> <path>..." >&2 && exit 1; }
 
@@ -29,18 +31,23 @@ esac
 
 app=$1
 shift
+target=$(find_first "$app" target) &&
+    { [[ -f $target ]] && [[ -x $target ]] || die "not executable: $target"; } &&
+    { target=$("$target") && [[ -d $target ]] || die "target directory not found: $target"; } &&
+    { dir=$(realpath -- "$target") || die "error resolving target directory: $target"; } ||
+    dir=$HOME
 root=$app_root/$app/files
 rel_paths=()
 for _path in "$@"; do
     path=$(realpath -- "$_path")
-    rel_path=${path#"$HOME/"}
-    [[ $rel_path != "$path" ]] || die "path is not in your home directory: $_path"
+    rel_path=${path#"$dir/"}
+    [[ $rel_path != "$path" ]] || die "path is not in $dir: $_path"
     [[ ! -e $root/$rel_path ]] || die "already added to dotfiles: $root/$rel_path"
     rel_paths[${#rel_paths[@]}]=$rel_path
 done
 
 for rel_path in "${rel_paths[@]}"; do
-    from=$HOME/$rel_path
+    from=$dir/$rel_path
     to=$root/$rel_path
     echo "==> Copying $from -> $to"
     command -p install -d -- "${to%/*}" || die "error creating directory: ${to%/*}"

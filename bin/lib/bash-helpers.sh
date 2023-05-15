@@ -1,6 +1,33 @@
 #!/usr/bin/env bash
 
+function set_local_app_roots() {
+    [[ -z ${local_app_roots+1} ]] || return 0
+    local IFS=$'\n' host
+    # Match qualified (i.e. more specific) hostnames first
+    host=($(
+        { hostname -f &&
+            hostname -s; } | uniq
+    )) || die "error getting hostname"
+    local_app_roots=(
+        "${host[@]/#/$df_root/by-host/}"
+        "$df_root/by-platform/$df_platform"
+        "$df_root/by-default"
+    )
+}
+
+# find_first <appname> <path>
+#
+# Find the most applicable instance of <path> in the dotfiles for <appname>.
+function find_first() {
+    [[ -n ${local_app_roots+1} ]] || set_local_app_roots
+    local IFS=$'\n'
+    (shopt -s extglob nullglob &&
+        eval printf '%s\\n' $(printf '%q!(?)\n' "${local_app_roots[@]/%//$1/$2}") | head -n1 | grep .)
+}
+
 # maybe <command> [<arg>]...
+#
+# Run "<command> [<arg>]..." unless in dry-run mode.
 function maybe() {
     if [[ -n ${df_dryrun:+1} ]]; then
         echo "  - would have run:$(printf ' %q' "$@")"
@@ -33,18 +60,18 @@ function link_file() {
     maybe ln -s "$source" "$target" || die "error creating symbolic link: $target"
 }
 
-# maybe_replace <file> <command> [<arg>]...
+# replace_file <file> <command> [<arg>]...
 #
 # Pipe <file> to "<command> [<arg>]..." and replace <file> if the output is
 # different.
-function maybe_replace() {
-    [[ -w ${df_temp-} ]] || df_temp=$(mktemp) || return
+function replace_file() {
+    [[ -w ${df_temp-} ]] || df_temp=$(mktemp) || die "error creating temporary file"
     local file=$1
     shift
-    "$@" <"$file" >"$df_temp" || return
+    "$@" <"$file" >"$df_temp" || die "command failed in $FUNCNAME:$(printf ' %q' "$@")"
     ! diff -q "$file" "$df_temp" >/dev/null || return 0
     echo " -> Replacing: $file"
-    maybe cp "$df_temp" "$file" || return
+    maybe cp "$df_temp" "$file" || die "error replacing file: $file"
     if [[ -n ${df_dryrun:+1} ]]; then
         ! diff "$file" "$df_temp" || return 0
     fi
@@ -72,14 +99,27 @@ function with_each() {
     done
 }
 
-# safe_jq [<arg>]...
-function safe_jq() { (
-    set -o pipefail
+# jq_safe [<arg>]...
+#
+# Pass JSON to "jq [<arg>]..." after stripping trailing commas and comments.
+function jq_safe() {
     # Given JSON or JSONC that is legal aside from trailing commas, strip
     # comments and trailing commas
     perl -p0777e \
         's/\G(?:([^",\/]*+|"(?:[^"\\]++|\\.)*+"|,(?!\s*[]},]))|,|\/\/.*?$|\/\*.*?\*\/)/\1/msg' |
         jq "$@"
-); }
+}
+
+# Return now if sourced by bin/dotfiles
+[[ ! $0 -ef $df_root/bin/dotfiles ]] || return 0
+
+set -euo pipefail
+
+# die [<message>]
+function die() {
+    local s=$?
+    printf '%s: %s\n' "${0##*/}" "${1-command failed}" >&2
+    exit $((s + 3))
+}
 
 df_argv=("$@")

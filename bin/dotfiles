@@ -16,8 +16,9 @@ function die() {
 }
 
 type -P realpath >/dev/null ||
-    # realpath <filename>
+    # realpath [--] <filename>
     function realpath() {
+        [[ $1 != -- ]] || shift
         local file=$1 dir
         while [[ -L $file ]]; do
             dir=$(dirname "$file") &&
@@ -29,7 +30,7 @@ type -P realpath >/dev/null ||
             printf '%s/%s' "$dir" "${file##*/}"
     }
 
-df_root=$(realpath "${BASH_SOURCE[0]}") &&
+df_root=$(realpath -- "${BASH_SOURCE[0]}") &&
     df_root=${df_root%/*/*} &&
     [[ ${BASH_SOURCE[0]} -ef "$df_root/bin/dotfiles" ]] ||
     die "error resolving ${BASH_SOURCE[0]}"

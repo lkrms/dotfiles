@@ -5,9 +5,9 @@ set -euo pipefail
 . "$df_root/bin/lib/bash-helpers.sh" || exit
 
 with_each files/User/keybindings.json \
-    maybe_replace '{}' safe_jq --indent 4 'sort_by((.command | sub("^-"; "")), .key)'
+    replace_file '{}' jq_safe --indent 4 'sort_by((.command | sub("^-"; "")), .key)'
 with_each files/User/settings.json \
-    maybe_replace '{}' safe_jq --indent 4 -S '
+    replace_file '{}' jq_safe --indent 4 -S '
 walk(
   if type == "array" and ([ .[] | select(type == "array" or type == "object") ] | length == 0)
   then sort_by(tostring | ascii_downcase)

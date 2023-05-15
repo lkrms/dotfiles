@@ -2,7 +2,7 @@
 
 shopt -s extglob nullglob
 
-# find_installable <app> <app_dir>...
+# find_installable <appname> <app_dir>...
 function find_installable() {
     local app=$1
     shift
@@ -27,20 +27,10 @@ if [[ ${1-} == --check ]]; then
     shift
 fi
 
-# Match qualified (i.e. more specific) hostnames first
+set_local_app_roots
+
 IFS=$'\n'
-host=($(
-    { hostname -f &&
-        hostname -s; } | uniq
-))
-
-app_roots=(
-    "${host[@]/#/$df_root/by-host/}"
-    "$df_root/by-platform/$df_platform"
-    "$df_root/by-default"
-)
-
-apps=($(eval printf '%s\\n' $(printf '%q/*\n' "${app_roots[@]}") | xargs -r basename -a | sort -u))
+apps=($(eval printf '%s\\n' $(printf '%q/*\n' "${local_app_roots[@]}") | xargs -r basename -a | sort -u))
 
 link_file "$df_root/bin/add" ~/.local/bin/dotfiles-add-by-long-host
 link_file "$df_root/bin/add" ~/.local/bin/dotfiles-add-by-host
@@ -56,7 +46,7 @@ for app in ${apps+"${apps[@]}"}; do
     ((!i++)) || echo
     echo "==> [$i/$count] Configuring $app"
     # Get a list of directories that actually exist by expanding !(?)
-    app_dirs=($(eval printf '%s\\n' $(printf '%q!(?)\n' "${app_roots[@]/%//$app}")))
+    app_dirs=($(eval printf '%s\\n' $(printf '%q!(?)\n' "${local_app_roots[@]/%//$app}")))
     # Mitigate race condition where settings for an app are removed before they can be applied
     [[ -n ${app_dirs+1} ]] || continue
     export df_target=~
