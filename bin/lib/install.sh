@@ -38,7 +38,7 @@ done
 set_local_app_roots
 
 IFS=$'\n'
-apps=($(eval printf '%s\\n' $(printf '%q/*\n' "${local_app_roots[@]}") | xargs -r basename -a -- | sort -u))
+apps=($(printf '%s\0' $(printf '%q/*\n' "${local_app_roots[@]}") | xargs -0r basename -a -- | sort -u))
 
 if ((!by_app)); then
     link_file "$df_root/bin/add" ~/.local/bin/dotfiles-add-by-long-host
@@ -61,7 +61,7 @@ for app in ${apps+"${apps[@]}"}; do
     ((!i++)) || echo
     echo "==> [$i/$count] Configuring $app"
     # Get a list of directories that actually exist by expanding !(?)
-    app_dirs=($(eval printf '%s\\n' $(printf '%q!(?)\n' "${local_app_roots[@]/%//$app}")))
+    app_dirs=($(printf '%s\n' $(printf '%q!(?)\n' "${local_app_roots[@]/%//$app}")))
     # Mitigate race condition where settings for an app are removed before they can be applied
     [[ -n ${app_dirs+1} ]] || continue
     export df_target=~

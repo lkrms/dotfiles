@@ -22,7 +22,7 @@ function find_first() {
     [[ -n ${local_app_roots+1} ]] || set_local_app_roots
     local IFS=$'\n'
     (shopt -s extglob nullglob &&
-        eval printf '%s\\n' $(printf '%q!(?)\n' "${local_app_roots[@]/%//$1/$2}") | head -n1 | grep .)
+        printf '%s\n' $(printf '%q!(?)\n' "${local_app_roots[@]/%//$1/$2}") | head -n1 | grep .)
 }
 
 # maybe <command> [<arg>]...
@@ -91,7 +91,7 @@ function with_each() {
     for dir in ${df_argv+"${df_argv[@]}"}; do
         (shopt -s extglob nullglob &&
             cd -- "$dir" &&
-            set -- $(eval printf '%s\\n' "$glob!(?)") &&
+            set -- $(printf '%s\n' "$glob!(?)") &&
             while (($#)); do
                 "${command[@]//"{}"/$1}" || exit
                 shift

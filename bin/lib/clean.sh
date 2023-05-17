@@ -13,7 +13,8 @@ app_roots=(
     "$df_root/by-default"
 )
 
-apps=($(eval printf '%s\\n' $(printf '%q/*\n' "${app_roots[@]}") | xargs -r basename -a | sort -u))
+IFS=$'\n'
+apps=($(printf '%s\0' $(printf '%q/*\n' "${app_roots[@]}") | xargs -0r basename -a -- | sort -u))
 
 i=0
 count=${#apps[@]}
@@ -25,7 +26,7 @@ for app in ${apps+"${apps[@]}"}; do
     [[ -e $path ]] && [[ -s $path ]] || continue
     [[ -f $path ]] && [[ -x $path ]] || die "not executable: $path"
     # Get a list of directories that actually exist by expanding !(?)
-    app_dirs=($(eval printf '%s\\n' $(printf '%q!(?)\n' "${app_roots[@]/%//$app}")))
+    app_dirs=($(printf '%s\n' $(printf '%q!(?)\n' "${app_roots[@]/%//$app}")))
     # Mitigate race condition where settings for an app are removed before they can be cleaned
     [[ -n ${app_dirs+1} ]] || continue
     echo " -> Running: $path"
