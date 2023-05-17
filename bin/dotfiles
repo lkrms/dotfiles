@@ -27,7 +27,7 @@ type -P realpath >/dev/null ||
         done
         dir=$(dirname "$file") &&
             dir=$(cd -P "$dir" &>/dev/null && pwd) &&
-            printf '%s/%s' "$dir" "${file##*/}"
+            printf '%s/%s\n' "$dir" "${file##*/}"
     }
 
 df_root=$(realpath -- "${BASH_SOURCE[0]}") &&
