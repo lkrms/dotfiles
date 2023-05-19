@@ -39,7 +39,16 @@ target=$(find_first "$app" target) &&
 root=$app_root/$app/files
 rel_paths=()
 for _path in "$@"; do
-    path=$(realpath -- "$_path")
+    if [[ -L $_path ]]; then
+        # If <path> is a symbolic link (e.g. to a file outside the target
+        # directory), resolve its directory instead of the path itself
+        path=$(dirname -- "$_path") &&
+            path=$(realpath -- "$path") &&
+            path=$path/$(basename "$_path") &&
+            [[ $path -ef $_path ]] || die "error resolving path: $_path"
+    else
+        path=$(realpath -- "$_path")
+    fi
     rel_path=${path#"$dir/"}
     [[ $rel_path != "$path" ]] || die "path is not in $dir: $_path"
     [[ ! -e $root/$rel_path ]] || die "already added to dotfiles: $root/$rel_path"
@@ -51,7 +60,7 @@ for rel_path in "${rel_paths[@]}"; do
     to=$root/$rel_path
     echo "==> Copying $from -> $to"
     command -p install -d -- "${to%/*}" || die "error creating directory: ${to%/*}"
-    cp -a -- "$from" "$to"
+    cp -aH -- "$from" "$to"
     if [[ -d $from ]]; then
         echo " -> Creating $to.symlink"
         touch -- "$to.symlink"

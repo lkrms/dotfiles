@@ -21,12 +21,12 @@ type -P realpath >/dev/null ||
         [[ $1 != -- ]] || shift
         local file=$1 dir
         while [[ -L $file ]]; do
-            dir=$(dirname "$file") &&
-                file=$(readlink "$file") || return
+            dir=$(dirname -- "$file") &&
+                file=$(readlink -- "$file") || return
             [[ $file == /* ]] || file=$dir/$file
         done
-        dir=$(dirname "$file") &&
-            dir=$(cd -P "$dir" &>/dev/null && pwd) &&
+        dir=$(dirname -- "$file") &&
+            dir=$(cd -P -- "$dir" &>/dev/null && pwd) &&
             printf '%s/%s\n' "$dir" "${file##*/}"
     }
 

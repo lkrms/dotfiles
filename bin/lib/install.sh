@@ -80,12 +80,12 @@ for app in ${apps+"${apps[@]}"}; do
         ((!by_app)) || continue
         if ((run)); then
             [[ -f $path ]] && [[ -x $path ]] || die "not executable: $path"
-            echo " -> Running: $path"
             if [[ $rel_path == target ]]; then
                 target=$("$path" "${app_dirs[@]}") &&
                     { [[ -n $target ]] || die "invalid target"; } &&
                     df_target=$target
             else
+                echo " -> Running: $path"
                 "$path" "${app_dirs[@]}"
             fi && status=0 || status=$?
             case "$status" in
