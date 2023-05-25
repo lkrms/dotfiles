@@ -7,11 +7,7 @@ if [[ ${1-} == --check ]]; then
     shift
 fi
 
-app_roots=(
-    "$df_root/by-host"/*
-    "$df_root/by-platform"/*
-    "$df_root/by-default"
-)
+set_app_roots
 
 IFS=$'\n'
 apps=($(printf '%s\0' $(printf '%q/*\n' "${app_roots[@]}") | xargs -0r basename -a -- | sort -u))
