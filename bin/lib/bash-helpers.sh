@@ -15,6 +15,15 @@ function set_local_app_roots() {
     )
 }
 
+function set_app_roots() {
+    [[ -z ${app_roots+1} ]] || return 0
+    app_roots=(
+        "$df_root/by-host"/*
+        "$df_root/by-platform"/*
+        "$df_root/by-default"
+    )
+}
+
 # find_first <appname> <path>
 #
 # Find the most applicable instance of <path> in the dotfiles for <appname>.
