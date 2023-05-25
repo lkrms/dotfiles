@@ -6,8 +6,7 @@ shopt -s extglob nullglob
 function find_installable() {
     local app=$1
     shift
-    find "$@" \
-        \( \( -type d -execdir test -e '{}.symlink' \; -prune \) -o -type f -o -type l \) ! -name '*.symlink' -print |
+    find_all "$@" |
         # 1. Discard all but the first instance of each file
         # 2. In column 1, print:
         #    - '-2' if the file is a `target` script
@@ -20,6 +19,12 @@ function find_installable() {
         # Move `target` and `configure` scripts to the top of the list, `apply` to the end, and sort remaining
         # entries by relative path
         LC_ALL=C sort -t $'\t' -k1,1n -k2,2
+}
+
+# find_all <app_dir>...
+function find_all() {
+    find "$@" \
+        \( \( -type d -execdir test -e '{}.symlink' \; -prune \) -o -type f -o -type l \) ! -name '*.symlink' -print
 }
 
 by_app=0
@@ -36,6 +41,7 @@ while [[ ${1-} == --* ]]; do
 done
 
 set_local_app_roots
+set_app_roots
 
 IFS=$'\n'
 apps=($(printf '%s\0' $(printf '%q/*\n' "${local_app_roots[@]}") | xargs -0r basename -a -- | sort -u))
@@ -60,33 +66,32 @@ error_apps=()
 for app in ${apps+"${apps[@]}"}; do
     ((!i++)) || echo
     echo "==> [$i/$count] Configuring $app"
-    # Get a list of directories that actually exist by expanding !(?)
-    app_dirs=($(printf '%s\n' $(printf '%q!(?)\n' "${local_app_roots[@]/%//$app}")))
+    # Get directories that actually exist by expanding !(?)
+    local_app_dirs=($(printf '%s\n' $(printf '%q!(?)\n' "${local_app_roots[@]/%//$app}")))
+    app_dirs=($(printf '%s\n' $(printf '%q!(?)\n' "${app_roots[@]/%//$app}")))
     # Mitigate race condition where settings for an app are removed before they can be applied
-    [[ -n ${app_dirs+1} ]] || continue
+    [[ -n ${local_app_dirs+${app_dirs+1}} ]] || continue
+    # 1. Populate by-app/ with settings for every host and platform
+    while IFS= read -r path; do
+        by_app_path=${path#"$df_root/"}
+        [[ $by_app_path =~ ^(by-(host|platform)/[^/]+|by-default)/(.*) ]] ||
+            die "invalid pathname: $path"
+        by_app_path=$df_root/by-app/$app/${BASH_REMATCH[1]}/${BASH_REMATCH[3]#*/}
+        link_file "$path" "$by_app_path" >/dev/null
+    done < <(find_all "${app_dirs[@]}")
+    ((!by_app)) || continue
+    # 2. Perform the actual installation
     export df_target=~
     while IFS=$'\t' read -r run rel_path path; do
-        # rel_path can't be used under by-app/ because it doesn't include files/
-        by_app_path=${path#"$df_root/by-host"/*/"$app"/}
-        [[ $by_app_path != "$path" ]] || {
-            by_app_path=${path#"$df_root/by-platform"/*/"$app"/}
-            [[ $by_app_path != "$path" ]] || {
-                by_app_path=${path#"$df_root/by-default/$app"/}
-            }
-        }
-        [[ $by_app_path != "$path" ]] || die "invalid pathname: $path"
-        by_app_path=$df_root/by-app/$app/$by_app_path
-        link_file "$path" "$by_app_path" >/dev/null
-        ((!by_app)) || continue
         if ((run)); then
             [[ -f $path ]] && [[ -x $path ]] || die "not executable: $path"
             if [[ $rel_path == target ]]; then
-                target=$("$path" "${app_dirs[@]}") &&
+                target=$("$path" "${local_app_dirs[@]}") &&
                     { [[ -n $target ]] || die "invalid target"; } &&
                     df_target=$target
             else
                 echo " -> Running: $path"
-                "$path" "${app_dirs[@]}"
+                "$path" "${local_app_dirs[@]}"
             fi && status=0 || status=$?
             case "$status" in
             0)
@@ -109,7 +114,7 @@ for app in ${apps+"${apps[@]}"}; do
         fi
         target=$df_target/$rel_path
         link_file "$path" "$target"
-    done < <(find_installable "$app" "${app_dirs[@]}")
+    done < <(find_installable "$app" "${local_app_dirs[@]}")
 done
 
 ((!i)) || {
