@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+type -P code >/dev/null || exit 0
+
+extensions=$(mktemp)
+install=$(mktemp)
+installed=$(mktemp)
+with_each extensions.txt \
+    cat '{}' | sed -E 's/\s*(#.*)?//g; /^$/d' | sort -u | tee "$extensions" >"$install"
+
+while true; do
+    code --list-extensions | sort -u >"$installed"
+    extension=$(comm -23 "$install" "$installed" | head -n1)
+    [[ -n ${extension:+1} ]] || break
+    maybe code --install-extension "$extension"
+    grep -Fxv "$extension" "$install" >"$installed" || true
+    cp "$installed" "$install"
+done
+
+IFS=$'\n'
+unknown=($(comm -13 "$extensions" "$installed"))
+if [[ -n ${unknown+1} ]]; then
+    echo "${#unknown[@]} unknown extension(s):"
+    printf '%s\n' "${unknown[@]}"
+fi
