@@ -4,6 +4,10 @@
 
 type -P code >/dev/null || exit 0
 
+if code=$(find_first code); then
+    link_file "$code" ~/.local/bin/code
+fi
+
 extensions=$(mktemp)
 install=$(mktemp)
 installed=$(mktemp)
