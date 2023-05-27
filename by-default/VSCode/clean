@@ -5,9 +5,6 @@
 with_each files/User/keybindings.json \
     replace_file '{}' jq_safe --indent 4 'sort_by((.command | sub("^-"; "")), .key)'
 with_each files/User/settings.json \
-    replace_file '{}' jq_safe --indent 4 -S '
-walk(
-    if type == "array" and ([ .[] | select(type == "array" or type == "object") ] | length == 0)
-    then sort_by(tostring | ascii_downcase)
-    else . end
-)'
+    replace_file '{}' jq_safe --indent 4 'to_entries | sort_by(.key | ascii_downcase) | from_entries'
+with_each files/User/tasks.json \
+    replace_file '{}' jq_safe --indent 4 '.tasks |= sort_by(.label | ascii_downcase)'

@@ -1,0 +1,28 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Print setting value",
+            "detail": "Add Setting ID to tasks.json first",
+            "type": "shell",
+            "command": "printf",
+            "args": [
+                {
+                    "value": "%s\\n",
+                    "quoting": "strong"
+                },
+                {
+                    "value": "${config:keyboard.dispatch}",
+                    "quoting": "strong"
+                }
+            ],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        }
+    ]
+}

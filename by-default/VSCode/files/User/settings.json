@@ -1,22 +1,4 @@
 {
-    "Lua.addonManager.enable": false,
-    "Lua.format.defaultConfig": {
-        "line_space_after_comment": "max(2)",
-        "line_space_after_do_statement": "max(2)",
-        "line_space_after_expression_statement": "max(2)",
-        "line_space_after_for_statement": "max(2)",
-        "line_space_after_function_statement": "max(2)",
-        "line_space_after_if_statement": "max(2)",
-        "line_space_after_local_or_assign_statement": "max(2)",
-        "line_space_after_repeat_statement": "max(2)",
-        "line_space_after_while_statement": "max(2)",
-        "space_around_table_field_list": "false"
-    },
-    "Lua.workspace.checkThirdParty": false,
-    "Prettier-SQL.SQLFlavourOverride": "sqlite",
-    "Prettier-SQL.ignoreTabSettings": true,
-    "Prettier-SQL.keywordCase": "upper",
-    "Prettier-SQL.linesBetweenQueries": 0,
     "[css]": {
         "editor.defaultFormatter": "HookyQR.beautify"
     },
@@ -438,8 +420,105 @@
         }
     ],
     "keyboard.dispatch": "keyCode",
+    "launch": {
+        "configurations": [
+            {
+                "name": "PHP: Listen for Xdebug",
+                "type": "php",
+                "request": "launch",
+                "port": 9003,
+                "skipFiles": [
+                    "**/vendor/**",
+                    "!**/vendor/lkrms/**"
+                ]
+            },
+            {
+                "name": "PHP: Current file",
+                "type": "php",
+                "request": "launch",
+                "program": "${file}",
+                "cwd": "${fileDirname}",
+                "port": 0,
+                "runtimeExecutable": "php",
+                "runtimeArgs": [
+                    "-dzend_extension=xdebug.so",
+                    "-dxdebug.start_with_request=yes"
+                ],
+                "env": {
+                    "XDEBUG_MODE": "debug,develop",
+                    "XDEBUG_CONFIG": "client_port=${port}"
+                },
+                "xdebugSettings": {
+                    "max_children": 10000,
+                    "show_hidden": 1,
+                    "max_data": 10000000
+                },
+                "skipFiles": [
+                    "**/vendor/**",
+                    "!**/vendor/lkrms/**"
+                ]
+            },
+            {
+                "name": "PHP: Current file, with optional arguments",
+                "type": "php",
+                "request": "launch",
+                "program": "${file}",
+                "cwd": "${fileDirname}",
+                "port": 0,
+                "runtimeExecutable": "bash",
+                "runtimeArgs": [
+                    "-c",
+                    "eval \"args=(${*: -1})\" && php \"${@:1:$#-1}\" \"${args[@]}\"",
+                    "bash",
+                    "-dzend_extension=xdebug.so",
+                    "-dxdebug.start_with_request=yes"
+                ],
+                "env": {
+                    "XDEBUG_MODE": "debug,develop",
+                    "XDEBUG_CONFIG": "client_port=${port}"
+                },
+                "xdebugSettings": {
+                    "max_children": 10000,
+                    "show_hidden": 1,
+                    "max_data": 10000000
+                },
+                "skipFiles": [
+                    "**/vendor/**",
+                    "!**/vendor/lkrms/**"
+                ],
+                "args": [
+                    "${input:phpArgs}"
+                ]
+            }
+        ],
+        "inputs": [
+            {
+                "id": "phpArgs",
+                "type": "command",
+                "command": "memento.promptString",
+                "args": {
+                    "id": "phpArgs",
+                    "description": "Command line arguments"
+                }
+            }
+        ]
+    },
+    "Lua.addonManager.enable": false,
+    "Lua.format.defaultConfig": {
+        "line_space_after_comment": "max(2)",
+        "line_space_after_do_statement": "max(2)",
+        "line_space_after_expression_statement": "max(2)",
+        "line_space_after_for_statement": "max(2)",
+        "line_space_after_function_statement": "max(2)",
+        "line_space_after_if_statement": "max(2)",
+        "line_space_after_local_or_assign_statement": "max(2)",
+        "line_space_after_repeat_statement": "max(2)",
+        "line_space_after_while_statement": "max(2)",
+        "space_around_table_field_list": "false"
+    },
     "lua.format.lineWidth": 1000,
     "lua.targetVersion": "5.3",
+    "Lua.workspace.checkThirdParty": false,
     "nginx-conf-hint.syntax": "sublime",
     "outline.collapseItems": "alwaysCollapse",
     "partialDiff.enableTelemetry": false,
@@ -453,6 +532,10 @@
     "powershell.codeFormatting.pipelineIndentationStyle": "IncreaseIndentationForFirstPipeline",
     "powershell.codeFormatting.trimWhitespaceAroundPipe": true,
     "powershell.startAutomatically": false,
+    "Prettier-SQL.ignoreTabSettings": true,
+    "Prettier-SQL.keywordCase": "upper",
+    "Prettier-SQL.linesBetweenQueries": 0,
+    "Prettier-SQL.SQLFlavourOverride": "sqlite",
     "pretty-php.formatting.alignment.alignChains": true,
     "pretty-php.formatting.alignment.alignFn": true,
     "pretty-php.formatting.blankBeforeReturn": true,
@@ -503,7 +586,6 @@
     "terminal.external.osxExec": "iTerm.app",
     "terminal.integrated.copyOnSelection": true,
     "terminal.integrated.cwd": "${fileDirname}",
-    "terminal.integrated.defaultLocation": "editor",
     "terminal.integrated.detectLocale": "off",
     "terminal.integrated.enableFileLinks": "off",
     "terminal.integrated.enablePersistentSessions": false,
