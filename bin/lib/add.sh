@@ -31,7 +31,7 @@ esac
 
 app=$1
 shift
-target=$(find_first "$app" target) &&
+target=$(find_first_by_app "$app" target) &&
     { [[ -f $target ]] && [[ -x $target ]] || die "not executable: $target"; } &&
     { target=$("$target") && [[ -d $target ]] || die "target directory not found: $target"; } &&
     { dir=$(realpath -- "$target") || die "error resolving target directory: $target"; } ||

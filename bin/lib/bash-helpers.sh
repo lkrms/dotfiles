@@ -24,10 +24,10 @@ function set_app_roots() {
     )
 }
 
-# find_first <appname> <path>
+# find_first_by_app <appname> <path>
 #
 # Find the most applicable instance of <path> in the dotfiles for <appname>.
-function find_first() {
+function find_first_by_app() {
     [[ -n ${local_app_roots+1} ]] || set_local_app_roots
     local IFS=$'\n'
     (shopt -s extglob nullglob &&
@@ -84,6 +84,17 @@ function replace_file() {
     if [[ -n ${df_dryrun:+1} ]]; then
         ! diff -- "$file" "$df_temp" || return 0
     fi
+}
+
+# find_first <path>
+#
+# Find the most applicable instance of <path> in the <appname> directories
+# passed to the script.
+function find_first() {
+    [[ -n ${df_argv+1} ]] || return
+    local IFS=$'\n'
+    (shopt -s extglob nullglob &&
+        printf '%s\n' $(printf '%q!(?)\n' "${df_argv[@]/%//$1}") | head -n1 | grep .)
 }
 
 # with_each <glob> <command> [<arg>]...
