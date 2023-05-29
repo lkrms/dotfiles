@@ -8,6 +8,10 @@ if code=$(find_first code); then
     link_file "$code" ~/.local/bin/code
 fi
 
+if php=$(find_first php-xdebug); then
+    link_file "$php" ~/.local/bin/php-xdebug
+fi
+
 extensions=$(mktemp)
 install=$(mktemp)
 installed=$(mktemp)
