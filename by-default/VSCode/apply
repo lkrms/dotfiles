@@ -16,7 +16,7 @@ extensions=$(mktemp)
 install=$(mktemp)
 installed=$(mktemp)
 with_each extensions.txt \
-    cat '{}' | sed -E 's/\s*(#.*)?//g; /^$/d' | sort -u | tee "$extensions" >"$install"
+    cat '{}' | sed -E 's/[[:blank:]]*(#.*)?//g; /^$/d' | sort -u | tee "$extensions" >"$install"
 
 while true; do
     code --list-extensions | sort -u >"$installed"
