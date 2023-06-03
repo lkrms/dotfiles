@@ -58,6 +58,7 @@
         "editor.defaultFormatter": "ms-python.python"
     },
     "[sql]": {
+        "editor.comments.insertSpace": true,
         "editor.defaultFormatter": "inferrinizzard.prettier-sql-vscode",
         "editor.detectIndentation": false,
         "editor.insertSpaces": true,
