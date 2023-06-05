@@ -1,4 +1,9 @@
 {
+    "[awk]": {
+        "editor.detectIndentation": false,
+        "editor.insertSpaces": true,
+        "editor.tabSize": 2
+    },
     "[css]": {
         "editor.defaultFormatter": "HookyQR.beautify"
     },
@@ -256,47 +261,11 @@
     "gitlens.advanced.fileHistoryFollowsRenames": true,
     "gitlens.blame.format": "${message|40?} ${date|14-}",
     "gitlens.codeLens.enabled": false,
-    "gitlens.codeLens.scopes": [
-        "document"
-    ],
     "gitlens.currentLine.format": "${author}, ${date} • ${message}",
     "gitlens.hovers.avatars": false,
-    "gitlens.menus": {
-        "editor": {
-            "blame": false,
-            "clipboard": true,
-            "compare": true,
-            "details": false,
-            "history": false,
-            "remote": false
-        },
-        "editorGroup": false,
-        "editorTab": {
-            "clipboard": true,
-            "compare": true,
-            "history": true,
-            "remote": true
-        },
-        "explorer": {
-            "clipboard": true,
-            "compare": true,
-            "history": true,
-            "remote": true
-        },
-        "scmGroup": {
-            "compare": true,
-            "openClose": true,
-            "stash": true,
-            "stashInline": true
-        },
-        "scmItem": {
-            "clipboard": true,
-            "compare": true,
-            "history": true,
-            "remote": true,
-            "stash": true
-        }
-    },
+    "gitlens.plusFeatures.enabled": false,
+    "gitlens.showWelcomeOnInstall": false,
+    "gitlens.showWhatsNewAfterUpgrades": false,
     "gitlens.statusBar.format": "${author}, ${date} • ${message}",
     "gitlens.statusBar.reduceFlicker": true,
     "html.autoClosingTags": false,
