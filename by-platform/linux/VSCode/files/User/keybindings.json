@@ -25,7 +25,7 @@
         "when": "editorTextFocus && !editorReadonly"
     },
     {
-        "key": "ctrl+meta+/",
+        "key": "ctrl+shift+/",
         "command": "editor.action.blockComment",
         "when": "editorTextFocus && !editorReadonly"
     },
@@ -293,7 +293,7 @@
     {
         "key": "alt+a",
         "command": "toggle",
-        "when": "editorTextFocus",
+        "when": "editorTextFocus && editorLangId == 'markdown'",
         "args": {
             "id": "rulers",
             "value": [
@@ -322,6 +322,47 @@
                         120,
                         0
                     ]
+                }
+            ]
+        }
+    },
+    {
+        "key": "alt+a",
+        "command": "toggle",
+        "when": "editorTextFocus && editorLangId != 'markdown'",
+        "args": {
+            "id": "rulers",
+            "value": [
+                {
+                    "editor.rulers": [
+                        {
+                            "color": "#6662",
+                            "column": 80
+                        },
+                        120,
+                        0
+                    ]
+                },
+                {
+                    "editor.rulers": [
+                        120,
+                        0
+                    ]
+                }
+            ]
+        }
+    },
+    {
+        "key": "alt+x",
+        "command": "toggle",
+        "args": {
+            "id": "phpunit",
+            "value": [
+                {
+                    "phpunit.php": "php"
+                },
+                {
+                    "phpunit.php": "php-xdebug"
                 }
             ]
         }

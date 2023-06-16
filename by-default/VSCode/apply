@@ -12,6 +12,10 @@ if php=$(find_first php-xdebug); then
     link_file "$php" ~/.local/bin/php-xdebug
 fi
 
+if php=$(find_first php74-xdebug); then
+    link_file "$php" ~/.local/bin/php74-xdebug
+fi
+
 extensions=$(mktemp)
 install=$(mktemp)
 installed=$(mktemp)

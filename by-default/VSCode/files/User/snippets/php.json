@@ -4,7 +4,7 @@
 		"body": [
 			"<?php declare(strict_types=1);",
 			"",
-			"namespace Lkrms${TM_DIRECTORY/^.*\\\\/src|^.*\\\\/(tests)|\\\\/([A-Z][a-zA-Z0-9]*)/${1:+\\\\Tests}${2:+\\\\}$2/g};",
+			"namespace Lkrms${TM_DIRECTORY/^.*\\\\/src|^.*\\\\/(tests\\\\/unit)|\\\\/([A-Z][a-zA-Z0-9]*)/${1:+\\\\Tests}${2:+\\\\}$2/g};",
 			"",
 			"/**",
 			" * ${1:Summary}",
@@ -19,11 +19,11 @@
 		"prefix": "@deprecated",
 		"body": "@deprecated Use {@see $0} instead"
 	},
-	"PHPDoc: @inheritDoc (unofficial usage)": {
+	"PHPDoc: @inheritDoc (proposed)": {
 		"prefix": "@inheritDoc",
 		"body": [
 			"/**",
-			" * {@inheritDoc}",
+			" * @inheritDoc",
 			" */"
 		]
 	},

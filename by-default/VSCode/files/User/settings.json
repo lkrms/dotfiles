@@ -46,6 +46,9 @@
         "editor.unicodeHighlight.invisibleCharacters": false,
         "editor.wordWrap": "off"
     },
+    "[neon]": {
+        "editor.defaultFormatter": "redhat.vscode-yaml"
+    },
     "[nginx]": {
         "editor.defaultFormatter": "ahmadalli.vscode-nginx-conf"
     },
@@ -83,6 +86,7 @@
     "azureFunctions.showCoreToolsWarning": false,
     "bashIde.highlightParsingErrors": false,
     "bashIde.shellcheckArguments": "--exclude=1003,1007,1090,1091,2012,2013,2015,2016,2024,2029,2030,2031,2032,2033,2034,2046,2054,2064,2086,2119,2120,2128,2148,2153,2154,2164,2178,2180,2206,2207,2261,2317",
+    "bashIde.shellcheckPath": "",
     "beautify.config": {
         "break_chained_methods": true,
         "end_with_newline": true,
@@ -269,6 +273,7 @@
     "gitlens.statusBar.format": "${author}, ${date} • ${message}",
     "gitlens.statusBar.reduceFlicker": true,
     "html.autoClosingTags": false,
+    "intelephense.diagnostics.implementationErrors": false,
     "intelephense.files.exclude": [
         "**/.ci/**",
         "**/.DS_Store/**",
@@ -387,6 +392,13 @@
                 "composer.json"
             ],
             "url": "https://raw.githubusercontent.com/composer/composer/master/res/composer-schema.json"
+        },
+        {
+            "fileMatch": [
+                "box.json",
+                "box.json.dist"
+            ],
+            "url": "https://raw.githubusercontent.com/box-project/box/main/res/schema.json"
         }
     ],
     "keyboard.dispatch": "keyCode",
@@ -397,9 +409,14 @@
                 "type": "php",
                 "request": "launch",
                 "port": 9003,
+                "xdebugSettings": {
+                    "max_children": 10000,
+                    "show_hidden": 1,
+                    "max_data": 10000000
+                },
                 "skipFiles": [
-                    "**/vendor/**",
-                    "!**/vendor/lkrms/**"
+                    "!**/vendor/lkrms/**",
+                    "**/vendor/**"
                 ]
             },
             {
@@ -424,8 +441,8 @@
                     "max_data": 10000000
                 },
                 "skipFiles": [
-                    "**/vendor/**",
-                    "!**/vendor/lkrms/**"
+                    "!**/vendor/lkrms/**",
+                    "**/vendor/**"
                 ]
             },
             {
@@ -453,8 +470,8 @@
                     "max_data": 10000000
                 },
                 "skipFiles": [
-                    "**/vendor/**",
-                    "!**/vendor/lkrms/**"
+                    "!**/vendor/lkrms/**",
+                    "**/vendor/**"
                 ],
                 "args": [
                     "${input:phpArgs}"
@@ -486,9 +503,13 @@
         "line_space_after_while_statement": "max(2)",
         "space_around_table_field_list": "false"
     },
-    "lua.format.lineWidth": 1000,
-    "lua.targetVersion": "5.3",
     "Lua.workspace.checkThirdParty": false,
+    "markdown.preview.linkify": false,
+    "markdown.preview.markEditorSelection": false,
+    "markdown.preview.scrollEditorWithPreview": false,
+    "markdown.preview.typographer": true,
+    "markdown.updateLinksOnFileMove.enabled": "prompt",
+    "markdown.validate.enabled": true,
     "nginx-conf-hint.syntax": "sublime",
     "outline.collapseItems": "alwaysCollapse",
     "partialDiff.enableTelemetry": false,
@@ -506,25 +527,11 @@
     "Prettier-SQL.keywordCase": "upper",
     "Prettier-SQL.linesBetweenQueries": 0,
     "Prettier-SQL.SQLFlavourOverride": "sqlite",
-    "pretty-php.formatting.alignment.alignChains": true,
-    "pretty-php.formatting.alignment.alignFn": true,
-    "pretty-php.formatting.blankBeforeReturn": true,
-    "pretty-php.formatting.indentHeredocs": false,
-    "pretty-php.formatting.preserveOneLineStatements": true,
-    "pretty-php.formatting.preserveTrailingSpaces": [
-        2
-    ],
-    "pretty-php.formatting.strictLists": true,
     "python.experiments.enabled": false,
-    "python.formatting.provider": "black",
-    "python.showStartPage": false,
     "redhat.telemetry.enabled": false,
-    "ruby.format": "rubocop",
-    "ruby.lint": {
-        "rubocop": true
-    },
-    "ruby.useLanguageServer": true,
-    "salesforcedx-vscode-core.telemetry.enabled": false,
+    "regex-previewer.enableCodeLens": false,
+    "rest-client.enableTelemetry": false,
+    "rest-client.previewOption": "exchange",
     "scm.diffDecorationsIgnoreTrimWhitespace": "true",
     "search.exclude": {
         "**/*.code-search": true,
@@ -536,25 +543,19 @@
         "**/build": true,
         "**/log": true,
         "**/node_modules": true,
+        "**/phpstan-baseline.neon": true,
         "**/var": true,
         "**/vendor": true
     },
     "search.followSymlinks": false,
     "security.workspace.trust.enabled": false,
     "shellformat.flag": "-s",
-    "sqltools.format": {
-        "linesBetweenQueries": "preserve",
-        "reservedWordCase": "upper"
-    },
-    "sqltools.highlightQuery": false,
     "standard.engine": "ts-standard",
-    "tableformatter.common.centerAlignedHeader": false,
     "telemetry.telemetryLevel": "off",
     "terminal.external.osxExec": "iTerm.app",
     "terminal.integrated.copyOnSelection": true,
     "terminal.integrated.cwd": "${fileDirname}",
     "terminal.integrated.detectLocale": "off",
-    "terminal.integrated.enableFileLinks": "off",
     "terminal.integrated.enablePersistentSessions": false,
     "terminal.integrated.env.linux": {
         "LC_BYOBU": "0"
@@ -565,6 +566,7 @@
     "terminal.integrated.fontSize": 12,
     "terminal.integrated.lineHeight": 1.2,
     "terminal.integrated.minimumContrastRatio": 1,
+    "terminal.integrated.persistentSessionReviveProcess": "never",
     "terminal.integrated.profiles.linux": {
         "bash": {
             "icon": "terminal-bash",
@@ -605,7 +607,6 @@
     "typescript.format.insertSpaceBeforeFunctionParenthesis": true,
     "typescript.format.semicolons": "remove",
     "update.showReleaseNotes": false,
-    "vim.disableExtension": true,
     "window.newWindowDimensions": "inherit",
     "window.title": "${dirty}${rootName}${separator}${activeEditorShort}${separator}${appName}",
     "window.titleBarStyle": "custom",
@@ -627,5 +628,6 @@
     "xml.format.enforceQuoteStyle": "preferred",
     "xml.format.maxLineWidth": 0,
     "xml.format.preservedNewlines": 0,
-    "xml.format.splitAttributes": true
+    "xml.format.splitAttributes": true,
+    "yaml.validate": false
 }

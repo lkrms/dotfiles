@@ -67,6 +67,8 @@ TaoKlerks.poor-mans-t-sql-formatter-vscode
 
 ahmadalli.vscode-nginx-conf
 beaglefoot.awk-ide-vscode
+chrmarti.regex
+daohong-emilio.yash
 HookyQR.beautify
 humao.rest-client
 idleberg.applescript
