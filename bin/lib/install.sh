@@ -51,6 +51,10 @@ if ((!by_app)); then
     link_file "$df_root/bin/add" ~/.local/bin/dotfiles-add-by-host
     link_file "$df_root/bin/add" ~/.local/bin/dotfiles-add-by-platform
     link_file "$df_root/bin/add" ~/.local/bin/dotfiles-add-by-default
+    link_file "$df_root/bin/add" ~/.local/bin/dotfiles-add-private-by-long-host
+    link_file "$df_root/bin/add" ~/.local/bin/dotfiles-add-private-by-host
+    link_file "$df_root/bin/add" ~/.local/bin/dotfiles-add-private-by-platform
+    link_file "$df_root/bin/add" ~/.local/bin/dotfiles-add-private-by-default
     link_file "$df_root/bin/clean" ~/.local/bin/dotfiles-clean
     link_file "$df_root/bin/install" ~/.local/bin/dotfiles-install
 fi
@@ -74,6 +78,7 @@ for app in ${apps+"${apps[@]}"}; do
     # 1. Populate by-app/ with settings for every host and platform
     while IFS= read -r path; do
         by_app_path=${path#"$df_root/"}
+        by_app_path=${by_app_path#private/}
         [[ $by_app_path =~ ^(by-(host|platform)/[^/]+|by-default)/(.*) ]] ||
             die "invalid pathname: $path"
         by_app_path=$df_root/by-app/$app/${BASH_REMATCH[1]}/${BASH_REMATCH[3]#*/}

@@ -9,8 +9,11 @@ function set_local_app_roots() {
             hostname -s; } | uniq
     )) || die "error getting hostname"
     local_app_roots=(
+        "${host[@]/#/$df_root/private/by-host/}"
         "${host[@]/#/$df_root/by-host/}"
+        "$df_root/private/by-platform/$df_platform"
         "$df_root/by-platform/$df_platform"
+        "$df_root/private/by-default"
         "$df_root/by-default"
     )
 }
@@ -18,8 +21,11 @@ function set_local_app_roots() {
 function set_app_roots() {
     [[ -z ${app_roots+1} ]] || return 0
     app_roots=(
+        "$df_root/private/by-host"/*
         "$df_root/by-host"/*
+        "$df_root/private/by-platform"/*
         "$df_root/by-platform"/*
+        "$df_root/private/by-default"
         "$df_root/by-default"
     )
 }
