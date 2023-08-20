@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+with_each files/User/Preferences.sublime-settings \
+    replace_file '{}' jq_safe -S
