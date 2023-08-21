@@ -111,16 +111,18 @@ function find_first() {
 #
 # The `extglob` and `nullglob` options are set when expanding <glob>.
 function with_each() {
-    local IFS=$'\n' glob=$1 command dir
+    local glob=$1 command dir
     shift
     command=("$@")
     for dir in ${df_argv+"${df_argv[@]}"}; do
         (shopt -s extglob nullglob &&
             cd -- "$dir" &&
-            set -- $(printf '%s\n' "$glob!(?)") &&
+            set -- $glob &&
             while (($#)); do
-                "${command[@]//"{}"/$1}" || exit
+                path=$1
                 shift
+                [[ -e $path ]] || [[ -L $path ]] || continue
+                "${command[@]//"{}"/$path}" || exit
             done) || return
     done
 }
