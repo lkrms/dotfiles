@@ -53,8 +53,31 @@ function maybe() {
 
 # link_file <source> <target>
 function link_file() {
-    local source=$1 target=$2
-    [[ ! $target -ef $source ]] || return 0
+    local source=$1 target=$2 link
+
+    [[ ! $target -ef $source ]] ||
+        [[ ! -L $target ]] ||
+        ! link=$(readlink "$target") ||
+        [[ $link != "$source" ]] ||
+        return 0
+
+    # Remove symbolic links created on behalf of .symlink sidecars that no
+    # longer exist
+    local sparent=$source tparent=$target
+    while [[ -w ${tparent%/*/*} ]]; do
+        sparent=${sparent%/*}
+        tparent=${tparent%/*}
+        [[ $tparent -ef $sparent ]] || break
+        if [[ -L $tparent ]] &&
+            link=$(readlink "$tparent") &&
+            [[ $link == "$df_root"/* ]] &&
+            [[ $tparent != "$df_root"/* ]]; then
+            echo " -> Removing stale symbolic link: $tparent -> $friendly_df_root${link#"$df_root"}"
+            maybe rm -- "$tparent" || die "error removing symlink: $tparent"
+            break
+        fi
+    done
+
     echo " -> Creating symbolic link: $target -> $friendly_df_root${source#"$df_root"}"
     if [[ -L $target ]]; then
         maybe rm -- "$target" || die "error removing existing symlink: $target"
