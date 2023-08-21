@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+# plist=<file.plist> PlistBuddy (<command>|-x) ...
+function PlistBuddy() {
+    (($#)) || return
+    local i=0 args=()
+    while (($#)); do
+        [[ $1 == -x ]] || args[i++]=-c
+        args[i++]=$1
+        shift
+    done
+    /usr/libexec/PlistBuddy "${args[@]}" "$plist"
+}
+
+# plist=<file.plist> plist_import <entry> <file.plist> [<type>]
+function plist_import() {
+    set -- "${@//\"/\\\"}"
+    (($# != 2)) || set -- "$@" dict
+    PlistBuddy "Delete \"$1\"" 2>/dev/null || true
+    PlistBuddy \
+        "Add \"$1\" \"$3\"" \
+        "Merge \"$2\" \"$1\""
+}
+
+plist=~/Library/Preferences/com.googlecode.iterm2.plist
+
+presets=$(find_first "Custom Color Presets.plist") &&
+    map=$(find_first "Keyboard Map.plist") || exit 3
+
+plist_import ":Custom Color Presets" "$presets"
+
+i=-1
+while PlistBuddy "Print \":New Bookmarks:$((++i))\"" &>/dev/null; do
+    plist_import ":New Bookmarks:$i:Keyboard Map" "$map"
+    exit
+done
