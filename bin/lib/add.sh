@@ -15,6 +15,18 @@ set_local_app_roots
     { echo "Usage: ${0##*/} <appname> <path>..." >&2 && exit 1; }
 
 case "${0##*/}" in
+*-private-by-long-host)
+    app_root=$df_root/private/by-host/$(hostname -f)
+    ;;
+*-private-by-host)
+    app_root=$df_root/private/by-host/$(hostname -s)
+    ;;
+*-private-by-platform)
+    app_root=$df_root/private/by-platform/$df_platform
+    ;;
+*-private*)
+    app_root=$df_root/private/by-default
+    ;;
 *-by-long-host)
     app_root=$df_root/by-host/$(hostname -f)
     ;;

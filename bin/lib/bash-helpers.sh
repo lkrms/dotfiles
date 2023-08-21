@@ -9,8 +9,11 @@ function set_local_app_roots() {
             hostname -s; } | uniq
     )) || die "error getting hostname"
     local_app_roots=(
+        "${host[@]/#/$df_root/private/by-host/}"
         "${host[@]/#/$df_root/by-host/}"
+        "$df_root/private/by-platform/$df_platform"
         "$df_root/by-platform/$df_platform"
+        "$df_root/private/by-default"
         "$df_root/by-default"
     )
 }
@@ -18,8 +21,11 @@ function set_local_app_roots() {
 function set_app_roots() {
     [[ -z ${app_roots+1} ]] || return 0
     app_roots=(
+        "$df_root/private/by-host"/*
         "$df_root/by-host"/*
+        "$df_root/private/by-platform"/*
         "$df_root/by-platform"/*
+        "$df_root/private/by-default"
         "$df_root/by-default"
     )
 }
@@ -105,16 +111,18 @@ function find_first() {
 #
 # The `extglob` and `nullglob` options are set when expanding <glob>.
 function with_each() {
-    local IFS=$'\n' glob=$1 command dir
+    local glob=$1 command dir
     shift
     command=("$@")
     for dir in ${df_argv+"${df_argv[@]}"}; do
         (shopt -s extglob nullglob &&
             cd -- "$dir" &&
-            set -- $(printf '%s\n' "$glob!(?)") &&
+            set -- $glob &&
             while (($#)); do
-                "${command[@]//"{}"/$1}" || exit
+                path=$1
                 shift
+                [[ -e $path ]] || [[ -L $path ]] || continue
+                "${command[@]//"{}"/$path}" || exit
             done) || return
     done
 }

@@ -12,7 +12,7 @@ BEGIN {
 
 {
 	path = substr($0, df_root_len + 2)
-	sub(/^by-(default|(platform|host)\/[^\/]+)\//, "", path)
+	sub(/^(private\/)?by-(default|(platform|host)\/[^\/]+)\//, "", path)
 	path = substr(path, app_len + 2)
 	icount = iseen[inode($0)]++
 	if (seen[path]++ || icount) {
