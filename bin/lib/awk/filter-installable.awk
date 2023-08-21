@@ -14,8 +14,7 @@ BEGIN {
 	path = substr($0, df_root_len + 2)
 	sub(/^(private\/)?by-(default|(platform|host)\/[^\/]+)\//, "", path)
 	path = substr(path, app_len + 2)
-	icount = iseen[inode($0)]++
-	if (seen[path]++ || icount) {
+	if (seen[path]++) {
 		next
 	}
 	sort_by = 0
