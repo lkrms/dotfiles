@@ -24,15 +24,71 @@ function plist_import() {
         "Merge \"$2\" \"$1\""
 }
 
+# plist=<file.plist> plist_set (<entry> <type> <value>) ...
+function plist_set() {
+    set -- "${@//\"/\\\"}"
+    local i=0 args=()
+    while (($# > 2)); do
+        args[i++]="Delete \"$1\""
+        args[i++]="Add \"$1\" \"$2\" \"$3\""
+        shift 3
+    done
+    PlistBuddy ${args+"${args[@]}"} 2>/dev/null || true
+}
+
 plist=~/Library/Preferences/com.googlecode.iterm2.plist
 
 presets=$(find_first "Custom Color Presets.plist") &&
     map=$(find_first "Keyboard Map.plist") || exit 3
 
 plist_import ":Custom Color Presets" "$presets"
+plist_set \
+    ":NoSyncConfirmRunOpenFile" bool true \
+    ":NoSyncConfirmRunOpenFile_selection" integer 0 \
+    ":AllowClipboardAccess" bool true \
+    ":AddNewTabAtEndOfTabs" bool false \
+    ":AlternateMouseScroll" bool true \
+    ":CopyWithStylesByDefault" bool true \
+    ":DisallowCopyEmptyString" bool true \
+    ":DoubleClickPerformsSmartSelection" bool true \
+    ":EnableAPIServer" bool true \
+    ":NoSyncTipsDisabled" bool true \
+    ":OpenFileInNewWindows" bool true \
+    ":OptionClickMovesCursor" bool false \
+    ":QuitWhenAllWindowsClosed" bool true \
+    ":SensitiveScrollWheel" bool true \
+    ":SmartPlacement" bool true \
+    ":SoundForEsc" bool false \
+    ":SpacelessApplicationSupport" string "" \
+    ":StatusBarPosition" integer 1 \
+    ":StretchTabsToFillBar" bool false \
+    ":SUEnableAutomaticChecks" bool true \
+    ":SwitchTabModifier" integer 5 \
+    ":UseBorder" bool true \
+    ":VisualIndicatorForEsc" bool false
 
 i=-1
 while PlistBuddy "Print \":New Bookmarks:$((++i))\"" &>/dev/null; do
-    plist_import ":New Bookmarks:$i:Keyboard Map" "$map"
-    exit
+    entry=":New Bookmarks:$i"
+    plist_import "$entry:Keyboard Map" "$map"
+    plist_set \
+        "$entry:AWDS Pane Option" string Recycle \
+        "$entry:AWDS Tab Option" string Recycle \
+        "$entry:AWDS Window Option" string Recycle \
+        "$entry:BM Growl" bool false \
+        "$entry:Columns" integer 120 \
+        "$entry:Custom Directory" string Advanced \
+        "$entry:Flashing Bell" bool true \
+        "$entry:Left Option Key Changeable" bool false \
+        "$entry:Mouse Reporting allow clicks and drags" bool true \
+        "$entry:Normal Font" string "Menlo-Regular 12" \
+        "$entry:Option Key Sends" integer 2 \
+        "$entry:Place Prompt at First Column" bool false \
+        "$entry:Right Option Key Sends" integer 2 \
+        "$entry:Rows" integer 35 \
+        "$entry:Screen" integer -2 \
+        "$entry:Scrollback Lines" integer 0 \
+        "$entry:Show Mark Indicators" bool false \
+        "$entry:Silence Bell" bool true \
+        "$entry:Unlimited Scrollback" bool true
 done

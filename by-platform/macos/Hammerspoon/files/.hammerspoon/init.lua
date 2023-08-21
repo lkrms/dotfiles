@@ -616,7 +616,7 @@ hs.hotkey.bind(
     {"ctrl", "cmd"},
     "g",
     function()
-        run("/opt/lk-settings/bin/open-repo.sh", true)
+        run(homePath("/Code/lk/lk-settings/bin/open-repo.sh"), true)
     end
 )
 
@@ -624,7 +624,7 @@ hs.hotkey.bind(
     {"ctrl", "cmd", "shift"},
     "g",
     function()
-        run("/opt/lk-settings/bin/open-repo.sh smerge --new-window {}", true)
+        run(homePath("/Code/lk/lk-settings/bin/open-repo.sh") .. " smerge --new-window {}", true)
     end
 )
 
@@ -672,7 +672,7 @@ hs.hotkey.bind(
     {"ctrl", "cmd"},
     "n",
     function()
-        run("/opt/lk-platform/bin/lk-note-open.sh")
+        run(homePath("/Code/lk/lk-platform/bin/lk-note-open.sh"))
     end
 )
 
@@ -720,7 +720,7 @@ hs.hotkey.bind(
     {"ctrl", "cmd", "shift"},
     "t",
     function()
-        run("/opt/lk-settings/bin/open-repo.sh git -C {} cola", true)
+        run(homePath("/Code/lk/lk-settings/bin/open-repo.sh") .. " git -C {} cola", true)
     end
 )
 
