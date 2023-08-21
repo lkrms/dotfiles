@@ -207,6 +207,7 @@
     ],
     "emmet.triggerExpansionOnTab": true,
     "explorer.autoReveal": "focusNoScroll",
+    "explorer.compactFolders": false,
     "explorer.confirmDelete": false,
     "explorer.decorations.badges": false,
     "explorer.openEditors.sortOrder": "fullPath",
