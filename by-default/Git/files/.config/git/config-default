@@ -1,0 +1,70 @@
+[commit]
+	gpgSign = true
+
+[cola]
+	expandtab = true
+	safemode = true
+	spellcheck = false
+	startupmode = list
+	statusshowtotals = true
+	tabwidth = 4
+
+[core]
+	autocrlf = input
+
+[diff]
+	guitool = smerge
+	renames = copies
+
+[gui]
+	editor = code
+
+[icdiff]
+	options = -NU3
+
+[init]
+	defaultBranch = main
+
+[merge]
+	tool = meld
+
+[pull]
+	ff = only
+
+[push]
+	default = nothing
+	followTags = true
+
+[tag]
+	gpgSign = true
+
+[url "github.com:"]
+	pushInsteadOf = https://github.com/
+
+[url "https://aur.archlinux.org/"]
+	insteadOf = aur:
+
+[url "aur:"]
+	pushInsteadOf = https://aur.archlinux.org/
+	pushInsteadOf = aur:
+
+[user]
+	name = Luke Arms
+	signingKey = 2F0ADF7F222F13C8
+	useConfigOnly = true
+
+[alias]
+	hide = update-index --assume-unchanged
+	unhide = update-index --no-assume-unchanged
+	unhide-all = update-index --really-refresh
+	hidden = "!f() { git -C \"$GIT_PREFIX\" ls-files -v \"$@\" | awk '/^[[:lower:]]/'; }; f"
+	ignored = "!f() { git -C \"$GIT_PREFIX\" status --short --ignored \"$@\" | awk '/^!!/'; }; f"
+	recheckout = "!f() { cd \"$GIT_PREFIX\" || return; [ $# -gt 0 ] || set -- .; git ls-files -z \"$@\" | xargs -0r git rm --cached && git checkout HEAD -- \"$@\"; }; f"
+	history = reflog --date=iso
+	history-all = reflog --date=iso --all
+	cleanup-aggressive = gc --aggressive --prune=now
+	cleanup-aggressive-keep-largest = gc --aggressive --prune=now --keep-largest-pack
+	clear-history-test = reflog expire --expire=all --verbose --dry-run
+	clear-history-apply = reflog expire --expire=all --verbose
+	clear-history-all-test = reflog expire --expire=all --verbose --all --dry-run
+	clear-history-all-apply = reflog expire --expire=all --verbose --all

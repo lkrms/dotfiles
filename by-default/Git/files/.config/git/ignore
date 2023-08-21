@@ -1,0 +1,10 @@
+.DS_Store
+Thumbs.db
+*.log
+
+*.code-workspace
+*.sublime-project
+*.sublime-workspace
+
+.venv
+__pycache__
