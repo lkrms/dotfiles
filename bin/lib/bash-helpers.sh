@@ -78,6 +78,11 @@ function link_file() {
         fi
     done
 
+    if [[ -e ${target%/*} ]] &&
+        [[ ${target%/*} != "$(realpath "${target%/*}")" ]]; then
+        die "nested symbolic link is not permitted: $target -> $friendly_df_root${source#"$df_root"}"
+    fi
+
     echo " -> Creating symbolic link: $target -> $friendly_df_root${source#"$df_root"}"
     if [[ -L $target ]]; then
         maybe rm -- "$target" || die "error removing existing symlink: $target"
