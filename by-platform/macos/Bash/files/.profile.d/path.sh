@@ -17,6 +17,4 @@ prepend_path() {
     esac
 }
 
-prepend_path /opt/homebrew/opt/ruby/bin
-
 unset -f prepend_path
