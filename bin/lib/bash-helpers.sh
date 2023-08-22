@@ -173,4 +173,7 @@ function die() {
     exit $((s + 3))
 }
 
+[[ ! -r $df_root/bin/lib/bash-helpers-$df_platform.sh ]] ||
+    . "$df_root/bin/lib/bash-helpers-$df_platform.sh"
+
 df_argv=("$@")
