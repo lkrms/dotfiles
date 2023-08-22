@@ -2,5 +2,32 @@
 
 . "$df_root/bin/lib/bash-helpers.sh" || exit
 
-with_each 'files/.ssh/!(authorized_keys|*.pub|*.d*)' \
-    maybe chmod -vv go-rw '{}'
+# As per sshd(8), revoke read and write access to privileged files in ~/.ssh for
+# everyone except the owner, otherwise authorized_keys won't be honoured
+command=(chmod -vv go-rw)
+if [[ -n ${df_dryrun:+1} ]]; then
+    command=(echo "  - would have run: ${command[*]}")
+fi
+find -L ~/.ssh -type f ! -name '*.pub' -print0 |
+    xargs -0 "${command[@]}"
+
+# Ditto for write access to directories between ~ and ~/.ssh
+parent=$(realpath ~)
+child=$(realpath ~/.ssh)
+
+args=()
+i=0
+while true; do
+    args[i++]=$child
+    [[ ! $child -ef $parent ]] ||
+        break
+    # If ~/.ssh resolves to a path outside ~, restrict access to ~ and ~/.ssh,
+    # otherwise restrict every directory in the hierarchy from ~/.ssh to ~
+    [[ ${child#$parent} != "$child" ]] || {
+        args[i++]=$parent
+        break
+    }
+    child=${child%/*}
+done
+
+maybe chmod -vv go-w "${args[@]}"
