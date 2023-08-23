@@ -6,4 +6,4 @@ plist=~/Library/Preferences/com.hegenberg.BetterSnapTool.plist
 
 file=$(find_first com.hegenberg.BetterSnapTool.plist) || exit 3
 
-plist_import "" "$file"
+plist_import "" "$file" >/dev/null
