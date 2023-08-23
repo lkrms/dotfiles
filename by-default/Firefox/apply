@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+shopt -s nullglob
+
+[[ $df_platform == linux ]] && dir=/usr/lib/firefox ||
+    dir=/Applications/Firefox.app/Contents/Resources
+
+if [[ ! -d $dir ]]; then
+    exit
+fi
+
+pref_dir=$dir/defaults/pref
+if [[ ! -d $pref_dir ]]; then
+    echo "Creating directory: $pref_dir"
+    maybe sudo install -d "$pref_dir"
+fi
+
+file=$pref_dir/autoconfig.js
+if [[ ! -f $file ]]; then
+    echo "Creating file: $file"
+    maybe sudo install -m 0644 /dev/null "$file"
+fi
+replace_file --sudo "$file" <<'EOF'
+pref("general.config.filename", "firefox.cfg");
+pref("general.config.obscure_value", 0);
+EOF
+
+file=$dir/firefox.cfg
+if [[ ! -f $file ]]; then
+    echo "Creating file: $file"
+    maybe sudo install -m 0644 /dev/null "$file"
+fi
+replace_file --sudo "$file" <<'EOF'
+// IMPORTANT: Start your code on the 2nd line
+defaultPref("mousewheel.system_scroll_override.enabled", false);
+defaultPref("services.sync.prefs.dangerously_allow_arbitrary", true);
+defaultPref("services.sync.addons.ignoreUserEnabledChanges", true);
+EOF
+
+profile=(~/{"Library/Application Support/Firefox/Profiles",.mozilla/firefox}/*.default-release)
+
+if [[ -z ${profile+1} ]]; then
+    exit
+fi
+
+file=$profile/containers.json
+if containers=$(find_first containers.json) &&
+    { [[ ! -f $file ]] ||
+        { id=$(jq -r .lastUserContextId "$file") && ((id < 100)); }; }; then
+    maybe cp -v "$containers" "$file"
+fi
