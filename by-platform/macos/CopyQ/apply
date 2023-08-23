@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+plist=~/Library/Preferences/com.copyq.copyq.plist
+
+plist_set \
+    ":Options.confirm_exit" bool false \
+    ":Options.native_tray_menu" bool true \
+    ":Options.tray_item_paste" bool false \
+    ":Options.tray_items" integer 20 \
+    ":Options.activate_pastes" bool false \
+    ":Options.show_advanced_command_settings" bool true
