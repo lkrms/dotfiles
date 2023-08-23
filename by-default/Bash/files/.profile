@@ -16,3 +16,5 @@ if [ "${BASH-no}" != no ]; then
     fi
     [ -r ~/.bashrc ] && . ~/.bashrc
 fi
+
+export PIP_REQUIRE_VIRTUALENV=true

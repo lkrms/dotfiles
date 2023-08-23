@@ -63,7 +63,10 @@
         "editor.defaultFormatter": "lkrms.inifmt"
     },
     "[python]": {
-        "editor.defaultFormatter": "ms-python.python"
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
+    "[ruby]": {
+        "editor.defaultFormatter": "LoranKloeze.ruby-rubocop-revived"
     },
     "[sql]": {
         "editor.comments.insertSpace": true,
