@@ -27,11 +27,20 @@ function find_all() {
         \( \( -type d -execdir test -e '{}.symlink' \; -prune \) -o -type f -o -type l \) ! -name '*.symlink' -print
 }
 
+# git <arg>...
+function git() {
+    command git -C "$df_root" "$@"
+}
+
 by_app=0
+offline=0
 while [[ ${1-} == --* ]]; do
     case "$1" in
     --check)
         export df_dryrun=1
+        ;;
+    --offline)
+        offline=1
         ;;
     --by-app)
         by_app=1
@@ -39,6 +48,11 @@ while [[ ${1-} == --* ]]; do
     esac
     shift
 done
+
+if ((!offline)); then
+    git fetch --prune --tags --no-auto-maintenance &>/dev/null </dev/null &
+    git_pid=$!
+fi
 
 set_local_app_roots
 set_app_roots
@@ -126,6 +140,28 @@ done
     maybe chmod -R a-w "$df_root/by-app" || die "error making $df_root/by-app unwritable"
     echo
 }
+
+if ((!offline)); then
+    echo "==> Waiting for 'git fetch' to finish"
+    if wait "$git_pid"; then
+        if git merge-base --is-ancestor HEAD @{upstream}; then
+            behind=$(git rev-list --count HEAD..@{upstream})
+            if ((behind)); then
+                echo "$friendly_df_root is $behind commits behind upstream"
+            else
+                echo "$friendly_df_root is up to date"
+            fi
+        elif git merge-base --is-ancestor @{upstream} HEAD; then
+            ahead=$(git rev-list --count @{upstream}..HEAD)
+            echo "$friendly_df_root is $ahead commits ahead of upstream"
+        else
+            echo "WARNING: $friendly_df_root has diverged from upstream"
+        fi
+    else
+        echo "WARNING: Git failed with exit status $? in $friendly_df_root"
+    fi
+    echo
+fi
 
 if [[ -z ${error_apps+1} ]]; then
     echo "Successfully applied dotfiles in $friendly_df_root to $count application(s)"
