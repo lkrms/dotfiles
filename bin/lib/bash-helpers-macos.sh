@@ -16,6 +16,11 @@ function PlistBuddy() {
 function plist_import() {
     set -- "${@//\"/\\\"}"
     (($# != 2)) || set -- "$@" dict
+    if [[ -z ${1:+1} ]]; then
+        PlistBuddy \
+            "Merge \"$2\" \"$1\""
+        return
+    fi
     PlistBuddy "Delete \"$1\"" 2>/dev/null || true
     PlistBuddy \
         "Add \"$1\" \"$3\"" \
