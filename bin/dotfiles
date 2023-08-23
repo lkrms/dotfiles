@@ -61,7 +61,7 @@ case "${0##*/}" in
 *clean)
     . "$df_root/bin/lib/clean.sh"
     ;;
-*add | *add-by-long-host | *add-by-host | *add-by-platform | *add-by-default)
+*add | *add-by-long-host | *add-by-host | *add-by-platform | *add-by-default | *add-private-by-long-host | *add-private-by-host | *add-private-by-platform | *add-private-by-default)
     . "$df_root/bin/lib/add.sh"
     ;;
 esac
