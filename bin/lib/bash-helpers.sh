@@ -51,8 +51,11 @@ function maybe() {
     "$@"
 }
 
-# link_file <source> <target>
+# link_file [--sudo] <source> <target>
 function link_file() {
+    local IFS=$' \t\n' sudo
+    [[ $1 == --sudo ]] && sudo= && shift || unset sudo
+
     local source=$1 target=$2 link
 
     [[ ! $target -ef $source ]] ||
@@ -73,7 +76,7 @@ function link_file() {
             [[ $link == "$df_root"/* ]] &&
             [[ $tparent != "$df_root"/* ]]; then
             echo " -> Removing stale symbolic link: $tparent -> $friendly_df_root${link#"$df_root"}"
-            maybe rm -- "$tparent" || die "error removing symlink: $tparent"
+            maybe ${sudo+sudo} rm -- "$tparent" || die "error removing symlink: $tparent"
             break
         fi
     done
@@ -85,7 +88,7 @@ function link_file() {
 
     echo " -> Creating symbolic link: $target -> $friendly_df_root${source#"$df_root"}"
     if [[ -L $target ]]; then
-        maybe rm -- "$target" || die "error removing existing symlink: $target"
+        maybe ${sudo+sudo} rm -- "$target" || die "error removing existing symlink: $target"
     fi
     if [[ -e $target ]]; then
         local j=-1 backup
@@ -94,29 +97,40 @@ function link_file() {
             [[ ! -e $backup ]] && [[ ! -L $backup ]] || continue
             break
         done
-        maybe mv -nv -- "$target" "$backup" || die "error renaming existing file: $target"
+        maybe ${sudo+sudo} mv -nv -- "$target" "$backup" || die "error renaming existing file: $target"
     fi
     local dir=${target%/*}
     if [[ ! -d $dir ]]; then
-        maybe command -p install -d -- "$dir" || die "error creating directory: $dir"
+        maybe ${sudo+sudo}${sudo-command -p} install -d -- "$dir" || die "error creating directory: $dir"
     fi
-    maybe ln -s -- "$source" "$target" || die "error creating symbolic link: $target"
+    maybe ${sudo+sudo} ln -s -- "$source" "$target" || die "error creating symbolic link: $target"
 }
 
-# replace_file <file> <command> [<arg>]...
+# - replace_file [--sudo] <file>
+# - replace_file [--sudo] <file> <command> [<arg>]...
+# - replace_file [--sudo] <file> - <command> [<arg>]...
 #
-# Pipe <file> to "<command> [<arg>]..." and replace <file> if the output is
-# different.
+# - Replace <file> if the input is different
+# - Pipe <file> to "<command> [<arg>]..." and replace <file> if the output is
+#   different
+# - Run "<command> [<arg>]..." and replace <file> if the output is different
 function replace_file() {
     [[ -w ${df_temp-} ]] || df_temp=$(mktemp) || die "error creating temporary file"
-    local file=$1
+
+    local sudo
+    [[ $1 == --sudo ]] && sudo= && shift || unset sudo
+
+    local file=$1 input
     shift
-    "$@" <"$file" >"$df_temp" || die "command failed in $FUNCNAME:$(printf ' %q' "$@")"
-    ! diff -q -- "$file" "$df_temp" >/dev/null || return 0
+    [[ ${1-} == - ]] && shift || input=${1:+$file}
+
+    "${@-cat}" <"${input:-/dev/stdin}" >"$df_temp" || die "command failed in $FUNCNAME:$(printf ' %q' "${@-cat}")"
+    ! diff -q -- "$df_temp" "$file" >/dev/null || return 0
     echo " -> Replacing: $file"
-    maybe cp -- "$df_temp" "$file" || die "error replacing file: $file"
+    maybe ${sudo+sudo} cp -- "$df_temp" "$file" || die "error replacing file: $file"
+
     if [[ -n ${df_dryrun:+1} ]]; then
-        ! diff -- "$file" "$df_temp" || return 0
+        ! diff -- "$df_temp" "$file" || return 0
     fi
 }
 
