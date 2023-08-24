@@ -18,3 +18,5 @@ if [ "${BASH-no}" != no ]; then
 fi
 
 export PIP_REQUIRE_VIRTUALENV=true
+
+_byobu_sourced=1 . /usr/bin/byobu-launch 2>/dev/null || true
