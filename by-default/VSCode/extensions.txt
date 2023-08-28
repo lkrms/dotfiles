@@ -9,6 +9,7 @@ spadin.memento-inputs
 # Generate/sort/manipulate text
 
 aprilandjan.ascii-tree-generator
+dakshmiglani.hex-to-rgba
 henriiik.vscode-sort
 jkjustjoshing.vscode-text-pastry
 jrebocho.vscode-random
