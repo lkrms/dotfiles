@@ -24,7 +24,7 @@ function find_installable() {
 # find_all <app_dir>...
 function find_all() {
     find "$@" \
-        \( \( -type d -execdir test -e '{}.symlink' \; -prune \) -o -type f -o -type l \) ! -name '*.symlink' -print
+        \( \( -type d -execdir test -e '{}.symlink' \; -prune \) -o -type f -o -type l \) ! -name '*.symlink' ! -name '*.hardlink' -print
 }
 
 # git <arg>...
@@ -101,6 +101,7 @@ for app in ${apps+"${apps[@]}"}; do
     ((!by_app)) || continue
     # 2. Perform the actual installation
     export df_target=~
+    unset sudo
     while IFS=$'\t' read -r run rel_path path; do
         if ((run)); then
             [[ -f $path ]] && [[ -x $path ]] || die "not executable: $path"
@@ -108,6 +109,9 @@ for app in ${apps+"${apps[@]}"}; do
                 target=$("$path" "${local_app_dirs[@]}") &&
                     { [[ -n $target ]] || die "invalid target"; } &&
                     df_target=$target
+                [[ ! -e $df_target ]] ||
+                    [[ -w $df_target ]] ||
+                    sudo=
             else
                 echo " -> Running: $path"
                 "$path" "${local_app_dirs[@]}"
@@ -132,7 +136,7 @@ for app in ${apps+"${apps[@]}"}; do
             esac
         fi
         target=$df_target/$rel_path
-        link_file "$path" "$target"
+        link_file ${sudo+--sudo} "$path" "$target"
     done < <(find_installable "$app" "${local_app_dirs[@]}")
 done
 
