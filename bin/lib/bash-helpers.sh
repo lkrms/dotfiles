@@ -56,12 +56,18 @@ function link_file() {
     local IFS=$' \t\n' sudo
     [[ $1 == --sudo ]] && sudo= && shift || unset sudo
 
-    local source=$1 target=$2 link
+    local source=$1 target=$2 hardlink=0 ln_s=-s link
+
+    [[ ! -e $source.hardlink ]] ||
+        local hardlink=1 ln_s=
 
     [[ ! $target -ef $source ]] ||
-        [[ ! -L $target ]] ||
-        ! link=$(readlink "$target") ||
-        [[ $link != "$source" ]] ||
+        { ((!hardlink)) &&
+            { [[ ! -L $target ]] ||
+                ! link=$(readlink "$target") ||
+                [[ $link != "$source" ]]; }; } ||
+        { ((hardlink)) &&
+            [[ -L $target ]]; } ||
         return 0
 
     # Remove symbolic links created on behalf of .symlink sidecars that no
@@ -83,10 +89,10 @@ function link_file() {
 
     if [[ -e ${target%/*} ]] &&
         [[ ${target%/*} != "$(realpath "${target%/*}")" ]]; then
-        die "nested symbolic link is not permitted: $target -> $friendly_df_root${source#"$df_root"}"
+        die "nested link is not permitted: $target -> $friendly_df_root${source#"$df_root"}"
     fi
 
-    echo " -> Creating symbolic link: $target -> $friendly_df_root${source#"$df_root"}"
+    echo " -> Creating ${ln_s:+symbolic }link: $target -> $friendly_df_root${source#"$df_root"}"
     if [[ -L $target ]]; then
         maybe ${sudo+sudo} rm -- "$target" || die "error removing existing symlink: $target"
     fi
@@ -103,7 +109,7 @@ function link_file() {
     if [[ ! -d $dir ]]; then
         maybe ${sudo+sudo}${sudo-command -p} install -d -- "$dir" || die "error creating directory: $dir"
     fi
-    maybe ${sudo+sudo} ln -s -- "$source" "$target" || die "error creating symbolic link: $target"
+    maybe ${sudo+sudo} ln ${ln_s:+"$ln_s"} -- "$source" "$target" || die "error creating ${ln_s:+symbolic }link: $target"
 }
 
 # - replace_file [--sudo] <file>
