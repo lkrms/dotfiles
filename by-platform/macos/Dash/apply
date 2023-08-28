@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+plist=~/Library/Preferences/com.kapeli.dashdoc.plist
+
+plist_data=(
+    ":didShowStatusIconHello" bool true
+    ":statusIconHelloSuppressCheckboxState" bool false
+)
+
+if sync_dir=$(find_first sync) && [[ -d $sync_dir ]]; then
+    plist_data+=(":syncFolderPath" string "$sync_dir")
+fi
+
+plist_set "${plist_data[@]}"
+
+if defaults read com.kapeli.dashdoc docsets &>/dev/null; then
+    if ! pgrep -xu "$USER" Dash >/dev/null; then
+        plist_sort ":docsets" ":docsetName"
+    else
+        echo "Skipping docset cleanup (Dash is running)"
+    fi
+fi
