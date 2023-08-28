@@ -1,0 +1,8 @@
+#!/bin/sh
+
+[ -L /etc ] &&
+    cd /etc &&
+    pwd -P &&
+    exit
+
+printf '%s\n' /etc
