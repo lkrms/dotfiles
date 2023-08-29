@@ -38,3 +38,8 @@ function plist_set() {
     done
     PlistBuddy ${args+"${args[@]}"} 2>/dev/null || true
 }
+
+# plist=<file.plist> plist_sort [<entry> [<sort-by-entry>]]
+function plist_sort() {
+    "$df_root/bin/lib/python/plist_sort.py" "$plist" "$plist" "$@"
+}
