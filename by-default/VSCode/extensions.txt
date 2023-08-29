@@ -1,5 +1,7 @@
 # Improve VS Code
 
+bierner.markdown-preview-github-styles
+GitHub.github-vscode-theme
 monokai.theme-monokai-pro-vscode
 pdconsec.vscode-print
 rebornix.toggle
@@ -29,6 +31,7 @@ eamodio.gitlens
 fabiospampinato.vscode-open-in-github
 giovdk21.vscode-sublime-merge
 github.vscode-github-actions
+GitHub.vscode-pull-request-github
 ms-azuretools.vscode-azurefunctions
 ms-azuretools.vscode-azureresourcegroups
 ms-azuretools.vscode-docker

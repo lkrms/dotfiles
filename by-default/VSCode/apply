@@ -16,6 +16,17 @@ if php=$(find_first php74-xdebug); then
     link_file "$php" ~/.local/bin/php74-xdebug
 fi
 
+if [[ $df_platform == macos ]]; then
+    shopt -s nullglob
+    versions=({/usr/local,/opt/homebrew}/opt/php@*)
+    for version in ${versions+"${versions[@]}"}; do
+        [[ -x $version/bin/php ]] || continue
+        ver=${version#*/php@}
+        ver=${ver//./}
+        link_file "$version/bin/php" ~/".local/bin/php$ver"
+    done
+fi
+
 extensions=$(mktemp)
 install=$(mktemp)
 installed=$(mktemp)
