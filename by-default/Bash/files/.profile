@@ -8,13 +8,18 @@ if [ -d ~/.profile.d ]; then
 fi
 
 if [ "${BASH-no}" != no ]; then
-    if [ -d ~/.bash_profile.d ]; then
-        for profile in ~/.bash_profile.d/*.sh; do
-            [ -r "$profile" ] && . "$profile"
-        done
-        unset profile
-    fi
-    [ -r ~/.bashrc ] && . ~/.bashrc
+    case ":${SHELLOPTS-}:" in
+    *:posix:*) ;;
+    *)
+        if [ -d ~/.bash_profile.d ]; then
+            for profile in ~/.bash_profile.d/*.sh; do
+                [ -r "$profile" ] && . "$profile"
+            done
+            unset profile
+        fi
+        [ -r ~/.bashrc ] && . ~/.bashrc
+        ;;
+    esac
 fi
 
 export PIP_REQUIRE_VIRTUALENV=true
