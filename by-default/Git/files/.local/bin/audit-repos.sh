@@ -166,8 +166,8 @@ trap 'rm -f ${files+"${files[@]}"}' EXIT
                     no_upstreams[i]=
                     continue
                 fi
-            ahead=$(git rev-list --count "$branch..$upstream")
-            behind=$(git rev-list --count "$upstream..$branch")
+            ahead=$(git rev-list --count "$upstream..$branch")
+            behind=$(git rev-list --count "$branch..$upstream")
             if ((ahead && behind)); then
                 ohno "branch '$branch' has diverged from $upstream"
                 unpushed[i]=
@@ -176,8 +176,13 @@ trap 'rm -f ${files+"${files[@]}"}' EXIT
                 ohno "branch '$branch' has unpushed commits"
                 unpushed[i]=
             elif ((behind)); then
-                uhoh "branch '$branch' is behind $upstream"
-                unmerged[i]=
+                if [[ $branch == "$current_branch" ]]; then
+                    uhoh "branch '$branch' is behind $upstream"
+                    unmerged[i]=
+                else
+                    uhoh "fast-forwarding branch '$branch' to $upstream"
+                    git fetch . "$upstream:$branch"
+                fi
             fi
         done
         if git stash list --format="%gd" | grep . >/dev/null; then
