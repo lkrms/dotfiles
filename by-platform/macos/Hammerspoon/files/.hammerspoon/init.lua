@@ -402,7 +402,7 @@ function fileExists(path)
 end
 
 function scriptPath(script)
-    return hs.configdir .. "/../../bin/" .. script
+    return hs.configdir .. "/bin/" .. script
 end
 
 function homePath(path)
@@ -513,10 +513,10 @@ _screenwatcher = hs.screen.watcher.new(function()
 end)
 _screenwatcher:start()
 
-_pathwatcher = hs.pathwatcher.new(hs.configdir, function(paths, flagTables)
+_pathwatcher = hs.pathwatcher.new(hs.configdir .. '/init.lua', function(paths, flagTables)
     logger.d(hs.inspect.inspect({paths = paths, flagTables = flagTables}))
     for i, f in pairs(flagTables) do
-        if f.itemCreated or f.itemModified or f.itemRemoved or f.itemRenamed then
+        if f.itemModified then
             hs.reload()
             break
         end
@@ -561,14 +561,6 @@ hs.hotkey.bind(
     "b",
     function()
         open("com.apple.calculator")
-    end
-)
-
-hs.hotkey.bind(
-    {"ctrl", "cmd", "shift"},
-    "b",
-    function()
-        runInTerminal(scriptPath("build-lk-platform.sh"))
     end
 )
 
@@ -696,7 +688,7 @@ hs.hotkey.bind(
     {"ctrl", "cmd"},
     "s",
     function()
-        runInTerminal(scriptPath("sync-files.sh"))
+        runInTerminal(scriptPath("audit-repos-offline"))
     end
 )
 
@@ -704,7 +696,7 @@ hs.hotkey.bind(
     {"ctrl", "cmd", "shift"},
     "s",
     function()
-        open("com.microsoft.VSCode", homePath("/Code/lk-settings.code-workspace"))
+        runInTerminal(scriptPath("audit-repos"))
     end
 )
 

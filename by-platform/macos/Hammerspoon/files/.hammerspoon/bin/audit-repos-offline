@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+~/.local/bin/audit-repos.sh --offline
+
+echo
+read -sp "Press return to continue . . . "
