@@ -89,6 +89,8 @@ cyan=$'\E[36m'
 default=$'\E[39m'
 bold=$'\E[1m'
 unbold=$'\E[22m'
+dim=$'\E[2m'
+undim=$'\E[22m'
 
 offline=0
 [[ ${1-} != --offline ]] || offline=1
@@ -216,11 +218,16 @@ trap 'rm -f ${files+"${files[@]}"}' EXIT
     printf '%s%s\n' repository "$default$unbold"
 
     for ((i = 0; i < count; i++)); do
-        printf '%s%-9s%s  ' \
+        unset repo_clean
+        state=${no_remotes[i]+1}${fetch_errors[i]+0}${no_commits[i]+0}${no_branches[i]+1}${detached[i]+0}${no_upstreams[i]+1}${unpushed[i]+1}${unmerged[i]+0}${dirty[i]+1}${stashed[i]+1}
+        [[ -n $state ]] || continue
+        [[ $state == *1* ]] || repo_clean=
+        printf '%s%s%-9s%s  ' \
+            "${repo_clean+$dim}" \
             ${no_remotes[i]-"${good[@]}"} ${no_remotes[i]+"${bad[@]}"}
         ((offline)) || printf '%s%-7s%s  ' \
             ${fetch_errors[i]-"${good[@]}"} ${fetch_errors[i]+"${actionable[@]}"}
-        printf "%s%-7s%s  %s%-9s%s  %s%-9s%s  %s%-9s%s  %s%-8s%s  %s%-9s%s  %s%-8s%s  %s%-8s%s  %s\n" \
+        printf "%s%-7s%s  %s%-9s%s  %s%-9s%s  %s%-9s%s  %s%-8s%s  %s%-9s%s  %s%-8s%s  %s%-8s%s  %s%s\n" \
             ${no_commits[i]-"${good[@]}"} ${no_commits[i]+"${actionable[@]}"} \
             ${no_branches[i]-"${good[@]}"} ${no_branches[i]+"${bad[@]}"} \
             ${detached[i]-"${good[@]}"} ${detached[i]+"${actionable[@]}"} \
@@ -229,7 +236,8 @@ trap 'rm -f ${files+"${files[@]}"}' EXIT
             ${unmerged[i]-"${good[@]}"} ${unmerged[i]+"${actionable[@]}"} \
             ${dirty[i]-"${good[@]}"} ${dirty[i]+"${bad[@]}"} \
             ${stashed[i]-"${good[@]}"} ${stashed[i]+"${bad[@]}"} \
-            "$(val "${repos[i]}")"
+            "$(val "${repos[i]}")" \
+            "${repo_clean+$undim}"
     done
 
     exit
