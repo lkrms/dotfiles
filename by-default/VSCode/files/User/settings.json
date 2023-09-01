@@ -536,6 +536,7 @@
     "powershell.codeFormatting.newLineAfterCloseBrace": false,
     "powershell.codeFormatting.pipelineIndentationStyle": "IncreaseIndentationForFirstPipeline",
     "powershell.codeFormatting.trimWhitespaceAroundPipe": true,
+    "powershell.scriptAnalysis.settingsPath": "",
     "powershell.startAutomatically": false,
     "Prettier-SQL.ignoreTabSettings": true,
     "Prettier-SQL.keywordCase": "upper",
