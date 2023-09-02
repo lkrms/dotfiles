@@ -685,6 +685,14 @@ hs.hotkey.bind(
 )
 
 hs.hotkey.bind(
+    {"ctrl", "cmd", "shift"},
+    ".",
+    function()
+        open("com.microsoft.VSCode", homePath("/Nextcloud/dotfiles/dotfiles.code-workspace"))
+    end
+)
+
+hs.hotkey.bind(
     {"ctrl", "cmd"},
     "s",
     function()
