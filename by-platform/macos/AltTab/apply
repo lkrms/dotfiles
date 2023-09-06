@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+plist=~/Library/Preferences/com.lwouis.alt-tab-macos.plist
+
+# Command (⌘)
+# Option (⌥)
+# Tab (⇥)
+# Shift-Tab (⇧⇥)
+plist_set \
+    ":hideWindowlessApps" string "true" \
+    ":holdShortcut" string $'\xe2\x8c\x98' \
+    ":holdShortcut2" string $'\xe2\x8c\xa5' \
+    ":nextWindowShortcut2" string $'\xe2\x87\xa5' \
+    ":previousWindowShortcut" string $'\xe2\x87\xa7\xe2\x87\xa5' \
+    ":mouseHoverEnabled" string "false" \
+    ":showOnScreen" string "0" \
+    ":spacesToShow" string "1" \
+    ":spacesToShow2" string "1" \
+    ":startAtLogin" string "true"
