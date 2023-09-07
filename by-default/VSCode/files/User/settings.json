@@ -287,6 +287,8 @@
     "gitlens.statusBar.format": "${author}, ${date} • ${message}",
     "gitlens.statusBar.reduceFlicker": true,
     "html.autoClosingTags": false,
+    "html.format.maxPreserveNewLines": 1,
+    "html.format.wrapLineLength": 0,
     "intelephense.diagnostics.implementationErrors": false,
     "intelephense.files.exclude": [
         "**/.ci/**",
