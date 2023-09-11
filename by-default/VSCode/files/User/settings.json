@@ -631,7 +631,6 @@
     "workbench.editor.closeEmptyGroups": false,
     "workbench.editor.highlightModifiedTabs": true,
     "workbench.editor.revealIfOpen": true,
-    "workbench.editor.titleScrollbarSizing": "large",
     "workbench.editor.untitled.hint": "hidden",
     "workbench.enableExperiments": false,
     "workbench.iconTheme": "Monokai Pro (Filter Machine) Icons",
