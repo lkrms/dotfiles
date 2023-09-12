@@ -29,7 +29,7 @@ function ohai() {
 # uhoh <message> [<value>]
 function uhoh() {
     ((++notices))
-    printf "%s‼ %s%s%s${2+" %s"}\\n" \
+    printf "%s✱ %s%s%s${2+" %s"}\\n" \
         "$yellow" "$bold" "$1" "$unbold$default" \
         ${2+"$(val "$2")"}
 }
@@ -37,7 +37,7 @@ function uhoh() {
 # ohno <message> [<value>]
 function ohno() {
     ((++notices))
-    printf "%s✖ %s%s%s${2+" %s"}\\n" \
+    printf "%s✘ %s%s%s${2+" %s"}\\n" \
         "$red" "$bold" "$1" "$unbold$default" \
         ${2+"$(val "$2")"}
 }
@@ -91,6 +91,7 @@ bold=$'\E[1m'
 unbold=$'\E[22m'
 dim=$'\E[2m'
 undim=$'\E[22m'
+clear=$'\E[2J\E[H'
 
 offline=0
 [[ ${1-} != --offline ]] || offline=1
@@ -158,6 +159,7 @@ trap 'rm -f ${files+"${files[@]}"}' EXIT
                 uhoh "no commits"
                 no_commits[i]=
             fi
+        merge_upstream=
         for branch in ${branches+"${branches[@]}"}; do
             upstream=$(git rev-parse --verify --abbrev-ref "$branch@{upstream}" 2>/dev/null) ||
                 if branch_is_merged "$branch"; then
@@ -180,7 +182,7 @@ trap 'rm -f ${files+"${files[@]}"}' EXIT
             elif ((behind)); then
                 if [[ $branch == "$current_branch" ]]; then
                     uhoh "branch '$branch' is behind $upstream"
-                    unmerged[i]=
+                    merge_upstream=$upstream
                 else
                     uhoh "fast-forwarding branch '$branch' to $upstream"
                     git fetch . "$upstream:$branch"
@@ -195,15 +197,27 @@ trap 'rm -f ${files+"${files[@]}"}' EXIT
             ohno "there are uncommitted changes:"
             cat "${files[i]}"
             dirty[i]=
+        elif [[ -n ${merge_upstream:+1} ]]; then
+            uhoh "fast-forwarding current branch '$current_branch' to $merge_upstream"
+            status=0
+            git merge --ff-only "$merge_upstream" >"${files[i]}" || status=$?
+            if ((status)); then
+                ohno "'git merge' failed with exit status $status"
+                cat "${files[i]}"
+                unmerged[i]=
+            fi
+            continue
         fi
+        [[ -z ${merge_upstream:+1} ]] ||
+            unmerged[i]=
     done
     okay 'repository checks complete'
 
     good=("$green" "✔" "$default")
-    bad=("$red" "✖" "$default")
-    actionable=("$yellow" "‼" "$default")
+    bad=("$red" "✘" "$default")
+    actionable=("$yellow" "✱" "$default")
 
-    printf '%s' "$bold$cyan"
+    printf '%s' "$clear$bold$cyan"
 
     printf '%-7s  ' has
     ((offline)) || printf '%-5s  ' fetch
