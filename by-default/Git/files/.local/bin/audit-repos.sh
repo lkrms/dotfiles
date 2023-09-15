@@ -163,7 +163,11 @@ trap 'rm -f ${files+"${files[@]}"}' EXIT
         for branch in ${branches+"${branches[@]}"}; do
             upstream=$(git rev-parse --verify --abbrev-ref "$branch@{upstream}" 2>/dev/null) ||
                 if branch_is_merged "$branch"; then
-                    uhoh "merged branch '$branch' can be deleted"
+                    uhoh "deleting merged branch '$branch'"
+                    if ! git branch --delete "$branch"; then
+                        ohno "'git branch --delete' failed with exit status $?"
+                        no_upstreams[i]=
+                    fi
                     continue
                 else
                     ohno "branch '$branch' has no upstream"
