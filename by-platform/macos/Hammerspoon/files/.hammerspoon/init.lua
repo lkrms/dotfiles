@@ -71,7 +71,15 @@ _criteria.pinnable = {
 
 _groups = {
     mail = {
-        ["Mail"] = {},
+        ["Mail"] = {
+            criteria = {
+                function(ev)
+                    return
+                        string.find(ev.windowTitle, " – .+ messages?$") ~= nil or
+                        string.find(ev.windowTitle, " – .+ messages?, .+ unread$") ~= nil
+                end
+            },
+        },
         ["Calendar"] = {},
     },
     teams = {
