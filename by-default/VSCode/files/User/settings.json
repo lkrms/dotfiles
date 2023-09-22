@@ -55,9 +55,7 @@
     "[php]": {
         "editor.autoClosingBrackets": "languageDefined",
         "editor.defaultFormatter": "lkrms.pretty-php",
-        "editor.detectIndentation": false,
-        "editor.insertSpaces": true,
-        "editor.tabSize": 4
+        "editor.formatOnSave": true
     },
     "[properties]": {
         "editor.defaultFormatter": "lkrms.inifmt"
@@ -87,7 +85,6 @@
         "editor.defaultFormatter": "redhat.vscode-yaml"
     },
     "azureFunctions.showCoreToolsWarning": false,
-    "bashIde.highlightParsingErrors": false,
     "bashIde.shellcheckArguments": "--exclude=1003,1007,1090,1091,2012,2013,2015,2016,2024,2029,2030,2031,2032,2033,2034,2046,2054,2064,2086,2119,2120,2128,2148,2153,2154,2164,2178,2180,2206,2207,2261,2317",
     "bashIde.shellcheckPath": "",
     "beautify.config": {
@@ -276,6 +273,7 @@
             "query": "state:open repo:${owner}/${repository} sort:updated-desc"
         }
     ],
+    "githubPullRequests.pullBranch": "never",
     "gitlens.advanced.fileHistoryFollowsRenames": true,
     "gitlens.blame.format": "${message|40?} ${date|14-}",
     "gitlens.codeLens.enabled": false,
@@ -526,7 +524,6 @@
     "markdown.preview.typographer": true,
     "markdown.updateLinksOnFileMove.enabled": "prompt",
     "markdown.validate.enabled": true,
-    "nginx-conf-hint.syntax": "sublime",
     "outline.collapseItems": "alwaysCollapse",
     "partialDiff.enableTelemetry": false,
     "perltidy.additionalArguments": [

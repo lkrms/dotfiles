@@ -39,6 +39,10 @@
 			" */"
 		]
 	},
+	"PHPDoc: constructor summary": {
+		"prefix": "Creates",
+		"body": "Creates a new ${TM_FILENAME_BASE/[^a-zA-Z0-9]+//g} object"
+	},
 	"PHPStan: ignore next line": {
 		"prefix": "@phpstan",
 		"body": "@phpstan-ignore-next-line"
