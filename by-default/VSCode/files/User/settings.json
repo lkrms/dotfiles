@@ -10,6 +10,9 @@
     "[dockerfile]": {
         "editor.defaultFormatter": "foxundermoon.shell-format"
     },
+    "[handlebars]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
     "[hosts]": {
         "editor.defaultFormatter": "lkrms.inifmt"
     },

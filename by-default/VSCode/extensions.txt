@@ -76,6 +76,7 @@ ahmadalli.vscode-nginx-conf
 beaglefoot.awk-ide-vscode
 chrmarti.regex
 daohong-emilio.yash
+esbenp.prettier-vscode
 HookyQR.beautify
 humao.rest-client
 idleberg.applescript
@@ -91,7 +92,6 @@ rebornix.ruby
 redhat.java
 redhat.vscode-commons
 redhat.vscode-xml
-redhat.vscode-yaml
 sfodje.perltidy
 stansw.vscode-odata
 sumneko.lua

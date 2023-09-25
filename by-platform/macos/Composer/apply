@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+type -P composer >/dev/null || exit 0
+
+file=~/.bashrc.d/composer-completion.sh
+composer completion bash |
+    replace_file "$file"
