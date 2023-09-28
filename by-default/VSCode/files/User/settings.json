@@ -58,7 +58,8 @@
     "[php]": {
         "editor.autoClosingBrackets": "languageDefined",
         "editor.defaultFormatter": "lkrms.pretty-php",
-        "editor.formatOnSave": true
+        "editor.formatOnSave": true,
+        "editor.comments.insertSpace": true
     },
     "[properties]": {
         "editor.defaultFormatter": "lkrms.inifmt"
