@@ -227,21 +227,36 @@ trap 'rm -f ${files+"${files[@]}"}' EXIT
     bad=("$red" "✘" "$default")
     actionable=("$yellow" "✱" "$default")
 
-    printf '%s' "$clear$bold$cyan"
+    function headings() {
+        if [[ $last_printed -eq $printed ]]; then
+            return
+        fi
 
-    printf '%-7s  ' has
-    ((offline)) || printf '%-5s  ' fetch
-    printf '%-5s  %-7s  %-7s  %-7s  %-6s  %-7s  %-6s  %-6s  ' \
-        has has on tracks '' '' '' ''
-    printf '\n'
+        ((!printed)) || printf '\n'
 
-    printf '%-7s  ' "remote?"
-    ((offline)) || printf '%-5s  ' "ok?"
-    printf '%-5s  %-7s  %-7s  %-7s  %-6s  %-7s  %-6s  %-6s  ' \
-        "HEAD?" "branch?" "branch?" "remote?" "ahead?" "behind?" "clean?" "stash?"
-    printf '%s%s\n' repository "$default$unbold"
+        printf '%s' "$bold$cyan"
 
+        printf '%-7s  ' has
+        ((offline)) || printf '%-5s  ' fetch
+        printf '%-5s  %-7s  %-7s  %-7s  %-6s  %-7s  %-6s  %-6s  ' \
+            has has on tracks '' '' '' ''
+        printf '\n'
+
+        printf '%-7s  ' "remote?"
+        ((offline)) || printf '%-5s  ' "ok?"
+        printf '%-5s  %-7s  %-7s  %-7s  %-6s  %-7s  %-6s  %-6s  ' \
+            "HEAD?" "branch?" "branch?" "remote?" "ahead?" "behind?" "clean?" "stash?"
+        printf '%s%s\n' repository "$default$unbold"
+
+        last_printed=$printed
+    }
+
+    printf '%s' "$clear"
+
+    printed=0
+    last_printed=-1
     for ((i = 0; i < count; i++)); do
+        ((printed % 24)) || headings
         unset repo_clean
         state=${no_remotes[i]+1}${fetch_errors[i]+0}${no_commits[i]+0}${no_branches[i]+1}${detached[i]+0}${no_upstreams[i]+1}${unpushed[i]+1}${unmerged[i]+0}${dirty[i]+1}${stashed[i]+1}
         [[ -n $state ]] || continue
@@ -262,6 +277,7 @@ trap 'rm -f ${files+"${files[@]}"}' EXIT
             ${stashed[i]-"${good[@]}"} ${stashed[i]+"${bad[@]}"} \
             "$(uri "file://$HOSTNAME${repos[i]}" "$(val "${repos[i]}")")" \
             "${repo_clean+$undim}"
+        ((++printed))
     done
 
     exit
