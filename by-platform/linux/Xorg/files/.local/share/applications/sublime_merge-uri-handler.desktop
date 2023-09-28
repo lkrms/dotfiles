@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Sublime Merge - URI Handler
+GenericName=Git Client
+Comment=Sublime Merge is a Git client, from the makers of Sublime Text
+Exec=handle-uri %U
+Icon=sublime-merge
+Type=Application
+NoDisplay=true
+StartupNotify=false
+Categories=Development                                                 ;
+MimeType=x-scheme-handler/smerge                                       ;

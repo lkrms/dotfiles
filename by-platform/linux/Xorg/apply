@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+maybe update-desktop-database ~/.local/share/applications

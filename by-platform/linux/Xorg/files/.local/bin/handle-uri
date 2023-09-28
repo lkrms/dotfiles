@@ -1,0 +1,12 @@
+#!/bin/sh
+
+case "$1" in
+smerge://*)
+    exec smerge "${1#smerge://}"
+    ;;
+
+*)
+    printf 'Unsupported scheme: %s\n' "$1" >&2
+    exit 1
+    ;;
+esac

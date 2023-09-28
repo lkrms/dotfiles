@@ -47,7 +47,8 @@
         },
         "editor.unicodeHighlight.ambiguousCharacters": false,
         "editor.unicodeHighlight.invisibleCharacters": false,
-        "editor.wordWrap": "off"
+        "editor.wordWrap": "off",
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "[neon]": {
         "editor.defaultFormatter": "redhat.vscode-yaml"

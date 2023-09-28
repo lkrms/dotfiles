@@ -42,6 +42,11 @@ function ohno() {
         ${2+"$(val "$2")"}
 }
 
+# uri <uri> <text> [<uri> <text>]...
+function uri() {
+    printf '\E]8;;%s\E\\%s\E]8;;\E\\\n' "$@"
+}
+
 # val <value>
 function val() {
     [[ $1 == */* ]] || {
@@ -115,7 +120,8 @@ notices=0
 trap 'rm -f ${files+"${files[@]}"}' EXIT
 
 {
-    ((offline)) ||
+    ((offline)) &&
+        ohai "finding repositories" ||
         ohai "fetching changes (use '--offline' to skip)"
 
     i=-1
@@ -254,7 +260,7 @@ trap 'rm -f ${files+"${files[@]}"}' EXIT
             ${unmerged[i]-"${good[@]}"} ${unmerged[i]+"${actionable[@]}"} \
             ${dirty[i]-"${good[@]}"} ${dirty[i]+"${bad[@]}"} \
             ${stashed[i]-"${good[@]}"} ${stashed[i]+"${bad[@]}"} \
-            "$(val "${repos[i]}")" \
+            "$(uri "file://$HOSTNAME${repos[i]}" "$(val "${repos[i]}")")" \
             "${repo_clean+$undim}"
     done
 
