@@ -429,7 +429,11 @@ function getCommand(commandArray)
 end
 
 function run(command, detach)
-    local sh = 'eval "$(/usr/libexec/path_helper -s)" && {\n' .. command .. "\n} 2>&1"
+    local sh =
+        'eval "$(/usr/libexec/path_helper -s)" && ' ..
+        'eval "$(sh ~/Code/lk/lk-platform/lib/bash/env.sh)" && {\n' ..
+        command ..
+        "\n} 2>&1"
     if detach then
         sh = "(" .. sh .. ') >>"$(mktemp /tmp/lk.hammerspoon.XXXXXX)" 2>&1 &'
     end
@@ -440,6 +444,8 @@ function run(command, detach)
         if output ~= "" then
             logger.e("Output:\n" .. output)
         end
+    elseif output ~= "" then
+        logger.e("Output from " .. sh .. ":\n" .. output)
     end
     -- status: true or nil
     -- type: "exit" or "signal"
