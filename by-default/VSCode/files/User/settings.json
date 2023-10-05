@@ -87,7 +87,7 @@
         "editor.defaultFormatter": "redhat.vscode-xml"
     },
     "[yaml]": {
-        "editor.defaultFormatter": "redhat.vscode-yaml"
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "azureFunctions.showCoreToolsWarning": false,
     "bashIde.shellcheckArguments": "--exclude=1003,1007,1090,1091,2012,2013,2015,2016,2024,2029,2030,2031,2032,2033,2034,2046,2054,2064,2086,2119,2120,2128,2148,2153,2154,2164,2178,2180,2206,2207,2261,2317",
@@ -546,6 +546,7 @@
     "Prettier-SQL.keywordCase": "upper",
     "Prettier-SQL.linesBetweenQueries": 0,
     "Prettier-SQL.SQLFlavourOverride": "sqlite",
+    "prettier.proseWrap": "always",
     "python.experiments.enabled": false,
     "redhat.telemetry.enabled": false,
     "regex-previewer.enableCodeLens": false,
@@ -646,6 +647,5 @@
     "xml.format.enforceQuoteStyle": "preferred",
     "xml.format.maxLineWidth": 0,
     "xml.format.preservedNewlines": 0,
-    "xml.format.splitAttributes": true,
-    "yaml.validate": false
+    "xml.format.splitAttributes": true
 }
