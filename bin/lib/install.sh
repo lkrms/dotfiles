@@ -85,8 +85,8 @@ for app in ${apps+"${apps[@]}"}; do
     ((!i++)) || echo
     echo "==> [$i/$count] Configuring $app"
     # Get directories that actually exist by expanding !(?)
-    local_app_dirs=($(printf '%s\n' $(printf '%q!(?)\n' "${local_app_roots[@]/%//$app}")))
-    app_dirs=($(printf '%s\n' $(printf '%q!(?)\n' "${app_roots[@]/%//$app}")))
+    local_app_dirs=($(printf '%s\n' $(IFS=$' \t\n' && printf '%q!(?)\n' "${local_app_roots[@]/%//$app}")))
+    app_dirs=($(printf '%s\n' $(IFS=$' \t\n' && printf '%q!(?)\n' "${app_roots[@]/%//$app}")))
     # Mitigate race condition where settings for an app are removed before they can be applied
     [[ -n ${local_app_dirs+${app_dirs+1}} ]] || continue
     # 1. Populate by-app/ with settings for every host and platform

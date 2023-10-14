@@ -37,7 +37,7 @@ function find_first_by_app() {
     [[ -n ${local_app_roots+1} ]] || set_local_app_roots
     local IFS=$'\n'
     (shopt -s extglob nullglob &&
-        printf '%s\n' $(printf '%q!(?)\n' "${local_app_roots[@]/%//$1/$2}") | head -n1 | grep .)
+        printf '%s\n' $(IFS=$' \t\n' && printf '%q!(?)\n' "${local_app_roots[@]/%//$1/$2}") | head -n1 | grep .)
 }
 
 # maybe <command> [<arg>]...
@@ -148,7 +148,7 @@ function find_first() {
     [[ -n ${df_argv+1} ]] || return
     local IFS=$'\n'
     (shopt -s extglob nullglob &&
-        printf '%s\n' $(printf '%q!(?)\n' "${df_argv[@]/%//$1}") | head -n1 | grep .)
+        printf '%s\n' $(IFS=$' \t\n' && printf '%q!(?)\n' "${df_argv[@]/%//$1}") | head -n1 | grep .)
 }
 
 # with_each <glob> <command> [<arg>]...

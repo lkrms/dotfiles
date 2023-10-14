@@ -22,7 +22,7 @@ for app in ${apps+"${apps[@]}"}; do
     [[ -e $path ]] && [[ -s $path ]] || continue
     [[ -f $path ]] && [[ -x $path ]] || die "not executable: $path"
     # Get a list of directories that actually exist by expanding !(?)
-    app_dirs=($(printf '%s\n' $(printf '%q!(?)\n' "${app_roots[@]/%//$app}")))
+    app_dirs=($(printf '%s\n' $(IFS=$' \t\n' && printf '%q!(?)\n' "${app_roots[@]/%//$app}")))
     # Mitigate race condition where settings for an app are removed before they can be cleaned
     [[ -n ${app_dirs+1} ]] || continue
     echo " -> Running: $path"
