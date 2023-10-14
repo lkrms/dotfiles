@@ -349,6 +349,22 @@
         }
     },
     {
+        "key": "alt+p",
+        "command": "toggle",
+        "when": "editorTextFocus",
+        "args": {
+            "id": "prose",
+            "value": [
+                {
+                    "prettier.proseWrap": "always"
+                },
+                {
+                    "prettier.proseWrap": "never"
+                }
+            ]
+        }
+    },
+    {
         "key": "alt+x",
         "command": "toggle",
         "args": {
