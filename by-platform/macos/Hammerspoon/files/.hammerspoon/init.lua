@@ -5,6 +5,7 @@ wf = hs.window.filter
 hs.window.animationDuration = 0
 
 defaultGrid = {6, 2}
+showScreenLayoutChangeNotification = false
 
 function extend(copyTable, updateTable)
     local copy = hs.fnutils.copy(copyTable)
@@ -517,13 +518,15 @@ _screenwatcher = hs.screen.watcher.new(function()
     _filter:unsubscribeAll()
     initScreens()
     initWindowFilter()
-    hs.notify.new(
-        {
-            title = "Hammerspoon",
-            informativeText = "Screen layout change detected",
-            withdrawAfter = 5,
-        }
-    ):send()
+    if showScreenLayoutChangeNotification then
+        hs.notify.new(
+            {
+                title = "Hammerspoon",
+                informativeText = "Screen layout change detected",
+                withdrawAfter = 5,
+            }
+        ):send()
+    end
 end)
 _screenwatcher:start()
 
