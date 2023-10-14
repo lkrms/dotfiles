@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+brew=$(type -P brew 2>/dev/null) || exit 0
+
+if brewfile=$(find_first Brewfile) ||
+    brewfile=$(find_first Brewfile-arm64); then
+    brew bundle dump --file - |
+        sed -E '/^vscode /d' >"$brewfile"
+fi
+
+if ! brewfile=$(find_first Brewfile-x86_64) ||
+    [[ $brew != /opt/homebrew/bin/brew ]] ||
+    [[ ! -x /usr/local/bin/brew ]]; then
+    exit
+fi
+
+PATH=$(printf '%s:' "$PATH" |
+    awk -vRS=':' '
+/^\/opt\/homebrew(\/|$)/ { next } ! i++ { printf "%s", $0; next } { printf ":%s", $0 }')
+
+arch -x86_64 /usr/local/bin/brew bundle dump --file - |
+    sed -E '/^vscode /d' >"$brewfile"
