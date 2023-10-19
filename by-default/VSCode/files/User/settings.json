@@ -632,6 +632,7 @@
     "window.titleBarStyle": "custom",
     "workbench.colorTheme": "Monokai Pro (Filter Machine)",
     "workbench.editor.closeEmptyGroups": false,
+    "workbench.editor.empty.hint": "hidden",
     "workbench.editor.highlightModifiedTabs": true,
     "workbench.editor.revealIfOpen": true,
     "workbench.editor.untitled.hint": "hidden",

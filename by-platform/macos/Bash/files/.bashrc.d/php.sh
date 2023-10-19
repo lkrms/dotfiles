@@ -30,6 +30,7 @@ function php-build-all() {
             brew link --overwrite --force "shivammathur/php/$1" || return
         php-build-xdebug &&
             php-build-pcov &&
+            php-build-memprof &&
             php-build-sqlsrv &&
             php-build-db2 &&
             { (($# == 1)) && [[ $1 == php ]] && return ||
@@ -65,16 +66,33 @@ pcov.enabled = 0
 EOF
 }
 
+function php-build-memprof() {
+    ! lk_is_apple_silicon ||
+        lk_warn "Apple Silicon not supported" || return
+    lk_command_exists pecl ||
+        lk_warn "pecl must be installed" || return
+    brew list judy &>/dev/null ||
+        brew install judy || return
+    local php_ini file
+    lk_tty_print "Building memprof extension"
+    _pecl install -f memprof &&
+        file=$php_ini/conf.d/ext-memprof.ini &&
+        lk_install -m 00644 "$file" &&
+        lk_file_replace "$file" <<'EOF'
+;extension="memprof.so"
+EOF
+}
+
 function php-build-sqlsrv() {
     ! lk_is_apple_silicon ||
         lk_warn "Apple Silicon not supported" || return
-    local php_ini file
     lk_command_exists pecl ||
         lk_warn "pecl must be installed" || return
     brew tap | grep -Fx microsoft/mssql-release >/dev/null ||
         brew tap microsoft/mssql-release || return
     brew list msodbcsql18 mssql-tools18 &>/dev/null ||
         HOMEBREW_ACCEPT_EULA=Y brew install msodbcsql18 mssql-tools18 || return
+    local php_ini file
     lk_tty_print "Building sqlsrv extension"
     _pecl install -f sqlsrv &&
         file=$php_ini/conf.d/ext-sqlsrv.ini &&

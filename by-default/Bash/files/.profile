@@ -23,5 +23,6 @@ if [ "${BASH-no}" != no ]; then
 fi
 
 export PIP_REQUIRE_VIRTUALENV=true
+export HOMEBREW_ACCEPT_EULA=Y
 
 _byobu_sourced=1 . /usr/bin/byobu-launch 2>/dev/null || true

@@ -18,3 +18,13 @@ _ibrew() {
     eval "$__ibrew_brew"
 }
 complete -o bashdefault -o default -F _ibrew ibrew
+
+function brew-mark-as-dependency() {
+    [[ -f ${1-} ]] ||
+        lk_usage "Usage: $FUNCNAME <INSTALL_RECEIPT>" || return
+    local JSON
+    lk_mktemp_with JSON \
+        jq '.installed_on_request = false | .installed_as_dependency = true' \
+        "$1" || return
+    lk_file_replace "$1" <"$JSON"
+}
