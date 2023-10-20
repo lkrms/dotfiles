@@ -11,6 +11,7 @@ function _pecl() {
         lk_warn "Apple Silicon not supported" || return
     local temp status=0
     php_ini=$(php -r "echo php_ini_loaded_file();") || return
+    php_extension_dir=$(php -r "echo ini_get('extension_dir');") || return
     php_ini=${php_ini%/*}
     [[ -f $php_ini/php.ini ]] ||
         lk_warn "php.ini not found" || return
@@ -43,7 +44,7 @@ function php-build-all() {
 }
 
 function php-build-xdebug() {
-    local php_ini file version=
+    local php_ini php_extension_dir file version=
     lk_tty_print "Building xdebug extension"
     php -r "if (PHP_VERSION_ID < 80000) { exit (1); }" || version=-3.1.6
     _pecl install -f "xdebug$version" &&
@@ -55,7 +56,7 @@ EOF
 }
 
 function php-build-pcov() {
-    local php_ini file
+    local php_ini php_extension_dir file
     lk_tty_print "Building pcov extension"
     _pecl install -f pcov &&
         file=$php_ini/conf.d/ext-pcov.ini &&
@@ -73,7 +74,7 @@ function php-build-memprof() {
         lk_warn "pecl must be installed" || return
     brew list judy &>/dev/null ||
         brew install judy || return
-    local php_ini file
+    local php_ini php_extension_dir file
     lk_tty_print "Building memprof extension"
     _pecl install -f memprof &&
         file=$php_ini/conf.d/ext-memprof.ini &&
@@ -92,7 +93,7 @@ function php-build-sqlsrv() {
         brew tap microsoft/mssql-release || return
     brew list msodbcsql18 mssql-tools18 &>/dev/null ||
         HOMEBREW_ACCEPT_EULA=Y brew install msodbcsql18 mssql-tools18 || return
-    local php_ini file
+    local php_ini php_extension_dir file
     lk_tty_print "Building sqlsrv extension"
     _pecl install -f sqlsrv &&
         file=$php_ini/conf.d/ext-sqlsrv.ini &&
@@ -111,7 +112,7 @@ function php-build-db2() { {
         lk_warn "Apple Silicon not supported" || return
     lk_command_exists pecl odbcinst ||
         lk_warn "pecl and unixodbc must be installed" || return
-    local _LK_FD=3 php_ini file temp
+    local php_ini php_extension_dir file temp _LK_FD=3
     [[ -d /opt/clidriver ]] || {
         lk_tty_print "Installing Db2 clidriver"
         local file=${1-macos64_odbc_cli.tar.gz}
@@ -122,8 +123,6 @@ function php-build-db2() { {
             sudo xattr -dr com.apple.quarantine /opt/clidriver || return
         lk_tty_success "Db2 clidriver installed successfully"
     }
-    ln -sf /opt/clidriver/lib/libdb2.dylib /usr/local/lib/libdb2.dylib ||
-        return
     ! lk_confirm "Test Db2 installation?" N || (
         [[ :$PATH: == *:/opt/clidriver/bin:* ]] ||
             export PATH=/opt/clidriver/bin:$PATH \
@@ -147,6 +146,9 @@ function php-build-db2() { {
     IBM_DB_HOME=/opt/clidriver \
         CFLAGS="-DODBC64" \
         _pecl install -f -D 'with-IBM_DB2="yes"' ibm_db2 &&
+        lk_tty_run_detail install_name_tool \
+            -change libdb2.dylib /opt/clidriver/lib/libdb2.dylib \
+            "$php_extension_dir/ibm_db2.so" &&
         file=$php_ini/conf.d/ext-ibm_db2.ini &&
         lk_install -m 00644 "$file" &&
         lk_file_replace "$file" <<'EOF' &&
