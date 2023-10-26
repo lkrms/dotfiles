@@ -47,6 +47,7 @@ function php-build-xdebug() {
     local php_ini php_extension_dir file version=
     lk_tty_print "Building xdebug extension"
     php -r "if (PHP_VERSION_ID < 80000) { exit (1); }" || version=-3.1.6
+    php -r "if (PHP_VERSION_ID >= 80300) { exit (1); }" || version=-3.3.0alpha3
     _pecl install -f "xdebug$version" &&
         file=$php_ini/conf.d/ext-xdebug.ini &&
         lk_install -m 00644 "$file" &&

@@ -4,9 +4,11 @@
 
 brew=$(type -P brew 2>/dev/null) || exit 0
 
+export HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_ENV_HINTS=1
+
 if brewfile=$(find_first Brewfile) ||
     brewfile=$(find_first Brewfile-arm64); then
-    brew bundle dump --file - |
+    brew bundle dump --no-upgrade --file - |
         sed -E '/^vscode /d' >"$brewfile"
 fi
 
@@ -20,5 +22,5 @@ PATH=$(printf '%s:' "$PATH" |
     awk -vRS=':' '
 /^\/opt\/homebrew(\/|$)/ { next } ! i++ { printf "%s", $0; next } { printf ":%s", $0 }')
 
-arch -x86_64 /usr/local/bin/brew bundle dump --file - |
+arch -x86_64 /usr/local/bin/brew bundle dump --no-upgrade --file - |
     sed -E '/^vscode /d' >"$brewfile"

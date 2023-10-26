@@ -84,7 +84,9 @@ _groups = {
         ["Calendar"] = {},
     },
     teams = {
-        ["Microsoft Teams"] = {}
+        ["Microsoft Teams"] = {},
+        ["Microsoft Teams (work or school)"] = {},
+        ["Microsoft Teams classic"] = {}
     },
     messenger = {
         ["Messenger"] = {},
