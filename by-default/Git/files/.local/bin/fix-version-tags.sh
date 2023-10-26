@@ -2,7 +2,7 @@
 
 # Delete and re-create annotated version tags
 #
-# Usage: fix-version-tags.sh [--run] [--normalise] [--force] [<remote>]
+# Usage: fix-version-tags.sh [--run] [--normalise] [--force] [--no-release] [<remote>]
 #
 # By default:
 # - a dry run is performed (use `--run` to override)
@@ -11,7 +11,8 @@
 # - tags are pushed to the "origin" remote
 #
 # If `--normalise` is given, tags with content other than "Release <version>"
-# are also re-created. If `--force` is given, all version tags are replaced.
+# are also re-created. If `--force` is given, all version tags are replaced. If
+# `--no-release` is given, missing GitHub releases are ignored.
 
 set -euo pipefail
 
@@ -31,6 +32,7 @@ dryrun=1
 normalise=0
 force=0
 maxoffset=3600
+release=1
 while [[ ${1-} == --* ]]; do
     case "$1" in
     --run)
@@ -42,6 +44,9 @@ while [[ ${1-} == --* ]]; do
     --force)
         force=1
         maxoffset=-1
+        ;;
+    --no-release)
+        release=0
         ;;
     *)
         printf 'invalid argument: %s\n' "$1"
@@ -83,7 +88,8 @@ while read -r tag ref commitdate timezone tagdate; do
         printf ' -> %s is out of sequence (offset: %ds)\n' "$tag" "$offset"
     elif ((normalise)) &&
         { eval "content=($(git for-each-ref --shell --format "${contentformat[*]}" refs/tags/"$tag"))" || exit; } &&
-        ! { [[ ${content[0]} == "Release $tag" ]] && [[ -z ${content[1]} ]]; }; then
+        ! { { [[ ${content[0]} == "Release $tag" ]] ||
+            [[ -z ${content[0]} ]]; } && [[ -z ${content[1]} ]]; }; then
         printf ' -> %s has invalid content:\n%s\n%s\n' "$tag" "${content[@]}"
     else
         lasttagdate=$tagdate
@@ -116,5 +122,6 @@ for tag in "${releases[@]}"; do
     if printf '%s\n' "${gh_releases[@]}" | grep -Fx "$tag" >/dev/null; then
         continue
     fi
+    ((release)) || continue
     maybe gh release create "$tag" --notes ""
 done
