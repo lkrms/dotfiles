@@ -684,6 +684,10 @@
         "key": "ctrl+shift+b"
     },
     {
+        "key": "shift+alt+meta+b",
+        "command": "workbench.action.tasks.build"
+    },
+    {
         "args": "Pretty PHP",
         "command": "workbench.action.tasks.runTask",
         "key": "shift+alt+meta+f",

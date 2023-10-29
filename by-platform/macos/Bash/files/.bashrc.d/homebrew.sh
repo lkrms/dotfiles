@@ -28,3 +28,5 @@ function brew-mark-as-dependency() {
         "$1" || return
     lk_file_replace "$1" <"$JSON"
 }
+
+export HOMEBREW_ACCEPT_EULA=Y
