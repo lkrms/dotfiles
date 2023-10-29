@@ -254,13 +254,20 @@ trap 'rm -f ${files+"${files[@]}"}' EXIT
     printf '%s' "$clear"
 
     printed=0
+    dirty_count=0
+    actionable_count=0
     last_printed=-1
     for ((i = 0; i < count; i++)); do
         ((printed % 24)) || headings
         unset repo_clean
         state=${no_remotes[i]+1}${fetch_errors[i]+0}${no_commits[i]+0}${no_branches[i]+1}${detached[i]+0}${no_upstreams[i]+1}${unpushed[i]+1}${unmerged[i]+0}${dirty[i]+1}${stashed[i]+1}
         [[ -n $state ]] || continue
-        [[ $state == *1* ]] || repo_clean=
+        if [[ $state == *1* ]]; then
+            ((++dirty_count))
+        else
+            repo_clean=
+            ((++actionable_count))
+        fi
         printf '%s%s%-9s%s  ' \
             "${repo_clean+$dim}" \
             ${no_remotes[i]-"${good[@]}"} ${no_remotes[i]+"${bad[@]}"}
@@ -279,6 +286,12 @@ trap 'rm -f ${files+"${files[@]}"}' EXIT
             "${repo_clean+$undim}"
         ((++printed))
     done
+
+    printf '\n'
+
+    ((!dirty_count)) || ohno "dirty: $dirty_count"
+    ((!actionable_count)) || uhoh "actionable: $actionable_count"
+    ((dirty_count + actionable_count)) || okay 'nothing to do'
 
     exit
 }
