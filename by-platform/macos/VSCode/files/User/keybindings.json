@@ -636,6 +636,10 @@
         "key": "cmd+k cmd+t"
     },
     {
+        "key": "shift+alt+cmd+b",
+        "command": "workbench.action.tasks.build"
+    },
+    {
         "command": "-workbench.action.tasks.build",
         "key": "shift+cmd+b"
     },
