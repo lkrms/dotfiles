@@ -221,11 +221,6 @@
         "when": "editorTextFocus && !isInDiffEditor"
     },
     {
-        "key": "shift+cmd+g",
-        "command": "git.openChange",
-        "when": "editorTextFocus && !isInDiffEditor"
-    },
-    {
         "key": "ctrl+shift+enter",
         "command": "git.stageSelectedRanges",
         "when": "editorHasSelection && editorTextFocus"
@@ -396,11 +391,6 @@
     },
     {
         "key": "ctrl+shift+g",
-        "command": "toggle.diff.renderSideBySide",
-        "when": "editorTextFocus && isInDiffEditor"
-    },
-    {
-        "key": "shift+cmd+g",
         "command": "toggle.diff.renderSideBySide",
         "when": "editorTextFocus && isInDiffEditor"
     },
