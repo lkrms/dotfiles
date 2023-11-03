@@ -112,7 +112,13 @@ _groups = {
     dev = {
         ["com.microsoft.VSCode"] = {},
         ["com.sublimemerge"] = {},
-        ["org.jkiss.dbeaver.core.product"] = {},
+        ["org.jkiss.dbeaver.core.product"] = {
+            criteria = {
+                function(ev)
+                    return string.find(ev.windowTitle, "^DBeaver .+") ~= nil
+                end
+            },
+        },
     },
 }
 

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+if ssh_helper=$(find_first dbeaver-ssh.sh); then
+    link_file "$ssh_helper" ~/.local/bin/dbeaver-ssh.sh
+fi

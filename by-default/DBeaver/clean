@@ -2,6 +2,9 @@
 
 . "$df_root/bin/lib/bash-helpers.sh" || exit
 
+with_each files/workspace6/General/.dbeaver/data-sources.json \
+    replace_file '{}' jq_safe --sort-keys --indent 4
+
 file=$(find_first files/workspace6/General/.dbeaver/credentials-config.json) || exit 2
 replace=${file%files/workspace6/General/.dbeaver/credentials-config.json}credentials-config.json
 
