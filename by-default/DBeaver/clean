@@ -2,10 +2,10 @@
 
 . "$df_root/bin/lib/bash-helpers.sh" || exit
 
-file=files/workspace6/General/.dbeaver/credentials-config.json
-file=$(find_first "$file") || exit 2
+file=$(find_first files/workspace6/General/.dbeaver/credentials-config.json) || exit 2
+replace=${file%files/workspace6/General/.dbeaver/credentials-config.json}credentials-config.json
 
-replace_file "${file%.json}.clean.json" < <(
+replace_file "$replace" < <(
     # Decrypt
     openssl aes-128-cbc -d -K babb4a9f774ab853c96c2d653dfe544a -iv 00000000000000000000000000000000 -in "$file" |
         # Skip 16-byte preamble

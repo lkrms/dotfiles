@@ -2,9 +2,8 @@
 
 . "$df_root/bin/lib/bash-helpers.sh" || exit
 
-file=files/workspace6/General/.dbeaver/credentials-config.clean.json
-file=$(find_first "$file") || exit 2
-replace=${file%.clean.json}.json
+file=$(find_first credentials-config.json) || exit 2
+replace=${file%credentials-config.json}files/workspace6/General/.dbeaver/credentials-config.json
 
 backup_file "$replace"
 replace_file "$replace" < <(
