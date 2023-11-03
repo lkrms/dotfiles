@@ -140,6 +140,22 @@ function replace_file() {
     fi
 }
 
+# backup_file [--sudo] <file>
+#
+# Copy <file> to <file>.bak-XXX and assign the name of the backup file to the
+# `backup` variable.
+function backup_file() {
+    local sudo j=-1
+    [[ $1 == --sudo ]] && sudo= && shift || unset sudo
+
+    while j=$((j + 1)); do
+        backup=$1.bak-$(printf '%03d\n' "$j")
+        [[ ! -e $backup ]] && [[ ! -L $backup ]] || continue
+        break
+    done
+    maybe ${sudo+sudo} cp -anv -- "$1" "$backup" || die "error creating backup: $backup"
+}
+
 # find_first <path>
 #
 # Find the most applicable instance of <path> in the <appname> directories
