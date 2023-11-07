@@ -23,6 +23,10 @@ i       { print "  " $0; next }
   echo "Changelog generated for $*" >&2
 }
 
+http-toolkit-enable() {
+  eval "$(curl -sS localhost:8001/setup)"
+}
+
 function phpstan-neon-create() {
   cat >phpstan.neon <<EOF
 includes:
