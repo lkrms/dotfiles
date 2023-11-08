@@ -15,6 +15,14 @@ function extend(copyTable, updateTable)
     return copy
 end
 
+function keys(arrayTable)
+    local keysTable = {}
+    for k, v in pairs(arrayTable) do
+        table.insert(keysTable, k)
+    end
+    return keysTable
+end
+
 -- Configure preferred apps with:
 -- - `bundleID` (required): string
 -- - `commandLine` (optional): string, "{{app}}" is replaced with path to .app
@@ -38,6 +46,20 @@ _app = {
         menuItem = {"File", "New Finder Window"},
     },
 }
+
+_zone = {
+    left = "left",
+    centre = "centre",
+    right = "right",
+    topLeft = "topLeft",
+    topCentre = "topCentre",
+    topRight = "topRight",
+    bottomLeft = "bottomLeft",
+    bottomCentre = "bottomCentre",
+    bottomRight = "bottomRight",
+}
+
+_allZones = keys(_zone)
 
 _operator = {
     AND = "and",
@@ -149,6 +171,17 @@ _layouts = {
             util = {xy = {34, 2}},
             dev = {xy = {11, 1}, wh = {23, 2}},
         },
+        zone_places = {
+            [_zone.left] = {xy = {1, 1}, wh = {10, 2}},
+            [_zone.centre] = {xy = {11, 1}, wh = {23, 2}},
+            [_zone.right] = {xy = {34, 1}, wh = {10, 2}},
+            [_zone.topLeft] = {xy = {1, 1}, wh = {10, 1}},
+            [_zone.topCentre] = {xy = {11, 1}, wh = {23, 1}},
+            [_zone.topRight] = {xy = {34, 1}, wh = {10, 1}},
+            [_zone.bottomLeft] = {xy = {1, 2}, wh = {10, 1}},
+            [_zone.bottomCentre] = {xy = {11, 2}, wh = {23, 1}},
+            [_zone.bottomRight] = {xy = {34, 2}, wh = {10, 1}},
+        },
     },
     ["*"] = {
         grid = {4, 2},
@@ -178,7 +211,7 @@ function normalisePlace(place, ev)
     return p
 end
 
-function toPlace(place, ev)
+function toPlace(place, ev, force)
     local p = normalisePlace(place, ev)
     if p.display ~= nil and p.display ~= ev.display then
         logger.d("Moving " .. ev.appName .. " to display " .. p.display)
@@ -196,7 +229,7 @@ function toPlace(place, ev)
         ev.windowGeometry, ev.desktopGeometry
     logger.v("unitRect = " .. hs.inspect.inspect(unitRect))
     logger.v("windowFrame = " .. hs.inspect.inspect(windowFrame))
-    if not _initialising and windowFrame["w"] > 0 and windowFrame["h"] > 0 then
+    if not force and not _initialising and windowFrame["w"] > 0 and windowFrame["h"] > 0 then
         local gridWidth, gridHeight = desktop["w"] / p.grid[1], desktop["h"] / p.grid[2]
         local _x, _y, _gx, _gy, _w, _h, _w3, _gw, _gh
         -- _x, _y = window position, relative to desktop
@@ -277,6 +310,37 @@ function getPlace(ev)
     end
 end
 
+function getZone(zone, ev)
+    local geometry, layout, place = table.concat({ev.screenGeometry.w, ev.screenGeometry.h}, "x")
+    for i, layout_id in ipairs({
+        #_screen .. "," .. ev.display .. ":" .. geometry,
+        "*," .. ev.display .. ":" .. geometry,
+        ev.display .. ":" .. geometry,
+        #_screen .. ",*:" .. geometry,
+        #_screen .. "," .. geometry,
+        "*,*:" .. geometry,
+        "*:" .. geometry,
+        "*," .. geometry,
+        geometry,
+        "*,*:*",
+        "*",
+    }) do
+        logger.v("Checking layout_id = " .. layout_id)
+        layout = _layouts[layout_id]
+        if layout and checkCriteria(layout.criteria, ev) then
+            logger.v("layout_id = " .. layout_id)
+            place = layout.zone_places and layout.zone_places[zone]
+            if place then
+                if layout.place then
+                    place = extend(layout.place, place)
+                end
+                place.grid = place.grid or layout.grid
+                return place
+            end
+        end
+    end
+end
+
 _rule = {
     {
         criteria = {
@@ -290,6 +354,20 @@ _rule = {
         action = {
             function(ev)
                 toPlace(ev.place, ev)
+            end,
+        },
+    },
+    {
+        criteria = {
+            event = _allZones,
+            function(ev)
+                ev.place = getZone(ev.event, ev)
+                return ev.place ~= nil
+            end,
+        },
+        action = {
+            function(ev)
+                toPlace(ev.place, ev, true)
             end,
         },
     },
@@ -800,6 +878,37 @@ hs.hotkey.bind(
         hs.eventtap.keyStrokes(paste)
     end
 )
+
+function toZone(zone)
+    logger.d("Moving window to zone " .. zone)
+    local window = hs.window.focusedWindow()
+    local app = window and window:application()
+    if app then
+        processEvent(window, app:name(), zone)
+    end
+end
+
+_zoneKeys = {
+    f13 = _zone.topLeft,
+    f14 = _zone.topCentre,
+    f15 = _zone.topRight,
+    help = _zone.left,
+    home = _zone.centre,
+    pageup = _zone.right,
+    forwarddelete = _zone.bottomLeft,
+    ["end"] = _zone.bottomCentre,
+    pagedown = _zone.bottomRight,
+}
+
+for key, zone in pairs(_zoneKeys) do
+    hs.hotkey.bind(
+        {"ctrl", "alt"},
+        key,
+        function()
+            toZone(zone)
+        end
+    )
+end
 
 hs.notify.new(
     {

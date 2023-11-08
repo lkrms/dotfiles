@@ -64,34 +64,6 @@
 			<key>modifiers</key>
 			<integer>8395264</integer>
 		</dict>
-		<key>11</key>
-		<dict>
-			<key>keyCode</key>
-			<integer>114</integer>
-			<key>modifiers</key>
-			<integer>8394752</integer>
-		</dict>
-		<key>12</key>
-		<dict>
-			<key>keyCode</key>
-			<integer>116</integer>
-			<key>modifiers</key>
-			<integer>8394752</integer>
-		</dict>
-		<key>13</key>
-		<dict>
-			<key>keyCode</key>
-			<integer>117</integer>
-			<key>modifiers</key>
-			<integer>8394752</integer>
-		</dict>
-		<key>14</key>
-		<dict>
-			<key>keyCode</key>
-			<integer>121</integer>
-			<key>modifiers</key>
-			<integer>8394752</integer>
-		</dict>
 		<key>15</key>
 		<dict>
 			<key>keyCode</key>
