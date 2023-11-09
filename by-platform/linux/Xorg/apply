@@ -3,3 +3,6 @@
 . "$df_root/bin/lib/bash-helpers.sh" || exit
 
 maybe update-desktop-database ~/.local/share/applications
+
+# Stop updates triggering `/usr/bin/udevadm trigger -c change`
+replace_file --sudo /etc/systemd/do-not-udevadm-trigger-on-update </dev/null
