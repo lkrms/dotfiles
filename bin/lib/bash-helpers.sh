@@ -131,13 +131,52 @@ function replace_file() {
     [[ ${1-} == - ]] && shift || input=${1:+$file}
 
     "${@-cat}" <"${input:-/dev/stdin}" >"$df_temp" || die "command failed in $FUNCNAME:$(printf ' %q' "${@-cat}")"
-    ! diff -q -- "$df_temp" "$file" >/dev/null || return 0
-    echo " -> Replacing: $file"
-    maybe ${sudo+sudo} cp -- "$df_temp" "$file" || die "error replacing file: $file"
 
-    if [[ -n ${df_dryrun:+1} ]]; then
-        ! diff -- "$df_temp" "$file" || return 0
+    if [[ -f $file ]]; then
+        ! diff -- "$file" "$df_temp" || return 0
+        echo " -> Replacing: $file"
+    else
+        echo " -> Creating: $file"
     fi
+
+    maybe ${sudo+sudo} cp -- "$df_temp" "$file" || die "error replacing file: $file"
+}
+
+# - replace_json [--sudo] <file>
+# - replace_json [--sudo] <file> <command> [<arg>]...
+# - replace_json [--sudo] <file> - <command> [<arg>]...
+#
+# Normalise JSON for comparison and:
+#
+# - Replace <file> if the input is different
+# - Pipe <file> to "<command> [<arg>]..." and replace <file> if the output is
+#   different
+# - Run "<command> [<arg>]..." and replace <file> if the output is different
+function replace_json() {
+    { [[ -w ${df_temp-} ]] || df_temp=$(mktemp); } &&
+        { [[ -w ${df_temp2-} ]] || df_temp2=$(mktemp); } ||
+        die "error creating temporary files"
+
+    local sudo
+    [[ $1 == --sudo ]] && sudo= && shift || unset sudo
+
+    local file=$1 input
+    shift
+    [[ ${1-} == - ]] && shift || input=${1:+$file}
+
+    "${@-jq_safe}" <"${input:-/dev/stdin}" >"$df_temp" || die "command failed in $FUNCNAME:$(printf ' %q' "${@-jq_safe}")"
+
+    if [[ -s $file ]]; then
+        jq_safe <"$file" >"$df_temp2" || die "error reading file: $file"
+        ! diff -- "$df_temp2" "$df_temp" || return 0
+        echo " -> Replacing: $file"
+    elif [[ -f $file ]]; then
+        echo " -> Replacing (empty): $file"
+    else
+        echo " -> Creating: $file"
+    fi
+
+    maybe ${sudo+sudo} cp -- "$df_temp" "$file" || die "error replacing file: $file"
 }
 
 # backup_file [--sudo] <file>
