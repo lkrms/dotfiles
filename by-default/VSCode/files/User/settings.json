@@ -635,7 +635,6 @@
     "workbench.editor.empty.hint": "hidden",
     "workbench.editor.highlightModifiedTabs": true,
     "workbench.editor.revealIfOpen": true,
-    "workbench.editor.untitled.hint": "hidden",
     "workbench.enableExperiments": false,
     "workbench.iconTheme": "Monokai Pro (Filter Machine) Icons",
     "workbench.preferredDarkColorTheme": "Monokai Pro (Filter Machine)",
