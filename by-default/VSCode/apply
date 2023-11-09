@@ -16,6 +16,21 @@ if php=$(find_first php74-xdebug); then
     link_file "$php" ~/.local/bin/php74-xdebug
 fi
 
+if [[ $df_platform == linux ]]; then
+    file=/opt/vscodium-bin/resources/app/product.json
+    if [[ -f $file ]]; then
+        replace_json --sudo "$file" jq_safe '
+.nameLong = "Visual Studio Code" |
+.extensionsGallery = {
+    "serviceUrl": "https://marketplace.visualstudio.com/_apis/public/gallery",
+    "cacheUrl": "https://vscode.blob.core.windows.net/gallery/index",
+    "itemUrl": "https://marketplace.visualstudio.com/items",
+    "controlUrl": "",
+    "recommendationsUrl": ""
+}'
+    fi
+fi
+
 if [[ $df_platform == macos ]]; then
     shopt -s nullglob
     versions=({/usr/local,/opt/homebrew}/opt/php@*)
