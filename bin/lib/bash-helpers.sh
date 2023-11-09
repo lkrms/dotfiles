@@ -123,7 +123,7 @@ function link_file() {
 function replace_file() {
     [[ -w ${df_temp-} ]] || df_temp=$(mktemp) || die "error creating temporary file"
 
-    local sudo
+    local IFS=$' \t\n' sudo
     [[ $1 == --sudo ]] && sudo= && shift || unset sudo
 
     local file=$1 input
@@ -137,6 +137,7 @@ function replace_file() {
         echo " -> Replacing: $file"
     else
         echo " -> Creating: $file"
+        maybe ${sudo+sudo}${sudo-command -p} install -Dm 0644 -- /dev/null "$file" || die "error creating file: $dir"
     fi
 
     maybe ${sudo+sudo} cp -- "$df_temp" "$file" || die "error replacing file: $file"
