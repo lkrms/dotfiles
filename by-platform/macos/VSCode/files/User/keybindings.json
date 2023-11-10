@@ -244,6 +244,16 @@
         "when": "editorTextFocus && !editorReadonly && !editorTabMovesFocus && !hasOtherSuggestions && !hasSnippetCompletions && !inSnippetMode && !suggestWidgetVisible && editorLangId == 'markdown'"
     },
     {
+        "key": "down",
+        "command": "multiCommand.previewOnDownArrow",
+        "when": "filesExplorerFocus && foldersViewVisible && !explorerResourceIsRoot && !inputFocus"
+    },
+    {
+        "key": "up",
+        "command": "multiCommand.previewOnUpArrow",
+        "when": "filesExplorerFocus && foldersViewVisible && !explorerResourceIsRoot && !inputFocus"
+    },
+    {
         "key": "shift+cmd+o",
         "command": "outline.focus",
         "when": "focusedView != 'outline'"

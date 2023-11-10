@@ -6,6 +6,7 @@ monokai.theme-monokai-pro-vscode
 pdconsec.vscode-print
 rebornix.toggle
 ryu1kn.partial-diff
+ryuta46.multi-command
 spadin.memento-inputs
 
 # Generate/sort/manipulate text

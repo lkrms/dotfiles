@@ -529,6 +529,22 @@
     "markdown.preview.typographer": true,
     "markdown.updateLinksOnFileMove.enabled": "prompt",
     "markdown.validate.enabled": true,
+    "multiCommand.commands": [
+        {
+            "command": "multiCommand.previewOnDownArrow",
+            "sequence": [
+                "list.focusDown",
+                "filesExplorer.openFilePreserveFocus"
+            ]
+        },
+        {
+            "command": "multiCommand.previewOnUpArrow",
+            "sequence": [
+                "list.focusUp",
+                "filesExplorer.openFilePreserveFocus"
+            ]
+        }
+    ],
     "outline.collapseItems": "alwaysCollapse",
     "partialDiff.enableTelemetry": false,
     "perltidy.additionalArguments": [

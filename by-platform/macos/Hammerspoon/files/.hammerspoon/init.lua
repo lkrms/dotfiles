@@ -132,10 +132,14 @@ _groups = {
         ["KeePassXC"] = {},
     },
     dev = {
+        criteria = {
+            event = wf.windowCreated,
+        },
         ["com.microsoft.VSCode"] = {},
         ["com.sublimemerge"] = {},
         ["org.jkiss.dbeaver.core.product"] = {
             criteria = {
+                event = wf.windowCreated,
                 function(ev)
                     return string.find(ev.windowTitle, "^DBeaver .+") ~= nil
                 end
@@ -146,8 +150,11 @@ _groups = {
 
 _apps = {}
 for group, apps in pairs(_groups) do
+    local criteria = apps["criteria"]
     for app, settings in pairs(apps) do
-        _apps[app] = extend(settings, {group = group})
+        if app ~= "criteria" then
+            _apps[app] = extend(extend({criteria = criteria}, settings), {group = group})
+        end
     end
 end
 logger.d("_apps = " .. hs.inspect.inspect(_apps))
@@ -889,12 +896,12 @@ function toZone(zone)
 end
 
 _zoneKeys = {
-    f13 = _zone.topLeft,
-    f14 = _zone.topCentre,
-    f15 = _zone.topRight,
-    help = _zone.left,
-    home = _zone.centre,
-    pageup = _zone.right,
+    help = _zone.topLeft,
+    home = _zone.topCentre,
+    pageup = _zone.topRight,
+    f13 = _zone.left,
+    f14 = _zone.centre,
+    f15 = _zone.right,
     forwarddelete = _zone.bottomLeft,
     ["end"] = _zone.bottomCentre,
     pagedown = _zone.bottomRight,

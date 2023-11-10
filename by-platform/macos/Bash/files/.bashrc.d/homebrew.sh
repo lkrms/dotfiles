@@ -19,6 +19,12 @@ _ibrew() {
 }
 complete -o bashdefault -o default -F _ibrew ibrew
 
+function brew-built-from-source() {
+    brew info --json=v2 --installed |
+        jq -r '.formulae[] | . as $formula |
+    .installed[] | select(.built_as_bottle | not) | $formula.full_name'
+}
+
 function brew-mark-as-dependency() {
     [[ -f ${1-} ]] ||
         lk_usage "Usage: $FUNCNAME <INSTALL_RECEIPT>" || return
