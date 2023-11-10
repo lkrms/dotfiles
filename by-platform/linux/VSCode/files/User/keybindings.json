@@ -196,6 +196,11 @@
         "when": "!inDebugMode && activeViewlet == 'workbench.view.debug' && debugConfigurationType == 'node' || !inDebugMode && activeViewlet == 'workbench.view.debug' && debugConfigurationType == 'pwa-extensionHost' || !inDebugMode && activeViewlet == 'workbench.view.debug' && debugConfigurationType == 'pwa-node'"
     },
     {
+        "key": "ctrl+shift+t",
+        "command": "-extension.toggleHEX",
+        "when": "editorTextFocus"
+    },
+    {
         "key": "ctrl+shift+g",
         "command": "git.openChange",
         "when": "editorTextFocus && !isInDiffEditor"
