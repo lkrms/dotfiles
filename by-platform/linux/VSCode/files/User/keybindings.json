@@ -249,6 +249,16 @@
         "when": "editorLangId == 'markdown'"
     },
     {
+        "key": "down",
+        "command": "multiCommand.previewOnDownArrow",
+        "when": "filesExplorerFocus && foldersViewVisible && !explorerResourceIsRoot && !inputFocus"
+    },
+    {
+        "key": "up",
+        "command": "multiCommand.previewOnUpArrow",
+        "when": "filesExplorerFocus && foldersViewVisible && !explorerResourceIsRoot && !inputFocus"
+    },
+    {
         "key": "ctrl+shift+o",
         "command": "outline.focus",
         "when": "focusedView != 'outline'"
