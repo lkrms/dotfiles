@@ -256,7 +256,7 @@
     {
         "key": "shift+cmd+o",
         "command": "outline.focus",
-        "when": "focusedView != 'outline'"
+        "when": "!auxiliaryBarFocus"
     },
     {
         "key": "f11",
@@ -274,10 +274,6 @@
         "when": "editorTextFocus && !editorReadonly && editorLangId == 'sql'"
     },
     {
-        "key": "shift+alt+q",
-        "command": "prettier-sql-vscode.format-selection"
-    },
-    {
         "command": "-sortLines.sortLines",
         "key": "f9",
         "when": "editorTextFocus"
@@ -291,6 +287,10 @@
         "command": "sortLines.sortLinesNatural",
         "key": "f9",
         "when": "editorTextFocus && editorHasSelection && !inDebugMode"
+    },
+    {
+        "key": "shift+alt+q",
+        "command": "sql-formatter-vscode.format-selection"
     },
     {
         "key": "cmd+u",
@@ -595,6 +595,10 @@
         "key": "shift+cmd+o"
     },
     {
+        "key": "ctrl+shift+cmd+i",
+        "command": "workbench.action.inspectContextKeys"
+    },
+    {
         "key": "shift+alt+cmd+o",
         "command": "workbench.action.maximizeEditor"
     },
@@ -717,7 +721,7 @@
     {
         "key": "shift+cmd+o",
         "command": "workbench.action.toggleAuxiliaryBar",
-        "when": "focusedView == 'outline'"
+        "when": "auxiliaryBarFocus"
     },
     {
         "key": "ctrl+alt+d",

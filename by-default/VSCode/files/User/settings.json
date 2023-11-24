@@ -60,7 +60,8 @@
         "editor.autoClosingBrackets": "languageDefined",
         "editor.defaultFormatter": "lkrms.pretty-php",
         "editor.formatOnSave": true,
-        "editor.comments.insertSpace": true
+        "editor.comments.insertSpace": true,
+        "editor.tabSize": 4
     },
     "[properties]": {
         "editor.defaultFormatter": "lkrms.inifmt"
@@ -73,7 +74,7 @@
     },
     "[sql]": {
         "editor.comments.insertSpace": true,
-        "editor.defaultFormatter": "inferrinizzard.prettier-sql-vscode",
+        "editor.defaultFormatter": "ReneSaarsoo.sql-formatter-vsc",
         "editor.detectIndentation": false,
         "editor.insertSpaces": true,
         "editor.tabSize": 2
@@ -558,11 +559,7 @@
     "powershell.codeFormatting.trimWhitespaceAroundPipe": true,
     "powershell.scriptAnalysis.settingsPath": "",
     "powershell.startAutomatically": false,
-    "Prettier-SQL.ignoreTabSettings": true,
-    "Prettier-SQL.keywordCase": "upper",
-    "Prettier-SQL.linesBetweenQueries": 0,
-    "Prettier-SQL.SQLFlavourOverride": "sqlite",
-    "prettier.proseWrap": "always",
+    "prettier.proseWrap": "never",
     "python.experiments.enabled": false,
     "redhat.telemetry.enabled": false,
     "regex-previewer.enableCodeLens": false,
@@ -586,6 +583,9 @@
     "search.followSymlinks": false,
     "security.workspace.trust.enabled": false,
     "shellformat.flag": "-s",
+    "SQL-Formatter-VSCode.ignoreTabSettings": true,
+    "SQL-Formatter-VSCode.keywordCase": "upper",
+    "SQL-Formatter-VSCode.SQLFlavourOverride": "sqlite",
     "standard.engine": "ts-standard",
     "telemetry.telemetryLevel": "off",
     "terminal.external.osxExec": "iTerm.app",

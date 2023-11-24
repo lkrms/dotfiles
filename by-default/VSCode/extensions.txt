@@ -68,7 +68,7 @@ mads-hartmann.bash-ide-vscode
 
 ## SQL
 
-inferrinizzard.prettier-sql-vscode
+ReneSaarsoo.sql-formatter-vsc
 TaoKlerks.poor-mans-t-sql-formatter-vscode
 
 ## Various
