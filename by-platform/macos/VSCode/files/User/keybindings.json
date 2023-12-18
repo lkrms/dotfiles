@@ -185,6 +185,10 @@
         "when": "editorTextFocus"
     },
     {
+        "command": "editor.action.transformToCamelcase",
+        "key": "cmd+k l"
+    },
+    {
         "command": "editor.action.transformToLowercase",
         "key": "cmd+k cmd+l"
     },
@@ -272,6 +276,11 @@
         "key": "shift+alt+cmd+f",
         "command": "poor-mans-t-sql-formatter.formatSql",
         "when": "editorTextFocus && !editorReadonly && editorLangId == 'sql'"
+    },
+    {
+        "command": "refactorPreview.discard",
+        "key": "escape",
+        "when": "refactorPreview.enabled && focusedView == 'refactorPreview'"
     },
     {
         "command": "-sortLines.sortLines",

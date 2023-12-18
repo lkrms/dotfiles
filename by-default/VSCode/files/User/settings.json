@@ -207,7 +207,7 @@
             ]
         }
     },
-    "editor.wordBasedSuggestions": false,
+    "editor.wordBasedSuggestions": "off",
     "emmet.excludeLanguages": [
         "markdown",
         "php"
@@ -567,6 +567,7 @@
     "rest-client.previewOption": "exchange",
     "scm.diffDecorationsIgnoreTrimWhitespace": "true",
     "search.exclude": {
+        "**/*-lock.json": true,
         "**/*.code-search": true,
         "**/*.lock": true,
         "**/*.log": true,
@@ -574,6 +575,7 @@
         "**/*.phar": true,
         "**/bower_components": true,
         "**/build": true,
+        "**/CHANGELOG.md": true,
         "**/log": true,
         "**/node_modules": true,
         "**/phpstan-baseline.neon": true,
