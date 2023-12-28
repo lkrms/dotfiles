@@ -351,7 +351,6 @@ end
 _rule = {
     {
         criteria = {
-            isMain = true,
             event = {wf.windowCreated, wf.windowFocused},
             function(ev)
                 ev.place = getPlace(ev)

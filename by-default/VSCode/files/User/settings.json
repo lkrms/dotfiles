@@ -583,6 +583,7 @@
         "**/vendor": true
     },
     "search.followSymlinks": false,
+    "security.promptForLocalFileProtocolHandling": false,
     "security.workspace.trust.enabled": false,
     "shellformat.flag": "-s",
     "SQL-Formatter-VSCode.ignoreTabSettings": true,
