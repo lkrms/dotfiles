@@ -152,7 +152,8 @@
     },
     {
         "key": "shift+f8",
-        "command": "editor.action.marker.prev"
+        "command": "editor.action.marker.prev",
+        "when": "editorFocus"
     },
     {
         "key": "shift+f8",
@@ -655,12 +656,6 @@
     {
         "command": "-workbench.action.tasks.build",
         "key": "shift+cmd+b"
-    },
-    {
-        "args": "Pretty PHP",
-        "command": "workbench.action.tasks.runTask",
-        "key": "shift+alt+cmd+f",
-        "when": "editorTextFocus && !editorReadonly && editorLangId == 'php'"
     },
     {
         "key": "alt+backspace",
