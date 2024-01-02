@@ -30,6 +30,15 @@ function set_app_roots() {
     )
 }
 
+function set_local_argv() {
+    [[ -z ${df_local_argv+1} ]] || return 0
+    [[ -n ${df_argv+1} ]] || return
+    [[ -n ${local_app_roots+1} ]] || set_local_app_roots
+    local IFS=$'\n' app=${df_argv##*/}
+    df_local_argv=($(printf '%s\n' "${df_argv[@]}" |
+        grep -Ff <(printf '%s\n' "${local_app_roots[@]/%//$app}")))
+}
+
 # find_first_by_app <appname> <path>
 #
 # Find the most applicable instance of <path> in the dotfiles for <appname>.
@@ -201,10 +210,10 @@ function backup_file() {
 # Find the most applicable instance of <path> in the <appname> directories
 # passed to the script.
 function find_first() {
-    [[ -n ${df_argv+1} ]] || return
+    [[ -n ${df_local_argv+1} ]] || set_local_argv || return
     local IFS=$'\n'
     (shopt -s extglob nullglob &&
-        printf '%s\n' $(IFS=$' \t\n' && printf '%q!(?)\n' "${df_argv[@]/%//$1}") | head -n1 | grep .)
+        printf '%s\n' $(IFS=$' \t\n' && printf '%q!(?)\n' "${df_local_argv[@]/%//$1}") | head -n1 | grep .)
 }
 
 # with_each <glob> <command> [<arg>]...
