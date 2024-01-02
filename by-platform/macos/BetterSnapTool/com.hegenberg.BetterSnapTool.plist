@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>BSTDidAlreadyLaunchOnElCapitan</key>
+	<true/>
+	<key>BSTDidAlreadyLaunchOnce</key>
+	<true/>
 	<key>cycle_lrm</key>
 	<false/>
 	<key>launchOnStartup</key>
@@ -178,6 +182,6 @@
 		</dict>
 	</dict>
 	<key>showMenubarIcon</key>
-	<true/>
+	<false/>
 </dict>
 </plist>

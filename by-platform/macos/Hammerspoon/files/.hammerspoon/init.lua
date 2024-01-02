@@ -223,7 +223,7 @@ function toPlace(place, ev, force)
     local p = normalisePlace(place, ev)
     if p.display ~= nil and p.display ~= ev.display then
         logger.d("Moving " .. ev.appName .. " to display " .. p.display .. maybeReportEv(ev))
-        ev.window:moveToScreen(_screen[p.display])
+        maybeWithAXEnhancedUserInterfaceDisabled(ev.window, function() ev.window:moveToScreen(_screen[p.display]) end)
     end
     local x, y = table.unpack(p.xy)
     local w, h = table.unpack(p.wh)
@@ -272,7 +272,7 @@ function toPlace(place, ev, force)
     do return end
     ::move::
     logger.i("Moving " .. ev.appName .. " to " .. hs.inspect.inspect(rect) .. maybeReportEv(ev))
-    ev.window:moveToUnit(rect)
+    maybeWithAXEnhancedUserInterfaceDisabled(ev.window, function() ev.window:moveToUnit(rect) end)
 end
 
 function getPlace(ev)
@@ -493,6 +493,18 @@ function processEvent(window, appName, event)
             end
         end
     end
+end
+
+-- See: https://github.com/Hammerspoon/hammerspoon/issues/3224#issuecomment-1294359070
+function maybeWithAXEnhancedUserInterfaceDisabled(window, callback)
+    local appElement = hs.axuielement.applicationElement(window:application())
+    if not appElement.AXEnhancedUserInterface then
+        callback()
+        return
+    end
+    appElement.AXEnhancedUserInterface = false
+    callback()
+    appElement.AXEnhancedUserInterface = true
 end
 
 function initWindowFilter()
