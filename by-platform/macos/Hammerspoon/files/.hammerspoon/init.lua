@@ -6,6 +6,7 @@ hs.window.animationDuration = 0
 
 defaultGrid = {6, 2}
 showScreenLayoutChangeNotification = false
+reportEv = false
 
 function extend(copyTable, updateTable)
     local copy = hs.fnutils.copy(copyTable)
@@ -221,7 +222,7 @@ end
 function toPlace(place, ev, force)
     local p = normalisePlace(place, ev)
     if p.display ~= nil and p.display ~= ev.display then
-        logger.d("Moving " .. ev.appName .. " to display " .. p.display)
+        logger.d("Moving " .. ev.appName .. " to display " .. p.display .. maybeReportEv(ev))
         ev.window:moveToScreen(_screen[p.display])
     end
     local x, y = table.unpack(p.xy)
@@ -259,7 +260,7 @@ function toPlace(place, ev, force)
         -- If the window falls within 1 pixel of alignment with the grid or a
         -- split display boundary, it has probably been placed here deliberately
         if ((_x < 2 and _y < 2) and (_w < 2 and _h < 2)) or ((_gx < 2 and _gy < 2) and (_gw < 2 and _gh < 2)) then
-            logger.i("Already aligned: " .. ev.appName)
+            logger.i("Already aligned: " .. ev.appName .. maybeReportEv(ev))
             do return end
         end
     end
@@ -270,7 +271,7 @@ function toPlace(place, ev, force)
     end
     do return end
     ::move::
-    logger.i("Moving " .. ev.appName .. " to " .. hs.inspect.inspect(rect))
+    logger.i("Moving " .. ev.appName .. " to " .. hs.inspect.inspect(rect) .. maybeReportEv(ev))
     ev.window:moveToUnit(rect)
 end
 
@@ -348,10 +349,18 @@ function getZone(zone, ev)
     end
 end
 
+function maybeReportEv(ev)
+    if reportEv then
+        return " on ev " .. hs.inspect.inspect(ev)
+    end
+    return ""
+end
+
 _rule = {
     {
         criteria = {
             event = {wf.windowCreated, wf.windowFocused},
+            isStandard = true,
             function(ev)
                 ev.place = getPlace(ev)
                 return ev.place ~= nil
