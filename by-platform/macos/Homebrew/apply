@@ -4,9 +4,16 @@
 
 brew=$(type -P brew 2>/dev/null) || exit 0
 
+if [[ ! $MACHTYPE =~ ^(arm|aarch)64- ]] &&
+    [[ ! -e /opt/homebrew ]] &&
+    [[ $(sysctl -n sysctl.proc_translated 2>/dev/null) != 1 ]]; then
+    echo "Creating symbolic link: /opt/homebrew -> /usr/local"
+    maybe sudo ln -s /usr/local /opt/homebrew
+fi
+
 if brewfile=$(find_first Brewfile) ||
     brewfile=$(find_first Brewfile-arm64); then
-    maybe brew bundle install --file "$brewfile" --no-lock
+    maybe brew bundle install --file "$brewfile" --no-lock --no-upgrade
 fi
 
 if ! brewfile=$(find_first Brewfile-x86_64) ||
@@ -19,4 +26,4 @@ PATH=$(printf '%s:' "$PATH" |
     awk -vRS=':' '
 /^\/opt\/homebrew(\/|$)/ { next } ! i++ { printf "%s", $0; next } { printf ":%s", $0 }')
 
-maybe arch -x86_64 /usr/local/bin/brew bundle install --file "$brewfile" --no-lock
+maybe arch -x86_64 /usr/local/bin/brew bundle install --file "$brewfile" --no-lock --no-upgrade

@@ -36,3 +36,4 @@ function brew-mark-as-dependency() {
 }
 
 export HOMEBREW_ACCEPT_EULA=Y
+export HOMEBREW_CASK_OPTS="--no-quarantine"
