@@ -33,7 +33,9 @@ fi
 
 if [[ $df_platform == macos ]]; then
     shopt -s nullglob
-    versions=({/usr/local,/opt/homebrew}/opt/php@*)
+    versions=(/usr/local/opt/php@*)
+    [[ /usr/local -ef /opt/homebrew ]] ||
+        versions+=(/opt/homebrew/opt/php@*)
     for version in ${versions+"${versions[@]}"}; do
         [[ -x $version/bin/php ]] || continue
         ver=${version#*/php@}
