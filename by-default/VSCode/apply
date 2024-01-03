@@ -39,8 +39,16 @@ if [[ $df_platform == macos ]]; then
     for version in ${versions+"${versions[@]}"}; do
         [[ -x $version/bin/php ]] || continue
         ver=${version#*/php@}
-        ver=${ver//./}
-        link_file "$version/bin/php" ~/".local/bin/php$ver"
+        link_file "$version/bin/php" ~/".local/bin/php${ver//./}"
+        inidir=${version%/*/*}/etc/php/$ver
+        [[ -d $inidir ]] || continue
+        ini=$inidir/php.ini
+        [[ -f $ini ]] || continue
+        inicli=$inidir/php-cli.ini
+        if [[ ! -f $inicli ]]; then
+            cp -v "$ini" "$inicli"
+        fi
+        replace_file "$inicli" sed -E 's/^[[:blank:]]*;*[[:blank:]]*memory_limit[[:blank:]]*=.*/memory_limit = -1/'
     done
 fi
 
