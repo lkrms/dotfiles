@@ -96,12 +96,15 @@ function link_file() {
         fi
     done
 
+    local friendly_source=${source#"$df_root"}
+    [[ $friendly_source == "$source" ]] ||
+        friendly_source=$friendly_df_root$friendly_source
     if [[ -e ${target%/*} ]] &&
         [[ ${target%/*} != "$(realpath "${target%/*}")" ]]; then
-        die "nested link is not permitted: $target -> $friendly_df_root${source#"$df_root"}"
+        die "nested link is not permitted: $target -> $friendly_source"
     fi
 
-    echo " -> Creating ${ln_s:+symbolic }link: $target -> $friendly_df_root${source#"$df_root"}"
+    echo " -> Creating ${ln_s:+symbolic }link: $target -> $friendly_source"
     if [[ -L $target ]]; then
         maybe ${sudo+sudo} rm -- "$target" || die "error removing existing symlink: $target"
     fi
