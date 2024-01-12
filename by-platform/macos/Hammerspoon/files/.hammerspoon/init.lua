@@ -858,7 +858,7 @@ hs.hotkey.bind(
     {"ctrl", "cmd"},
     "v",
     function()
-        run("/opt/homebrew/bin/virt-manager", true)
+        run("/opt/homebrew/bin/virt-manager --no-fork", true)
     end
 )
 
