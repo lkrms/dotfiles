@@ -653,6 +653,7 @@
     "workbench.editor.closeEmptyGroups": false,
     "workbench.editor.empty.hint": "hidden",
     "workbench.editor.highlightModifiedTabs": true,
+    "workbench.editor.restoreViewState": false,
     "workbench.editor.revealIfOpen": true,
     "workbench.enableExperiments": false,
     "workbench.iconTheme": "Monokai Pro (Filter Machine) Icons",
