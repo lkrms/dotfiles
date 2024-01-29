@@ -547,7 +547,17 @@
         "when": "editorTextFocus && !textCompareEditorActive"
     },
     {
+        "key": "ctrl+f12",
+        "command": "workbench.action.editor.nextChange",
+        "when": "editorTextFocus && !textCompareEditorActive"
+    },
+    {
         "key": "cmd+f11",
+        "command": "workbench.action.editor.previousChange",
+        "when": "editorTextFocus && !textCompareEditorActive"
+    },
+    {
+        "key": "ctrl+f11",
         "command": "workbench.action.editor.previousChange",
         "when": "editorTextFocus && !textCompareEditorActive"
     },
@@ -662,7 +672,7 @@
     {
         "key": "ctrl+cmd+f5",
         "command": "workbench.action.reloadWindow",
-        "when": "isDevelopment && !isAuxiliaryWindowFocusedContext"
+        "when": "!isAuxiliaryWindowFocusedContext"
     },
     {
         "command": "workbench.action.selectTheme",
