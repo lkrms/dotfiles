@@ -37,6 +37,7 @@ _app = {
     browser = {
         bundleID = "org.mozilla.firefox",
         commandLine = "{{app}}/Contents/MacOS/firefox --browser",
+        menuItem = {"File", "New Window"},
     },
     textEditor = {
         bundleID = "com.microsoft.VSCode",
@@ -393,7 +394,7 @@ function initScreens()
     _screen = {_screen1}
     for i, screen in pairs(hs.screen.allScreens()) do
         if screen:getUUID() ~= _screen1:getUUID() then
-            _screen2 = _screen2 and _screen2 or screen
+            _screen2 = _screen2 or screen
             _screen[#_screen + 1] = screen
         end
     end
@@ -454,10 +455,19 @@ actionMap = {
 
 function processEvent(window, appName, event)
     logger.d("Event received from " .. appName .. ": " .. event)
+    local app = window:application()
+    if event == wf.windowCreated then
+        if app and _focus_next and _focus_next == app:bundleID() then
+            logger.i("Focusing requested window of " .. _focus_next)
+            window:focus()
+            return
+        end
+        _focus_next = nil
+    end
     if _rule == nil then
         return
     end
-    local screen, app = window:screen(), window:application()
+    local screen = window:screen()
     local ev = {
         window = window,
         screen = screen,
@@ -591,8 +601,11 @@ function openNewWindow(rules)
     if app and rules.menuItem then
         if app:mainWindow() or app:activate() then
             logger.d("Calling selectMenuItem(" .. hs.inspect.inspect(rules.menuItem) .. ") on " .. app:bundleID())
+            _focus_next = rules.bundleID
             if app:selectMenuItem(rules.menuItem) then
                 return
+            else
+                _focus_next = nil
             end
         end
     end
