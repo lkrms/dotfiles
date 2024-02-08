@@ -270,6 +270,12 @@
     "git.ignoreLimitWarning": true,
     "git.mergeEditor": false,
     "git.openRepositoryInParentFolders": "never",
+    "github.copilot.enable": {
+        "*": true,
+        "plaintext": false,
+        "markdown": false,
+        "scminput": false
+    },
     "githubIssues.queries": [
         {
             "label": "My Issues",

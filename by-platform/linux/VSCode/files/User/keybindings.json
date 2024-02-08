@@ -246,6 +246,10 @@
         "when": "editorHasSelection && editorTextFocus"
     },
     {
+        "key": "ctrl+meta+/",
+        "command": "github.copilot.toggleCopilot"
+    },
+    {
         "key": "ctrl+alt+v",
         "command": "gitlens.copyShaToClipboard"
     },
