@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+function to_lower() {
+    sed 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'
+}
+
 function set_local_app_roots() {
     [[ -z ${local_app_roots+1} ]] || return 0
     local IFS=$'\n' host
