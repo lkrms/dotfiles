@@ -1,7 +1,9 @@
 # Improve VS Code
 
 bierner.markdown-preview-github-styles
-GitHub.github-vscode-theme
+github.copilot
+github.copilot-chat
+github.github-vscode-theme
 monokai.theme-monokai-pro-vscode
 pdconsec.vscode-print
 rebornix.toggle
@@ -21,8 +23,8 @@ mitchdenny.ecdc
 pustelto.bracketeer
 shardulm94.trailing-spaces
 stkb.rewrap
-Tyriar.lorem-ipsum
-Tyriar.sort-lines
+tyriar.lorem-ipsum
+tyriar.sort-lines
 wmaurer.change-case
 
 # Integrate with other software/services
@@ -32,7 +34,7 @@ eamodio.gitlens
 fabiospampinato.vscode-open-in-github
 giovdk21.vscode-sublime-merge
 github.vscode-github-actions
-GitHub.vscode-pull-request-github
+github.vscode-pull-request-github
 ms-azuretools.vscode-azurefunctions
 ms-azuretools.vscode-azureresourcegroups
 ms-azuretools.vscode-docker
@@ -52,6 +54,7 @@ xdebug.php-debug
 
 ms-python.autopep8
 ms-python.black-formatter
+ms-python.debugpy
 ms-python.isort
 ms-python.python
 ms-python.vscode-pylance
@@ -68,8 +71,8 @@ mads-hartmann.bash-ide-vscode
 
 ## SQL
 
-ReneSaarsoo.sql-formatter-vsc
-TaoKlerks.poor-mans-t-sql-formatter-vscode
+renesaarsoo.sql-formatter-vsc
+taoklerks.poor-mans-t-sql-formatter-vscode
 
 ## Various
 
@@ -78,12 +81,12 @@ beaglefoot.awk-ide-vscode
 chrmarti.regex
 daohong-emilio.yash
 esbenp.prettier-vscode
-HookyQR.beautify
+hookyqr.beautify
 humao.rest-client
 idleberg.applescript
 jq-syntax-highlighting.jq-syntax-highlighting
-Kasik96.latte
-LoranKloeze.ruby-rubocop-revived
+kasik96.latte
+lorankloeze.ruby-rubocop-revived
 maelvalais.autoconf
 mrmlnc.vscode-apache
 ms-vscode-remote.remote-ssh-edit
