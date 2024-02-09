@@ -132,7 +132,10 @@ trap 'rm -f ${files+"${files[@]}"}' EXIT
             { ((!offline)) || exit 0; } &&
             { git fetch --all --prune --tags || exit $((1 + $?)); }) >"${files[i]}" 2>&1 &
         pids[i]=$!
-    done < <(find ~/.dotfiles!(?) ~/Code/!(3rdparty|vendor) -type d -exec test -d '{}/.git' \; -prune -print0 | sort -z)
+    done < <(find ~/.dotfiles!(?) ~/Code/!(3rdparty|vendor) \
+        -type d -exec test -d '{}/.git' \; -prune \
+        ! -exec test -f '{}/.git/skip-audit' \; \
+        -print0 | sort -z)
     count=$((i + 1))
 
     ((offline)) ||
@@ -154,7 +157,7 @@ trap 'rm -f ${files+"${files[@]}"}' EXIT
         }
 
         branches=($(git for-each-ref --format="%(refname:short)" refs/heads | grep .)) ||
-            no_branches[i]=${#branches[@]}
+            no_branches[i]=
         current_branch=$(git rev-parse --verify --abbrev-ref HEAD 2>/dev/null) &&
             [[ $current_branch != HEAD ]] ||
             if [[ $current_branch == HEAD ]]; then
