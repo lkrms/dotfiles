@@ -22,6 +22,9 @@
     "[ignore]": {
         "editor.defaultFormatter": "lkrms.inifmt"
     },
+    "[ini]": {
+        "editor.defaultFormatter": "lkrms.inifmt"
+    },
     "[javascript]": {
         "editor.defaultFormatter": "vscode.typescript-language-features"
     },
@@ -62,6 +65,9 @@
         "editor.formatOnSave": true,
         "editor.comments.insertSpace": true,
         "editor.tabSize": 4
+    },
+    "[plaintext]": {
+        "editor.defaultFormatter": "lkrms.inifmt"
     },
     "[properties]": {
         "editor.defaultFormatter": "lkrms.inifmt"
