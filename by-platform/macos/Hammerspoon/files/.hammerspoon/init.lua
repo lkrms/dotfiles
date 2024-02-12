@@ -105,7 +105,13 @@ _groups = {
                 end
             },
         },
-        ["Calendar"] = {},
+        ["Calendar"] = {
+            criteria = {
+                function(ev)
+                    return ev.windowTitle ~= ""
+                end
+            },
+        },
     },
     teams = {
         ["Microsoft Teams"] = {},
