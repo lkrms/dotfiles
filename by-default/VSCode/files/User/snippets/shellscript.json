@@ -1,27 +1,23 @@
 {
 	"array: elements": {
-		"scope": "shellscript",
 		"prefix": "array",
 		"body": [
 			"\\${${1:array_var}[@]+\"\\${${1:array_var}[@]}\"}"
 		]
 	},
 	"array: empty?": {
-		"scope": "shellscript",
 		"prefix": "arrayempty",
 		"body": [
 			"[ \\${#${1:array_var}[@]} -eq 0 ] "
 		]
 	},
 	"array: not empty?": {
-		"scope": "shellscript",
 		"prefix": "arraynotempty",
 		"body": [
 			"[ \\${#${1:array_var}[@]} -gt 0 ] "
 		]
 	},
 	"array: for each element": {
-		"scope": "shellscript",
 		"prefix": "foreach",
 		"body": [
 			"for ${1:var} in \\${${2:array_var}[@]+\"\\${${2:array_var}[@]}\"}; do",
@@ -30,7 +26,6 @@
 		]
 	},
 	"arg: flag": {
-		"scope": "shellscript",
 		"prefix": "arg",
 		"body": [
 			"local FLAG",
@@ -38,7 +33,6 @@
 		]
 	},
 	"arg: value": {
-		"scope": "shellscript",
 		"prefix": "arg2",
 		"body": [
 			"local VALUE",
@@ -46,7 +40,6 @@
 		]
 	},
 	"arg: getopts": {
-		"scope": "shellscript",
 		"prefix": "getopts",
 		"body": [
 			"local OPTIND OPTARG OPT LK_USAGE FLAG VALUE",
@@ -70,7 +63,6 @@
 		]
 	},
 	"shellcheck disable": {
-		"scope": "shellscript",
 		"prefix": "shellcheckdisable",
 		"body": [
 			"# shellcheck disable="

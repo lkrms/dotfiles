@@ -4,8 +4,8 @@
 
 type -P code >/dev/null || exit 0
 
-if code=$(find_first code); then
-    link_file "$code" ~/.local/bin/code
+if [[ -L ~/.local/bin/code ]]; then
+    maybe rm -fv ~/.local/bin/code
 fi
 
 if php=$(find_first php-xdebug); then
@@ -46,7 +46,7 @@ if [[ $df_platform == macos ]]; then
         [[ -f $ini ]] || continue
         inicli=$inidir/php-cli.ini
         if [[ ! -f $inicli ]]; then
-            cp -v "$ini" "$inicli"
+            maybe cp -v "$ini" "$inicli"
         fi
         replace_file "$inicli" sed -E 's/^[[:blank:]]*;*[[:blank:]]*memory_limit[[:blank:]]*=.*/memory_limit = -1/'
     done
