@@ -308,6 +308,10 @@
         "command": "sql-formatter-vscode.format-selection"
     },
     {
+        "key": "alt+cmd+/",
+        "command": "surround.with.phpunitIgnore"
+    },
+    {
         "key": "cmd+u",
         "command": "-thunder-client.import-curl"
     },

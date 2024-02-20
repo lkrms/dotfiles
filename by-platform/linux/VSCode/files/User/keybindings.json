@@ -316,6 +316,10 @@
         "command": "sql-formatter-vscode.format-selection"
     },
     {
+        "key": "alt+meta+/",
+        "command": "surround.with.phpunitIgnore"
+    },
+    {
         "key": "alt+a",
         "command": "toggle",
         "when": "editorTextFocus && editorLangId == 'markdown'",

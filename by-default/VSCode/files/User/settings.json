@@ -602,6 +602,15 @@
     "SQL-Formatter-VSCode.keywordCase": "upper",
     "SQL-Formatter-VSCode.SQLFlavourOverride": "sqlite",
     "standard.engine": "ts-standard",
+    "surround.custom": {
+        "phpunitIgnore": {
+            "label": "PHPUnit ignore range",
+            "snippet": "// @codeCoverageIgnoreStart\n$TM_SELECTED_TEXT\n// @codeCoverageIgnoreEnd",
+            "languageIds": [
+                "php"
+            ]
+        }
+    },
     "telemetry.telemetryLevel": "off",
     "terminal.external.osxExec": "iTerm.app",
     "terminal.integrated.copyOnSelection": true,

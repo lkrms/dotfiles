@@ -19,11 +19,13 @@ jrebocho.vscode-random
 lkrms.inifmt
 mitchdenny.ecdc
 pustelto.bracketeer
+qcz.text-power-tools
 shardulm94.trailing-spaces
 stkb.rewrap
 Tyriar.lorem-ipsum
 Tyriar.sort-lines
 wmaurer.change-case
+yatki.vscode-surround
 
 # Integrate with other software/services
 
