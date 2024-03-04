@@ -527,7 +527,7 @@
     {
         "key": "ctrl+w",
         "command": "workbench.action.closeWindow",
-        "when": "!editorIsOpen"
+        "when": "!editorIsOpen && !multipleEditorGroups"
     },
     {
         "command": "workbench.action.compareEditor.nextChange",

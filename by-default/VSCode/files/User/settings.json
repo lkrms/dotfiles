@@ -266,8 +266,8 @@
         "**/wp-content/uploads/**": true
     },
     "files.watcherInclude": [
-        "vendor/lkrms/dice",
-        "vendor/lkrms/util",
+        "vendor/lkrms",
+        "vendor/salient",
         "vendor/pymblelc/sync"
     ],
     "git.confirmSync": true,
@@ -448,6 +448,7 @@
                 },
                 "skipFiles": [
                     "!**/vendor/lkrms/**",
+                    "!**/vendor/salient/**",
                     "**/vendor/**"
                 ]
             },
@@ -474,6 +475,7 @@
                 },
                 "skipFiles": [
                     "!**/vendor/lkrms/**",
+                    "!**/vendor/salient/**",
                     "**/vendor/**"
                 ]
             },
@@ -503,6 +505,7 @@
                 },
                 "skipFiles": [
                     "!**/vendor/lkrms/**",
+                    "!**/vendor/salient/**",
                     "**/vendor/**"
                 ],
                 "args": [
@@ -590,7 +593,7 @@
         "**/CHANGELOG.md": true,
         "**/log": true,
         "**/node_modules": true,
-        "**/phpstan-baseline.neon": true,
+        "**/phpstan-baseline*.neon": true,
         "**/var": true,
         "**/vendor": true
     },
@@ -670,15 +673,15 @@
     "window.newWindowDimensions": "inherit",
     "window.title": "${dirty}${rootName}${separator}${activeEditorShort}${separator}${appName}",
     "window.titleBarStyle": "custom",
-    "workbench.colorTheme": "Monokai Pro (Filter Machine)",
+    "workbench.colorTheme": "Monokai Pro (Filter Octagon)",
     "workbench.editor.closeEmptyGroups": false,
     "workbench.editor.empty.hint": "hidden",
     "workbench.editor.highlightModifiedTabs": true,
     "workbench.editor.restoreViewState": false,
     "workbench.editor.revealIfOpen": true,
     "workbench.enableExperiments": false,
-    "workbench.iconTheme": "Monokai Pro (Filter Machine) Icons",
-    "workbench.preferredDarkColorTheme": "Monokai Pro (Filter Machine)",
+    "workbench.iconTheme": "Monokai Pro (Filter Octagon) Icons",
+    "workbench.preferredDarkColorTheme": "Monokai Pro (Filter Octagon)",
     "workbench.preferredLightColorTheme": "Quiet Light",
     "workbench.settings.editor": "json",
     "workbench.settings.enableNaturalLanguageSearch": false,
