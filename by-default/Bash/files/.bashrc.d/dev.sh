@@ -1,5 +1,28 @@
 #!/usr/bin/env bash
 
+function changelog() {
+  cat <<'EOF'
+### Added
+
+
+### Changed
+
+
+### Deprecated
+
+
+### Removed
+
+
+### Fixed
+
+
+### Security
+
+
+EOF
+}
+
 function git-changelog() {
   if ((!$#)); then
     local latest previous
@@ -7,7 +30,7 @@ function git-changelog() {
       previous=$(git describe --abbrev=0 "${latest}~") || return
     set -- "${previous}..${latest}"
   fi
-
+  changelog || return
   git log \
     --reverse \
     --no-merges \
@@ -21,6 +44,12 @@ i       { print "  " $0; next }
         { print }'
 
   echo "Changelog generated for $*" >&2
+}
+
+function git-changelog-next() {
+  local latest
+  latest=$(git describe --abbrev=0) &&
+    git-changelog "${latest}..HEAD"
 }
 
 http-toolkit-enable() {

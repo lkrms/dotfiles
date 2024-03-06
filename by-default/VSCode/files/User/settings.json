@@ -266,8 +266,8 @@
         "**/wp-content/uploads/**": true
     },
     "files.watcherInclude": [
-        "vendor/lkrms",
-        "vendor/salient",
+        "vendor/lkrms/dice",
+        "vendor/salient/toolkit",
         "vendor/pymblelc/sync"
     ],
     "git.confirmSync": true,
