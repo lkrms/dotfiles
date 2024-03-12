@@ -53,12 +53,15 @@ _zone = {
     left = "left",
     centre = "centre",
     right = "right",
+    right23 = "right23",
     topLeft = "topLeft",
     topCentre = "topCentre",
     topRight = "topRight",
+    topRight23 = "topRight23",
     bottomLeft = "bottomLeft",
     bottomCentre = "bottomCentre",
     bottomRight = "bottomRight",
+    bottomRight23 = "bottomRight23",
 }
 
 _allZones = keys(_zone)
@@ -190,12 +193,15 @@ _layouts = {
             [_zone.left] = {xy = {1, 1}, wh = {10, 2}},
             [_zone.centre] = {xy = {11, 1}, wh = {23, 2}},
             [_zone.right] = {xy = {34, 1}, wh = {10, 2}},
+            [_zone.right23] = {xy = {11, 1}, wh = {33, 2}},
             [_zone.topLeft] = {xy = {1, 1}, wh = {10, 1}},
             [_zone.topCentre] = {xy = {11, 1}, wh = {23, 1}},
             [_zone.topRight] = {xy = {34, 1}, wh = {10, 1}},
+            [_zone.topRight23] = {xy = {11, 1}, wh = {33, 1}},
             [_zone.bottomLeft] = {xy = {1, 2}, wh = {10, 1}},
             [_zone.bottomCentre] = {xy = {11, 2}, wh = {23, 1}},
             [_zone.bottomRight] = {xy = {34, 2}, wh = {10, 1}},
+            [_zone.bottomRight23] = {xy = {11, 2}, wh = {33, 1}},
         },
     },
     ["*"] = {
@@ -937,23 +943,33 @@ end
 _zoneKeys = {
     help = _zone.topLeft,
     home = _zone.topCentre,
-    pageup = _zone.topRight,
+    pageup = {_zone.topRight, _zone.topRight23},
     f13 = _zone.left,
     f14 = _zone.centre,
-    f15 = _zone.right,
+    f15 = {_zone.right, _zone.right23},
     forwarddelete = _zone.bottomLeft,
     ["end"] = _zone.bottomCentre,
-    pagedown = _zone.bottomRight,
+    pagedown = {_zone.bottomRight, _zone.bottomRight23},
 }
 
-for key, zone in pairs(_zoneKeys) do
-    hs.hotkey.bind(
-        {"ctrl", "alt"},
-        key,
-        function()
-            toZone(zone)
-        end
-    )
+_zoneModifiers = {
+    {"ctrl", "alt"},
+    {"ctrl", "alt", "shift"},
+}
+
+for key, zones in pairs(_zoneKeys) do
+    if type(zones) ~= "table" then
+        zones = {zones}
+    end
+    for i, zone in ipairs(zones) do
+        hs.hotkey.bind(
+            _zoneModifiers[i],
+            key,
+            function()
+                toZone(zone)
+            end
+        )
+    end
 end
 
 hs.notify.new(
