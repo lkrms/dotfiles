@@ -27,12 +27,28 @@
 		"prefix": "Creates",
 		"body": "Creates a new ${TM_FILENAME_BASE/[^a-zA-Z0-9]+//g} object"
 	},
+	"PHPStan: assert": {
+		"prefix": "@phpstan",
+		"body": "@phpstan-assert ${1:Type, e.g. !null} $0"
+	},
+	"PHPStan: assert if true": {
+		"prefix": "@phpstan",
+		"body": "@phpstan-assert-if-true ${1:Type, e.g. !null} $0"
+	},
 	"PHPStan: ignore next line": {
 		"prefix": "@phpstan",
 		"body": "@phpstan-ignore-next-line"
 	},
+	"PHPStan: impure method": {
+		"prefix": "@phpstan",
+		"body": "@phpstan-impure"
+	},
+	"PHPStan: require implements": {
+		"prefix": "@phpstan",
+		"body": "@phpstan-require-implements $0"
+	},
 	"PHPStan: dump type": {
-		"prefix": "\\PHPStan\\",
+		"prefix": "dump",
 		"body": "\\PHPStan\\dumpType($0);"
 	}
 }
