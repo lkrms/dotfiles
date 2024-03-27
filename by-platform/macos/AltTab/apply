@@ -18,4 +18,4 @@ plist_set \
     ":showOnScreen" string "0" \
     ":spacesToShow" string "1" \
     ":spacesToShow2" string "1" \
-    ":startAtLogin" string "true"
+    ":startAtLogin" string "false"
