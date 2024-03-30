@@ -649,6 +649,10 @@ function dumpWindows()
     )
 end
 
+function dumpEnv()
+    run("printenv")
+end
+
 initScreens()
 initWindowFilter()
 
