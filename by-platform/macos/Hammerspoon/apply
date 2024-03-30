@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+file=~/Code/lk/lk-platform/bin/lk-bash-load.sh
+if [[ -f $file ]]; then
+    link_file "$file" ~/.local/bin/lk-bash-load.sh
+fi
