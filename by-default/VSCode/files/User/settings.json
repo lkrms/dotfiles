@@ -53,9 +53,6 @@
         "editor.wordWrap": "off",
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
-    "[neon]": {
-        "editor.defaultFormatter": "redhat.vscode-yaml"
-    },
     "[nginx]": {
         "editor.defaultFormatter": "ahmadalli.vscode-nginx-conf"
     },
