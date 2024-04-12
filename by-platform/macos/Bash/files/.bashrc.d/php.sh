@@ -22,18 +22,28 @@ function _pecl() {
     return "$status"
 }
 
-# php-build-all [php[@<ver>]] ...
-function php-build-all() {
-    (($#)) || set -- php
+function _php-with_usage() {
+    cat <<EOF
+Usage: $1 [php[@<ver>]...] [--] <command> [<arg>...]
+EOF
+}
+
+# php-with [php[@<ver>]...] [--] <command> [<arg>...]
+function php-with() {
+    local versions=() command
+    while [[ ${1-} == php ]] || [[ ${1-} == php@* ]]; do
+        versions[${#versions[@]}]=$1
+        shift
+    done
+    [[ ${1-} != -- ]] || shift
+    (($#)) || lk_usage || return
+    command=("$@")
+    set -- "${versions[@]-php}"
     (($# < 2)) || local LK_NO_INPUT=Y
     while (($#)); do
         brew unlink "shivammathur/php/$1" &&
             brew link --overwrite --force "shivammathur/php/$1" || return
-        php-build-xdebug &&
-            php-build-pcov &&
-            php-build-memprof &&
-            php-build-sqlsrv &&
-            php-build-db2 &&
+        "${command[@]}" &&
             { (($# == 1)) && [[ $1 == php ]] && return ||
                 brew unlink "shivammathur/php/$1"; } ||
             return
@@ -43,11 +53,29 @@ function php-build-all() {
         brew link --overwrite --force "shivammathur/php/php"
 }
 
+# php-build-all [php[@<ver>]...]
+function php-build-all() {
+    if (($#)); then
+        php-with "$@" -- "$FUNCNAME"
+        return
+    fi
+    php-build-xdebug &&
+        php-build-pcov &&
+        php-build-memprof &&
+        php-build-sqlsrv &&
+        php-build-db2 ||
+        return
+}
+
 function php-build-xdebug() {
+    if (($#)); then
+        php-with "$@" -- "$FUNCNAME"
+        return
+    fi
     local php_ini php_extension_dir file version=
     lk_tty_print "Building xdebug extension"
     php -r "if (PHP_VERSION_ID < 80000) { exit (1); }" || version=-3.1.6
-    php -r "if (PHP_VERSION_ID >= 80300) { exit (1); }" || version=-3.3.0alpha3
+    #php -r "if (PHP_VERSION_ID >= 80300) { exit (1); }" || version=-3.3.0alpha3
     _pecl install -f "xdebug$version" &&
         file=$php_ini/conf.d/ext-xdebug.ini &&
         lk_install -m 00644 "$file" &&
@@ -57,6 +85,10 @@ EOF
 }
 
 function php-build-pcov() {
+    if (($#)); then
+        php-with "$@" -- "$FUNCNAME"
+        return
+    fi
     local php_ini php_extension_dir file
     lk_tty_print "Building pcov extension"
     _pecl install -f pcov &&
@@ -73,6 +105,10 @@ function php-build-memprof() {
         lk_warn "Apple Silicon not supported" || return
     lk_command_exists pecl ||
         lk_warn "pecl must be installed" || return
+    if (($#)); then
+        php-with "$@" -- "$FUNCNAME"
+        return
+    fi
     brew list judy &>/dev/null ||
         brew install judy || return
     local php_ini php_extension_dir file
@@ -90,6 +126,10 @@ function php-build-sqlsrv() {
         lk_warn "Apple Silicon not supported" || return
     lk_command_exists pecl ||
         lk_warn "pecl must be installed" || return
+    if (($#)); then
+        php-with "$@" -- "$FUNCNAME"
+        return
+    fi
     brew tap | grep -Fx microsoft/mssql-release >/dev/null ||
         brew tap microsoft/mssql-release || return
     brew list msodbcsql18 mssql-tools18 &>/dev/null ||
@@ -113,6 +153,10 @@ function php-build-db2() { {
         lk_warn "Apple Silicon not supported" || return
     lk_command_exists pecl odbcinst ||
         lk_warn "pecl and unixodbc must be installed" || return
+    if (($#)); then
+        php-with "$@" -- "$FUNCNAME"
+        return
+    fi
     local php_ini php_extension_dir file temp _LK_FD=3
     [[ -d /opt/clidriver ]] || {
         lk_tty_print "Installing Db2 clidriver"

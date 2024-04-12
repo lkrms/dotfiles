@@ -1,5 +1,15 @@
 [
     {
+        "key": "cmd+enter",
+        "command": "-acceptRenameInputWithPreview",
+        "when": "config.editor.rename.enablePreview && editorFocus && renameInputVisible && !isComposing"
+    },
+    {
+        "key": "shift+enter",
+        "command": "acceptRenameInputWithPreview",
+        "when": "config.editor.rename.enablePreview && editorFocus && renameInputVisible && !isComposing"
+    },
+    {
         "key": "shift+alt+cmd+i",
         "command": "-bracketeer.removeBrackets"
     },
@@ -282,6 +292,16 @@
         "key": "shift+alt+cmd+f",
         "command": "poor-mans-t-sql-formatter.formatSql",
         "when": "editorTextFocus && !editorReadonly && editorLangId == 'sql'"
+    },
+    {
+        "key": "cmd+enter",
+        "command": "-refactorPreview.apply",
+        "when": "refactorPreview.enabled && refactorPreview.hasCheckedChanges && focusedView == 'refactorPreview'"
+    },
+    {
+        "key": "shift+enter",
+        "command": "refactorPreview.apply",
+        "when": "refactorPreview.enabled && refactorPreview.hasCheckedChanges && focusedView == 'refactorPreview'"
     },
     {
         "command": "refactorPreview.discard",

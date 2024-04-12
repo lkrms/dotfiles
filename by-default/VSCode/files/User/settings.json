@@ -259,7 +259,8 @@
         "**/.svn": true,
         "**/CVS": true,
         "**/Thumbs.db": true,
-        "**/docs/api": true
+        "**/docs/api": true,
+        "**/var/cache/git": true
     },
     "files.watcherExclude": {
         "**/build": true,
