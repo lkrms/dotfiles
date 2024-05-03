@@ -274,6 +274,7 @@
     "git.ignoreLimitWarning": true,
     "git.mergeEditor": false,
     "git.openRepositoryInParentFolders": "never",
+    "github.copilot.editor.enableCodeActions": false,
     "github.copilot.enable": {
         "*": true,
         "plaintext": false,
