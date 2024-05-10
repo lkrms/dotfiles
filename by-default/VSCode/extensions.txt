@@ -50,6 +50,7 @@ ms-vscode.azure-account
 bmewburn.vscode-intelephense-client
 lkrms.pretty-php
 recca0120.vscode-phpunit
+sanderronde.phpstan-vscode
 xdebug.php-debug
 
 ## Python

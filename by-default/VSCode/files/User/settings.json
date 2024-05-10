@@ -565,6 +565,8 @@
     "perltidy.additionalArguments": [
         "--indent-columns=2"
     ],
+    "phpstan.enableLanguageServer": true,
+    "phpstan.showProgress": true,
     "phpunit.php": "php-xdebug",
     "poor-mans-t-sql-formatter.std.indent": "  ",
     "poor-mans-t-sql-formatter.std.trailingCommas": false,
