@@ -132,7 +132,7 @@ trap 'rm -f ${files+"${files[@]}"}' EXIT
             { ((!offline)) || exit 0; } &&
             { git fetch --all --prune --tags || exit $((1 + $?)); }) >"${files[i]}" 2>&1 &
         pids[i]=$!
-    done < <(find ~/.dotfiles!(?) ~/Code/!(3rdparty|vendor) \
+    done < <(find -L ~/.dotfiles!(?) ~/Code/!(3rdparty|vendor) \
         -type d -exec test -d '{}/.git' \; -prune \
         ! -exec test -f '{}/.git/skip-audit' \; \
         -print0 | sort -z)
