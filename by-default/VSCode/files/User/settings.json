@@ -617,6 +617,7 @@
     },
     "telemetry.telemetryLevel": "off",
     "terminal.external.osxExec": "iTerm.app",
+    "terminal.integrated.confirmOnExit": "hasChildProcesses",
     "terminal.integrated.copyOnSelection": true,
     "terminal.integrated.cwd": "${fileDirname}",
     "terminal.integrated.detectLocale": "off",
