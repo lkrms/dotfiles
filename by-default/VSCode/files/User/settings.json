@@ -305,6 +305,7 @@
     "html.autoClosingTags": false,
     "html.format.maxPreserveNewLines": 1,
     "html.format.wrapLineLength": 0,
+    "inlineChat.mode": "preview",
     "intelephense.files.exclude": [
         "**/.ci/**",
         "**/.DS_Store/**",

@@ -264,6 +264,15 @@
         "key": "cmd+k cmd+g"
     },
     {
+        "key": "alt+c",
+        "command": "-markdown.extension.checkTaskList",
+        "when": "false"
+    },
+    {
+        "key": "alt+c",
+        "command": "markdown.extension.checkTaskList"
+    },
+    {
         "command": "-markdown.extension.onShiftTabKey",
         "key": "shift+tab",
         "when": "editorTextFocus && markdown.extension.editor.cursor.inList && !editorHasMultipleSelections && !editorReadonly && !editorTabMovesFocus && !hasOtherSuggestions && !hasSnippetCompletions && !inSnippetMode && !markdown.extension.editor.cursor.inFencedCodeBlock && !markdown.extension.editor.cursor.inMathEnv && !suggestWidgetVisible && editorLangId =~ /^markdown$|^rmd$|^quarto$/"
@@ -874,5 +883,13 @@
     {
         "command": "-workbench.extensions.action.showRecommendedKeymapExtensions",
         "key": "cmd+k cmd+m"
+    },
+    {
+        "key": "shift+cmd+a",
+        "command": "-workbench.view.extension.azure"
+    },
+    {
+        "key": "shift+cmd+k",
+        "command": "workbench.view.testing.focus"
     }
 ]
