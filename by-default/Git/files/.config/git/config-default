@@ -50,7 +50,6 @@
 
 [user]
 	name = Luke Arms
-	signingKey = 2F0ADF7F222F13C8
 	useConfigOnly = true
 
 [alias]
