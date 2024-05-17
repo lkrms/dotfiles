@@ -19,6 +19,11 @@ function aur-PKGBUILD-check-aur() { (
         PUSH=refs/heads/main:refs/heads/master
         git config remote.aur.push | grep -Fx "$PUSH" >/dev/null ||
             lk_tty_run_detail git config remote.aur.push "$PUSH" || return
+        [[ -L .git/remote2 ]] ||
+            lk_tty_run_detail ln -sfnv refs/remotes/aur .git/remote2 || return
+        [[ -L .git/hooks/reference-transaction ]] ||
+            lk_tty_run_detail ln -sfnv ~/.dotfiles/by-default/Git/files/.config/git/hooks/reference-transaction \
+                .git/hooks/reference-transaction || return
         git fetch --prune --tags aur &>/dev/null &
         ((++i))
     done && {
