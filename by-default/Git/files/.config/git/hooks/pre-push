@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Prevents private/<name> being pushed to remotes other than *-<name>.git
 

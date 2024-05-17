@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+# If a remote is linked from .git/remote2 and a branch is pushed to the 'origin'
+# remote successfully, this hook pushes the same branch to the linked remote
+
+set -euo pipefail
+
+debug=0
+[[ -z ${DEBUG-} ]] || debug=1
+
+# One of: "prepared", "committed", "aborted"
+reference_state=$1
+
+if [[ $reference_state != committed ]]; then
+    exit
+fi
+
+((!debug)) || echo "${BASH_SOURCE##*/} received" >&2
+
+while read -r old_oid new_oid ref_name; do
+    ((!debug)) || declare -p reference_state old_oid new_oid ref_name >&2
+
+    if [[ $ref_name != refs/remotes/origin/* ]]; then
+        continue
+    fi
+
+    # On pull, old_oid is not 0000000000000000000000000000000000000000
+    if [[ ! $old_oid =~ ^0+$ ]]; then
+        continue
+    fi
+
+    ((!debug)) || echo "Push to '${ref_name#refs/remotes/}' succeeded" >&2
+
+    if [[ ! -L "${GIT_DIR-.git}/remote2" ]]; then
+        continue
+    fi
+
+    remote2=$(readlink "${GIT_DIR-.git}/remote2") &&
+        remote2=${remote2##*/} &&
+        [[ -n $remote2 ]] || {
+        echo "Error resolving remote2" >&2
+        exit 1
+    }
+
+    if [[ $remote2 == origin ]]; then
+        echo "Error: remote2 cannot be 'origin'" >&2
+        exit 1
+    fi
+
+    branch=${ref_name#refs/remotes/origin/}
+    echo "Pushing '$branch' to '$remote2'" >&2
+    git push --no-follow-tags "$remote2" "$branch" || exit
+done
