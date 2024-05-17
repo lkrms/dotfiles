@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 # If a remote is linked from .git/remote2 and a branch is pushed to the 'origin'
-# remote successfully, this hook pushes the same branch to the linked remote
+# remote successfully, this hook pushes the same branch to the linked remote.
+# Additional remotes may be linked from .git/remote3, .git/remote4, etc.
 
 set -euo pipefail
 
@@ -31,23 +32,24 @@ while read -r old_oid new_oid ref_name; do
 
     ((!debug)) || echo "Push to '${ref_name#refs/remotes/}' succeeded" >&2
 
-    if [[ ! -L "${GIT_DIR-.git}/remote2" ]]; then
-        continue
-    fi
+    ((i = 2))
+    while [[ -L "${GIT_DIR-.git}/remote$i" ]]; do
+        remote2=$(readlink "${GIT_DIR-.git}/remote$i") &&
+            remote2=${remote2##*/} &&
+            [[ -n $remote2 ]] || {
+            echo "Error resolving remote$i" >&2
+            exit 1
+        }
 
-    remote2=$(readlink "${GIT_DIR-.git}/remote2") &&
-        remote2=${remote2##*/} &&
-        [[ -n $remote2 ]] || {
-        echo "Error resolving remote2" >&2
-        exit 1
-    }
+        if [[ $remote2 == origin ]]; then
+            echo "Error: remote$i cannot be 'origin'" >&2
+            exit 1
+        fi
 
-    if [[ $remote2 == origin ]]; then
-        echo "Error: remote2 cannot be 'origin'" >&2
-        exit 1
-    fi
+        branch=${ref_name#refs/remotes/origin/}
+        echo "Pushing '$branch' to '$remote2'" >&2
+        git push --no-follow-tags "$remote2" "$branch" || exit
 
-    branch=${ref_name#refs/remotes/origin/}
-    echo "Pushing '$branch' to '$remote2'" >&2
-    git push --no-follow-tags "$remote2" "$branch" || exit
+        ((i++))
+    done
 done
