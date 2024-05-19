@@ -273,4 +273,8 @@ function die() {
 [[ ! -r $df_root/bin/lib/bash-helpers-$df_platform.sh ]] ||
     . "$df_root/bin/lib/bash-helpers-$df_platform.sh"
 
-df_argv=("$@")
+if [[ -n ${df_filter:+1} ]]; then
+    df_argv=("${@:3}")
+else
+    df_argv=("$@")
+fi

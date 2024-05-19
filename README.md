@@ -63,6 +63,7 @@ less-specific directory.
 └── by-default
     └── Git                   ; Always applied
         ├── configure
+        ├── filter
         ├── apply
         └── files
             └── ...
@@ -72,7 +73,7 @@ less-specific directory.
 
 The installer processes files in `<appname>` directories in the following order.
 
-1. **`target`** *(must be an executable file if present)*
+1. **`target`** _(must be an executable file if present)_
 
    Provide a `target` script if symbolic links to the application's dotfiles
    should be created in a location other than the user's home directory.
@@ -82,14 +83,22 @@ The installer processes files in `<appname>` directories in the following order.
 
    See [Writing scripts] for more information.
 
-2. **`configure`** *(must be an executable file if present)*
+2. **`configure`** _(must be an executable file if present)_
 
    Provide a `configure` script to perform any tests or provisioning required
    before symbolic links to the application's dotfiles are created.
 
    See [Writing scripts] for details.
 
-3. **files\[/`<dir>`...\]/(`<dirname>`|`<filename>`)**
+3. **`filter`** _(must be an executable file if present)_
+
+   If a `filter` script is provided, it is called once per symbolic link to the
+   application's dotfiles, and if its exit code is not `0`, the symbolic link is
+   not created.
+
+   See [Writing scripts] for details.
+
+4. **files\[/`<dir>`...\]/(`<dirname>`|`<filename>`)**
 
    The installer's default behaviour is to create a symbolic link to every file
    it finds in `files` at the same location relative to the target path (`$HOME`
@@ -110,7 +119,7 @@ The installer processes files in `<appname>` directories in the following order.
    ```
 
    But if a directory has a `<dirname>.symlink` sidecar file, a symbolic link to
-   the *directory* is created instead, e.g.
+   the _directory_ is created instead, e.g.
 
    ```
    ~
@@ -128,7 +137,7 @@ The installer processes files in `<appname>` directories in the following order.
 
    > The content of a sidecar file is not specified.
 
-4. **`apply`** *(must be an executable file if present)*
+5. **`apply`** _(must be an executable file if present)_
 
    Provide an `apply` script to perform any provisioning tasks required after
    symbolic links to the application's dotfiles are created.
@@ -145,6 +154,19 @@ host "bamm-bamm", the installer would call `target` like this:
 
 ```shell
 by-platform/linux/Git/target \
+   /path/to/dotfiles/by-host/bamm-bamm/Git \
+   /path/to/dotfiles/by-platform/linux/Git \
+   /path/to/dotfiles/by-default/Git
+```
+
+`filter` scripts, called once per symbolic link to the application's dotfiles,
+receive the absolute path name of each target and link, followed by the same
+`<appname>` directories passed to other scripts, e.g. on the same host:
+
+```shell
+by-default/Git/filter \
+   /path/to/dotfiles/by-default/Git/files/.config/git \
+   ~/.config/git \
    /path/to/dotfiles/by-host/bamm-bamm/Git \
    /path/to/dotfiles/by-platform/linux/Git \
    /path/to/dotfiles/by-default/Git
@@ -176,6 +198,8 @@ The following environment variables are passed to `target`, `configure` and
 | `2`       | A non-critical error occurred | Skip to the next application |
 | >`2`      | A critical error occurred     | Exit                         |
 
+`filter` may return any non-zero exit code to suppress creation of the given
+symbolic link.
 
 [by-host]: by-host
 [by-platform]: by-platform

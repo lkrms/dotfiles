@@ -9,15 +9,16 @@ function find_installable() {
     find_all "$@" |
         # 1. Discard all but the first instance of each file
         # 2. In column 1, print:
-        #    - '-2' if the file is a `target` script
-        #    - '-1' if the file is a `configure` script
-        #    -  '1' if the file is an `apply` script
-        #    -  '0' otherwise
+        #    - '-30' if the file is a `target` script
+        #    - '-20' if the file is a `configure` script
+        #    - '-10' if the file is a `filter` script
+        #    -  '10' if the file is an `apply` script
+        #    -   '0' otherwise
         # 3. In column 2, print the path name of the file relative to `app_dir/files`
         # 4. In column 3, print the absolute path name of the file
         awk -v df_root_len=${#df_root} -v app_len=${#app} -f "$df_root/bin/lib/awk/filter-installable.awk" |
-        # Move `target` and `configure` scripts to the top of the list, `apply` to the end, and sort remaining
-        # entries by relative path
+        # Move `target`, `configure` and `filter` scripts to the top of the
+        # list, `apply` to the end, and sort remaining entries by relative path
         LC_ALL=C sort -t $'\t' -k1,1n -k2,2
 }
 
@@ -101,7 +102,8 @@ for app in ${apps+"${apps[@]}"}; do
     done < <(find_all "${app_dirs[@]}")
     ((!by_app)) || continue
     # 2. Perform the actual installation
-    export df_target=~
+    export df_target=~ df_filter=
+    filter=
     unset sudo
     while IFS=$'\t' read -r run rel_path path; do
         if ((run)); then
@@ -113,6 +115,8 @@ for app in ${apps+"${apps[@]}"}; do
                 [[ ! -e $df_target ]] ||
                     [[ -w $df_target ]] ||
                     sudo=
+            elif [[ $rel_path == filter ]]; then
+                filter=$path
             else
                 echo " -> Running: $path"
                 "$path" "${local_app_dirs[@]}"
@@ -137,6 +141,11 @@ for app in ${apps+"${apps[@]}"}; do
             esac
         fi
         target=$df_target/$rel_path
+        if [[ -n ${filter:+1} ]] &&
+            ! df_filter=1 "$filter" "$path" "$target" "${local_app_dirs[@]}"; then
+            echo " -> Symbolic link skipped by filter: $target -> $path"
+            continue
+        fi
         link_file ${sudo+--sudo} "$path" "$target"
     done < <(find_installable "$app" "${local_app_dirs[@]}")
 done
