@@ -21,15 +21,19 @@ BEGIN {
 }
 
 path == "target" {
-	sort_by = -2
+	sort_by = -30
 }
 
 path == "configure" {
-	sort_by = -1
+	sort_by = -20
+}
+
+path == "filter" {
+	sort_by = -10
 }
 
 path == "apply" {
-	sort_by = 1
+	sort_by = 10
 }
 
 sort_by {
