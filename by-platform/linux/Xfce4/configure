@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+# Do nothing if Xfce4 is not running
+if [[ ${XDG_CURRENT_DESKTOP-} != XFCE ]]; then
+    exit 1
+fi

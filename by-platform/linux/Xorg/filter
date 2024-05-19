@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+if [[ $1 == */autorandr/postswitch.d/set_lid_action ]] && ! is_portable; then
+    exit 1
+fi

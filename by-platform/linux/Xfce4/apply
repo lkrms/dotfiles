@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+killall plank 2>/dev/null || true
+
+dconf reset -f /net/launchpad/plank/
+dconf load / <<"EOF"
+[net/launchpad/plank/docks/dock1]
+current-workspace-only=true
+dock-items=['xfce4-terminal.dockitem', 'firefox.dockitem', 'caprine.dockitem', 'teams-for-linux.dockitem', 'org.mozilla.Thunderbird.dockitem', 'code.dockitem', 'sublime_merge.dockitem', 'clockify.dockitem', 'org.keepassxc.KeePassXC.dockitem']
+lock-items=true
+theme='Transparent'
+EOF
+
+nohup plank &>/dev/null &
+disown

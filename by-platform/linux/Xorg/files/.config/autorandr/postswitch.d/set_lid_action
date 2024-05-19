@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+case "${XDG_CURRENT_DESKTOP-}::${AUTORANDR_MONITORS-}:" in
+XFCE:*:DP-1:*)
+    # "Switch off display"
+    lid_action=0
+    # "Never"
+    window_grouping=0
+    ;;
+
+XFCE::*)
+    # "Suspend"
+    lid_action=1
+    # "Always"
+    window_grouping=1
+    ;;
+
+*)
+    exit
+    ;;
+esac
+
+xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/lid-action-on-ac -n -t uint -s "$lid_action"
+xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/lid-action-on-battery -n -t uint -s "$lid_action"
+xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/logind-handle-lid-switch -n -t bool -s false
+xfconf-query -c xfce4-panel -p /plugins/plugin-2/grouping -n -t uint -s "$window_grouping"

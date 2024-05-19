@@ -6,3 +6,8 @@ maybe update-desktop-database ~/.local/share/applications
 
 # Stop updates triggering `/usr/bin/udevadm trigger -c change`
 replace_file --sudo /etc/systemd/do-not-udevadm-trigger-on-update </dev/null
+
+if [[ -d ~lightdm ]] && ! sudo test ~lightdm/.config/autorandr -ef ~/.config/autorandr; then
+    maybe sudo -u lightdm install -d -m 00700 -v ~lightdm/.config
+    maybe sudo -u lightdm ln -sfTv ~/.config/autorandr ~lightdm/.config/autorandr
+fi
