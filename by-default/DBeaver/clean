@@ -2,8 +2,13 @@
 
 . "$df_root/bin/lib/bash-helpers.sh" || exit
 
+function normalise_data_sources() {
+    jq_safe --sort-keys |
+        jq --indent 4 '.connections |= (to_entries | sort_by(.value.folder, .value.name) | from_entries)'
+}
+
 with_each files/workspace6/General/.dbeaver/data-sources.json \
-    replace_file '{}' jq_safe --sort-keys --indent 4
+    replace_file '{}' normalise_data_sources
 
 file=$(find_first files/workspace6/General/.dbeaver/credentials-config.json) || exit 2
 replace=${file%files/workspace6/General/.dbeaver/credentials-config.json}credentials-config.json
