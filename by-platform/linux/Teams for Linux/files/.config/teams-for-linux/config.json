@@ -1,1 +1,4 @@
-{"disableNotificationSound":true}
+{
+	"disableNotificationSound": true,
+	"optInTeamsV2": true
+}
