@@ -8,13 +8,11 @@ if [[ -L ~/.local/bin/code ]]; then
     maybe rm -fv ~/.local/bin/code
 fi
 
-if php=$(find_first php-xdebug); then
-    link_file "$php" ~/.local/bin/php-xdebug
-fi
-
-if php=$(find_first php74-xdebug); then
-    link_file "$php" ~/.local/bin/php74-xdebug
-fi
+for version in "" 82 81 80 74; do
+    if php=$(find_first "php$version-xdebug"); then
+        link_file "$php" ~/.local/bin/"php$version-xdebug"
+    fi
+done
 
 if [[ $df_platform == linux ]]; then
     file=/opt/vscodium-bin/resources/app/product.json

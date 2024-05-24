@@ -9,7 +9,7 @@
 function _pecl() {
     ! lk_is_apple_silicon ||
         lk_warn "Apple Silicon not supported" || return
-    local temp status=0
+    local temp file status=0
     php_ini=$(php -r "echo php_ini_loaded_file();") || return
     php_extension_dir=$(php -r "echo ini_get('extension_dir');") || return
     php_ini=${php_ini%/*}
@@ -17,6 +17,9 @@ function _pecl() {
         lk_warn "php.ini not found" || return
     lk_mktemp_dir_with temp &&
         lk_tty_run_detail cp -a "$php_ini"/* "$temp/" || return
+    file=$php_ini/conf.d/ext-${*: -1}.ini
+    [[ ! -f $file ]] ||
+        lk_tty_run_detail rm -f "$file" || return
     pecl "$@" || status=$?
     lk_tty_run_detail cp -af "$temp"/* "$php_ini/" || true
     return "$status"
@@ -95,7 +98,7 @@ function php-build-pcov() {
         file=$php_ini/conf.d/ext-pcov.ini &&
         lk_install -m 00644 "$file" &&
         lk_file_replace "$file" <<'EOF'
-;extension="pcov.so"
+extension="pcov.so"
 pcov.enabled = 0
 EOF
 }

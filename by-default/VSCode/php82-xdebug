@@ -1,0 +1,8 @@
+#!/bin/sh
+
+exec /usr/bin/env php82 \
+    -dzend_extension=xdebug \
+    -dxdebug.start_with_request=yes \
+    -dxdebug.mode=debug,develop \
+    -dxdebug.client_port=9003 \
+    "$@"

@@ -35,6 +35,9 @@
 	default = nothing
 	followTags = true
 
+[rebase]
+	autoSquash = true
+
 [tag]
 	gpgSign = true
 
