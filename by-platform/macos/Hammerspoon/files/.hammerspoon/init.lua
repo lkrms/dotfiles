@@ -479,24 +479,7 @@ function processEvent(window, appName, event)
     if _rule == nil then
         return
     end
-    local screen = window:screen()
-    local ev = {
-        window = window,
-        screen = screen,
-        appName = appName,
-        event = event,
-        appTitle = app and app:title() or nil,
-        appBundleId = app and app:bundleID() or nil,
-        windowTitle = window:title(),
-        isStandard = window:isStandard(),
-        isMain = (app and app:mainWindow() == window) or nil,
-        role = window:role(),
-        subrole = window:subrole(),
-        windowGeometry = window:frame(),
-        screenGeometry = screen and screen:fullFrame() or nil,
-        desktopGeometry = screen and screen:frame() or nil,
-        display = screen and (screen:getUUID() == _screen1:getUUID()) and 1 or 2,
-    }
+    local ev = getEvent(event, window, app, appName)
     for i, rule in ipairs(_rule) do
         if rule.criteria ~= nil and not checkCriteria(rule.criteria, ev) then
             logger.v("_rule[" .. i .. "] criteria not met: " .. hs.inspect.inspect(rule.criteria))
@@ -515,6 +498,29 @@ function processEvent(window, appName, event)
             end
         end
     end
+end
+
+function getEvent(event, window, app, appName)
+    window = window or hs.window.focusedWindow()
+    app = app or (window and window:application())
+    local screen = window:screen()
+    return {
+        window = window,
+        screen = screen,
+        appName = appName or (app and app:name()),
+        event = event,
+        appTitle = app and app:title() or nil,
+        appBundleId = app and app:bundleID() or nil,
+        windowTitle = window:title(),
+        isStandard = window:isStandard(),
+        isMain = (app and app:mainWindow() == window) or nil,
+        role = window:role(),
+        subrole = window:subrole(),
+        windowGeometry = window:frame(),
+        screenGeometry = screen and screen:fullFrame() or nil,
+        desktopGeometry = screen and screen:frame() or nil,
+        display = screen and (screen:getUUID() == _screen1:getUUID()) and 1 or 2,
+    }
 end
 
 -- See: https://github.com/Hammerspoon/hammerspoon/issues/3224#issuecomment-1294359070
@@ -900,6 +906,25 @@ hs.hotkey.bind(
 )
 
 hs.hotkey.bind(
+    {"ctrl", "cmd", "shift"},
+    "w",
+    function()
+        hs.openConsole()
+        hs.consoleOnTop(true)
+        dumpWindows()
+    end
+)
+
+hs.hotkey.bind(
+    {"ctrl", "cmd", "alt", "shift"},
+    "w",
+    function()
+        hs.closeConsole()
+        hs.consoleOnTop(false)
+    end
+)
+
+hs.hotkey.bind(
     {"ctrl", "cmd"},
     "x",
     function()
@@ -912,7 +937,7 @@ hs.hotkey.bind(
     {"ctrl", "cmd", "shift"},
     "x",
     function()
-        hs.reload()
+        hs.relaunch()
     end
 )
 
@@ -932,6 +957,30 @@ hs.hotkey.bind(
             return
         end
         hs.eventtap.keyStrokes(paste)
+    end
+)
+
+-- Centre the focused window vertically
+hs.hotkey.bind(
+    {"ctrl", "alt"},
+    "=",
+    function()
+        local window = hs.window.focusedWindow()
+        if not window then
+            return
+        end
+        local ev = getEvent(nil, window)
+        local offset = (ev.desktopGeometry["h"] - ev.windowGeometry["h"]) / 2
+        if offset >= 1 then
+            local rect = hs.geometry(
+                ev.windowGeometry["x"],
+                ev.desktopGeometry["y"] + offset,
+                ev.windowGeometry["w"],
+                ev.windowGeometry["h"]
+            )
+            logger.i("Moving " .. ev.appName .. " to " .. hs.inspect.inspect(rect) .. maybeReportEv(ev))
+            window:move(rect)
+        end
     end
 )
 
