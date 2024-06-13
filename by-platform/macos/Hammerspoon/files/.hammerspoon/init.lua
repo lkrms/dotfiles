@@ -663,9 +663,14 @@ initScreens()
 initWindowFilter()
 
 _screenwatcher = hs.screen.watcher.new(function()
-    _filter:unsubscribeAll()
+    local prev = getScreenLayout()
     initScreens()
-    initWindowFilter()
+    local current = getScreenLayout()
+    if table.concat(prev, ",") == table.concat(current, ",") then
+        logger.i("Screen layout unchanged: " .. hs.inspect.inspect(current))
+        return
+    end
+    logger.i("Screen layout changed from " .. hs.inspect.inspect(prev) .. " to " .. hs.inspect.inspect(current))
     if showScreenLayoutChangeNotification then
         hs.notify.new(
             {
@@ -675,8 +680,23 @@ _screenwatcher = hs.screen.watcher.new(function()
             }
         ):send()
     end
+    _filter:unsubscribeAll()
+    initWindowFilter()
 end)
 _screenwatcher:start()
+
+function getScreenLayout()
+    local layout = {}
+    for i, screen in ipairs(_screen) do
+        local frame = screen:frame()
+        table.insert(layout, screen:getUUID())
+        table.insert(layout, frame["x"])
+        table.insert(layout, frame["y"])
+        table.insert(layout, frame["w"])
+        table.insert(layout, frame["h"])
+    end
+    return layout
+end
 
 _pathwatcher = hs.pathwatcher.new(hs.configdir .. '/init.lua', function(paths, flagTables)
     logger.d(hs.inspect.inspect({paths = paths, flagTables = flagTables}))

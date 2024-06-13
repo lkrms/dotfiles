@@ -24,7 +24,7 @@ brew "grep"
 brew "icdiff"
 brew "imagemagick"
 brew "jq"
-brew "libvirt", restart_service: true
+brew "libvirt"
 brew "linode-cli"
 brew "macos-trash"
 brew "multitime"
