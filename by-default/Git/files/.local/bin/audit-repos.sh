@@ -99,6 +99,7 @@ undim=$'\E[22m'
 clear=$'\E[2J\E[H'
 
 offline=0
+ignore_fetch_errors=1
 [[ ${1-} != --offline ]] || offline=1
 
 repos=()
@@ -152,7 +153,7 @@ trap 'rm -f ${files+"${files[@]}"}' EXIT
             else
                 uhoh "'git fetch' failed with exit status $((status - 1))"
             fi
-            fetch_errors[i]=
+            ((ignore_fetch_errors)) || fetch_errors[i]=
             cat "${files[i]}"
         }
 
