@@ -298,6 +298,7 @@
     "gitlens.codeLens.enabled": false,
     "gitlens.currentLine.format": "${author}, ${date} • ${message}",
     "gitlens.hovers.avatars": false,
+    "gitlens.launchpad.indicator.enabled": false,
     "gitlens.plusFeatures.enabled": false,
     "gitlens.showWelcomeOnInstall": false,
     "gitlens.showWhatsNewAfterUpgrades": false,

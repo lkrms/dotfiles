@@ -64,5 +64,8 @@ includes:
 parameters:
   editorUrl: "vscode://file/%%file%%:%%line%%"
   editorUrlTitle: "%%relFile%%:%%line%%"
+
+  parallel:
+    maximumNumberOfProcesses: 2
 EOF
 }
