@@ -75,6 +75,12 @@
     "[ruby]": {
         "editor.defaultFormatter": "LoranKloeze.ruby-rubocop-revived"
     },
+    "[shellscript]": {
+        "editor.defaultFormatter": "foxundermoon.shell-format"
+    },
+    "[snippets]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
     "[sql]": {
         "editor.comments.insertSpace": true,
         "editor.defaultFormatter": "ReneSaarsoo.sql-formatter-vsc",
@@ -696,5 +702,5 @@
     "xml.format.enforceQuoteStyle": "preferred",
     "xml.format.maxLineWidth": 0,
     "xml.format.preservedNewlines": 0,
-    "xml.format.splitAttributes": true
+    "xml.format.splitAttributes": "splitNewLine"
 }
