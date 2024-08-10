@@ -314,6 +314,11 @@
     "html.format.maxPreserveNewLines": 1,
     "html.format.wrapLineLength": 0,
     "inlineChat.mode": "preview",
+    "intelephense.codeLens.implementations.enable": true,
+    "intelephense.codeLens.overrides.enable": true,
+    "intelephense.codeLens.parent.enable": true,
+    "intelephense.codeLens.references.enable": true,
+    "intelephense.codeLens.usages.enable": true,
     "intelephense.files.exclude": [
         "**/.ci/**",
         "**/.DS_Store/**",
