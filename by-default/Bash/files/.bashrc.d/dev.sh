@@ -52,7 +52,7 @@ function git-changelog-next() {
     git-changelog "${latest}..HEAD"
 }
 
-http-toolkit-enable() {
+function http-toolkit-enable() {
   eval "$(curl -sS localhost:8001/setup)"
 }
 
