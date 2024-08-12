@@ -37,7 +37,7 @@ EOF
         [[ -z ${command2+1} ]] ||
             "${command2[@]//{\}/$value}" ||
             return
-        quoted=${value//\"/\"\"}
+        quoted=\"${value//\"/\"\"}\"
         quoted=${quoted//%/%%}
         quoted=${quoted//\\/\\\\}
         for ((run = 0; run < times; run++)); do
