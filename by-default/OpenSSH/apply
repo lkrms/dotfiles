@@ -11,23 +11,33 @@ fi
 find -L ~/.ssh -type f ! -name '*.pub' -print0 |
     xargs -0r "${command[@]}"
 
-# Ditto for write access to directories between ~ and ~/.ssh
+# Ditto for write access to directories between:
+# - ~ and ~/.ssh
+# - ~ and the parent of ~/.ssh/authorized_keys
 parent=$(realpath ~)
-child=$(realpath ~/.ssh)
+children=("$(realpath ~/.ssh)")
+if [[ -f ~/.ssh/authorized_keys ]]; then
+    child=$(realpath ~/.ssh/authorized_keys)
+    children[1]=${child%/*}
+fi
 
 args=()
 i=0
-while true; do
-    args[i++]=$child
-    [[ ! $child -ef $parent ]] ||
-        break
-    # If ~/.ssh resolves to a path outside ~, restrict access to ~ and ~/.ssh,
-    # otherwise restrict every directory in the hierarchy from ~/.ssh to ~
-    [[ ${child#$parent} != "$child" ]] || {
-        args[i++]=$parent
-        break
-    }
-    child=${child%/*}
+for child in "${children[@]}"; do
+    while true; do
+        args[i++]=$child
+        [[ ! $child -ef $parent ]] ||
+            break
+        # If $child is outside ~, restrict access to ~ and $child, otherwise
+        # restrict every directory in the hierarchy from $child to ~
+        [[ ${child#$parent} != "$child" ]] || {
+            args[i++]=$parent
+            break
+        }
+        child=${child%/*}
+    done
 done
 
+IFS=$'\n'
+args=($(printf '%s\n' "${args[@]}" | sort -ru))
 maybe chmod -c go-w "${args[@]}"
