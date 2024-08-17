@@ -1,0 +1,13 @@
+#!/bin/sh
+
+case "$df_platform" in
+linux)
+    printf '%s\n' ~/.config
+    ;;
+macos)
+    printf '%s\n' ~/"Library/Application Support"
+    ;;
+*)
+    exit 3
+    ;;
+esac
