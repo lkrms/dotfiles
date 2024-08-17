@@ -11,3 +11,27 @@ if [[ -d ~lightdm ]] && ! sudo test ~lightdm/.config/autorandr -ef ~/.config/aut
     maybe sudo -u lightdm install -d -m 00700 -v ~lightdm/.config
     maybe sudo -u lightdm ln -sfTv ~/.config/autorandr ~lightdm/.config/autorandr
 fi
+
+if [[ -f ~/.face ]]; then
+    # Make directories between ~ and ~/.face executable
+    parent=$(realpath ~)
+    child=$(realpath ~/.face)
+    child=${child%/*}
+
+    args=()
+    i=0
+    while true; do
+        args[i++]=$child
+        [[ ! $child -ef $parent ]] ||
+            break
+        # If ~/.face is outside ~, update ~ and ~/.face permissions, otherwise
+        # update every directory in the hierarchy from ~/.face to ~
+        [[ ${child#$parent} != "$child" ]] || {
+            args[i++]=$parent
+            break
+        }
+        child=${child%/*}
+    done
+
+    maybe chmod -c a+x "${args[@]}"
+fi
