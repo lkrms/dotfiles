@@ -26,7 +26,7 @@ function find_installable() {
 function find_all() {
     find "$@" \
         \( \( -type d -execdir test -e '{}.symlink' \; -prune \) -o -type f -o -type l \) \
-        ! -name '.*' ! -name '*.symlink' ! -name '*.hardlink' ! -name '*.bak-[0-9][0-9][0-9]' -print
+        ! -name '*.symlink' ! -name '*.hardlink' ! -name '*.bak-[0-9][0-9][0-9]' -print
 }
 
 # git <arg>...
