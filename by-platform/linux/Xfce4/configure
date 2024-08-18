@@ -1,6 +1,29 @@
 #!/usr/bin/env bash
 
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
 # Do nothing if Xfce4 is not running
 if [[ ${XDG_CURRENT_DESKTOP-} != XFCE ]]; then
     exit 1
 fi
+
+function compress() {
+    local txt=$1 tar=${1%.txt}.tar.bz2
+    if [[ ! -f $tar ]] || [[ $txt -nt $tar ]]; then
+        if [[ -n ${df_dryrun:+1} ]]; then
+            echo "  - would have compressed: $txt"
+        else
+            echo " -> Compressing: $txt"
+            local dir
+            dir=$(mktemp -d)
+            cp -a "$txt" "$dir/config.txt"
+            tar -jcf "$tar" -C "$dir" config.txt
+            rm -R "$dir"
+        fi
+        maybe touch -r "$txt" "$tar"
+    elif [[ $txt -ot $tar ]]; then
+        die "$txt must be newer than $tar when installing"
+    fi
+}
+
+with_each 'files/.local/share/xfce4-panel-profiles/*.txt' compress '{}'

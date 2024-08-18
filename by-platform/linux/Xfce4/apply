@@ -2,10 +2,302 @@
 
 . "$df_root/bin/lib/bash-helpers.sh" || exit
 
-killall plank 2>/dev/null || true
+function reset-all() {
+    [[ -n ${df_reset:+1} ]]
+}
 
-dconf reset -f /net/launchpad/plank/
-dconf load / <<"EOF"
+# channel=<channel> xfconf-set <property> <type> <value>
+#
+# <type> = (bool|int|uint|int64|uint64|double|string)
+function xfconf-set() {
+    maybe xfconf-query -c "$channel" -p "$1" -n -t "$2" -s "$3"
+}
+
+# channel=<channel> xfconf-set-array <property> (-t <type> -s <value>)...
+function xfconf-set-array() {
+    maybe xfconf-query -c "$channel" -p "$1" -n -a "${@:2}"
+}
+
+# channel=<channel> xfconf-reset <property>
+function xfconf-reset() {
+    maybe xfconf-query -c "$channel" -p "$1" -r -R
+}
+
+# autorandr is used to manage displays
+channel=displays
+xfconf-reset /
+xfconf-set /Notify int 0
+
+channel=xfce4-power-manager
+! reset-all || xfconf-reset /
+
+if is_portable; then
+    # Suspend at 4% battery
+    xfconf-set /xfce4-power-manager/critical-power-action uint 1
+    xfconf-set /xfce4-power-manager/critical-power-level uint 4
+
+    xfconf-set /xfce4-power-manager/dpms-on-ac-off uint 15
+    xfconf-set /xfce4-power-manager/dpms-on-ac-sleep uint 10
+    xfconf-set /xfce4-power-manager/dpms-on-battery-off uint 6
+    xfconf-set /xfce4-power-manager/dpms-on-battery-sleep uint 5
+
+    xfconf-set /xfce4-power-manager/brightness-on-ac uint 9
+    xfconf-set /xfce4-power-manager/brightness-on-battery uint 9
+
+    xfconf-set /xfce4-power-manager/inactivity-on-battery uint 6
+
+    # If not explicitly set to suspend, Xfce 4.12 attempts to hibernate
+    xfconf-set /xfce4-power-manager/inactivity-sleep-mode-on-battery uint 1
+
+    # If patched, xfce4-power-manager runs this when AC power is disconnected
+    xfconf-set /xfce4-power-manager/heartbeat-command string "xdotool key shift"
+
+    # Suspend when laptop lid is closed
+    xfconf-set /xfce4-power-manager/lid-action-on-ac uint 1
+    xfconf-set /xfce4-power-manager/lid-action-on-battery uint 1
+
+    # Without this, locking fails
+    xfconf-set /xfce4-power-manager/logind-handle-lid-switch bool false
+
+    xfconf-set /xfce4-power-manager/show-panel-label int 1
+else
+    xfconf-set /xfce4-power-manager/dpms-on-ac-off uint 0
+    xfconf-set /xfce4-power-manager/dpms-on-ac-sleep uint 40
+
+    xfconf-set /xfce4-power-manager/show-panel-label int 0
+fi
+
+xfconf-set /xfce4-power-manager/dpms-enabled bool true
+xfconf-set /xfce4-power-manager/blank-on-ac int 4
+xfconf-set /xfce4-power-manager/blank-on-battery int 4
+xfconf-set /xfce4-power-manager/show-presentation-indicator bool true
+
+reset-all || xfconf-reset /xfce4-power-manager/inactivity-on-ac
+
+xfconf-set /xfce4-power-manager/inactivity-sleep-mode-on-ac uint 1
+
+xfconf-set /xfce4-power-manager/lock-screen-suspend-hibernate bool true
+
+# Do nothing when power buttons are pressed
+xfconf-set /xfce4-power-manager/battery-button-action uint 0
+xfconf-set /xfce4-power-manager/hibernate-button-action uint 0
+xfconf-set /xfce4-power-manager/power-button-action uint 0
+xfconf-set /xfce4-power-manager/sleep-button-action uint 0
+
+channel=xfwm4
+! reset-all || xfconf-reset /
+
+# Setting easy_click triggers other changes, so it must be done first
+xfconf-set /general/easy_click string Mod3
+
+xfconf-set /general/activate_action string switch
+#xfconf-set /general/borderless_maximize bool true
+xfconf-set /general/button_layout string "OT|HMC"
+#xfconf-set /general/cycle_draw_frame bool true
+xfconf-set /general/cycle_hidden bool false
+xfconf-set /general/cycle_minimum bool false
+#xfconf-set /general/cycle_preview bool true
+#xfconf-set /general/cycle_raise bool false
+#xfconf-set /general/cycle_tabwin_mode int 0
+#xfconf-set /general/cycle_workspaces bool false
+#xfconf-set /general/mousewheel_rollup bool true
+xfconf-set /general/move_opacity int 50
+xfconf-set /general/placement_mode string mouse
+xfconf-set /general/placement_ratio int 12
+xfconf-set /general/raise_with_any_button bool false
+xfconf-set /general/scroll_workspaces bool false
+xfconf-set /general/show_dock_shadow bool false
+xfconf-set /general/show_popup_shadow bool true
+xfconf-set /general/snap_to_windows bool true
+xfconf-set /general/titleless_maximize bool true
+xfconf-set /general/toggle_workspaces bool true
+#xfconf-set /general/use_compositing bool true
+xfconf-set /general/workspace_count int 4
+xfconf-set-array /general/workspace_names array -t string -s 1 -t string -s 2 -t string -s 3 -t string -s 4
+#xfconf-set /general/wrap_cycle bool true
+#xfconf-set /general/wrap_layout bool true
+xfconf-set /general/wrap_windows bool false
+
+channel=xfce4-keyboard-shortcuts
+xfconf-reset /
+xfconf-set-array /providers -t string -s xfwm4 -t string -s commands
+xfconf-set /xfwm4/custom/override bool true
+xfconf-set /commands/custom/override bool true
+
+xfconf-set '/xfwm4/custom/<Alt>F1' string stick_window_key
+xfconf-set '/xfwm4/custom/<Alt>F7' string move_window_key
+xfconf-set '/xfwm4/custom/<Alt>F8' string resize_window_key
+xfconf-set '/xfwm4/custom/<Primary><Alt><Super>1' string move_window_workspace_1_key
+xfconf-set '/xfwm4/custom/<Primary><Alt><Super>2' string move_window_workspace_2_key
+xfconf-set '/xfwm4/custom/<Primary><Alt><Super>3' string move_window_workspace_3_key
+xfconf-set '/xfwm4/custom/<Primary><Alt><Super>4' string move_window_workspace_4_key
+xfconf-set '/xfwm4/custom/<Primary><Alt><Super>5' string move_window_workspace_5_key
+xfconf-set '/xfwm4/custom/<Primary><Alt><Super>6' string move_window_workspace_6_key
+xfconf-set '/xfwm4/custom/<Primary><Alt><Super>7' string move_window_workspace_7_key
+xfconf-set '/xfwm4/custom/<Primary><Alt><Super>8' string move_window_workspace_8_key
+xfconf-set '/xfwm4/custom/<Primary><Alt><Super>9' string move_window_workspace_9_key
+xfconf-set '/xfwm4/custom/<Primary><Alt>backslash' string maximize_vert_key
+xfconf-set '/xfwm4/custom/<Primary><Alt>BackSpace' string show_desktop_key
+xfconf-set '/xfwm4/custom/<Primary><Alt>Return' string maximize_window_key
+xfconf-set '/xfwm4/custom/<Primary><Super>1' string workspace_1_key
+xfconf-set '/xfwm4/custom/<Primary><Super>2' string workspace_2_key
+xfconf-set '/xfwm4/custom/<Primary><Super>3' string workspace_3_key
+xfconf-set '/xfwm4/custom/<Primary><Super>4' string workspace_4_key
+xfconf-set '/xfwm4/custom/<Primary><Super>5' string workspace_5_key
+xfconf-set '/xfwm4/custom/<Primary><Super>6' string workspace_6_key
+xfconf-set '/xfwm4/custom/<Primary><Super>7' string workspace_7_key
+xfconf-set '/xfwm4/custom/<Primary><Super>8' string workspace_8_key
+xfconf-set '/xfwm4/custom/<Primary><Super>9' string workspace_9_key
+xfconf-set '/xfwm4/custom/<Primary><Super>f' string fullscreen_key
+xfconf-set '/xfwm4/custom/<Primary><Super>Insert' string add_workspace_key
+xfconf-set '/xfwm4/custom/<Primary><Super>Left' string prev_workspace_key
+xfconf-set '/xfwm4/custom/<Primary><Super>Right' string next_workspace_key
+xfconf-set '/xfwm4/custom/<Shift><Super>ISO_Left_Tab' string cycle_reverse_windows_key
+xfconf-set '/xfwm4/custom/<Super>grave' string switch_window_key
+xfconf-set '/xfwm4/custom/<Super>m' string hide_window_key
+xfconf-set '/xfwm4/custom/<Super>Tab' string cycle_windows_key
+
+xfconf-set '/commands/custom/<Alt><Super>Escape' string xkill
+xfconf-set '/commands/custom/<Alt>F2' string xfce4-popup-applicationsmenu
+xfconf-set '/commands/custom/<Primary><Super>l' string xflock4
+xfconf-set '/commands/custom/<Primary><Super>q' string xflock4
+xfconf-set '/commands/custom/<Primary><Super>r' string xfrun4
+xfconf-set '/commands/custom/<Super>space' string xfce4-popup-whiskermenu
+
+xfconf-set '/commands/custom/<Primary><Super>e' string "exo-open --launch FileManager"
+xfconf-set '/commands/custom/<Primary><Super>m' string "exo-open --launch MailReader"
+xfconf-set '/commands/custom/<Primary><Super>t' string "exo-open --launch TerminalEmulator"
+xfconf-set '/commands/custom/<Primary><Super>w' string "exo-open --launch WebBrowser"
+xfconf-set '/commands/custom/XF86Explorer' string "exo-open --launch FileManager"
+xfconf-set '/commands/custom/XF86HomePage' string "exo-open --launch WebBrowser"
+xfconf-set '/commands/custom/XF86Mail' string "exo-open --launch MailReader"
+xfconf-set '/commands/custom/XF86WWW' string "exo-open --launch WebBrowser"
+
+# [Control-]Shift-Super-3 (whole screen)
+# [Control-]Shift-Super-4 (selection)
+# [Control-]Shift-Super-5 (top window)
+# [Control-]Shift-Super-6 (whole screen, 5-second delay)
+# [Control-]Shift-Super-7 (selection, 5-second delay)
+# [Control-]Shift-Super-8 (top window, 5-second delay)
+# [Control-]Shift-Super-9 (selection)
+screenshot_dir=${LK_SCREENSHOT_DIR:-~/Desktop}
+xfconf-set '/commands/custom/<Shift><Super>numbersign' string "flameshot screen -c"
+xfconf-set '/commands/custom/<Primary><Shift><Super>numbersign' string "flameshot screen -p \"$screenshot_dir\" -c"
+xfconf-set '/commands/custom/<Shift><Super>dollar' string "flameshot gui -c"
+xfconf-set '/commands/custom/<Primary><Shift><Super>dollar' string "flameshot gui -p \"$screenshot_dir\" -c"
+xfconf-set '/commands/custom/<Shift><Super>percent' string "sh -c 'flameshot gui -c --region \"\$(active-window-geometry)\"'"
+xfconf-set '/commands/custom/<Primary><Shift><Super>percent' string "sh -c 'flameshot gui -p \"$screenshot_dir\" -c --region \"\$(active-window-geometry)\"'"
+xfconf-set '/commands/custom/<Shift><Super>asciicircum' string "flameshot screen -c -d 5000"
+xfconf-set '/commands/custom/<Primary><Shift><Super>asciicircum' string "flameshot screen -p \"$screenshot_dir\" -c -d 5000"
+xfconf-set '/commands/custom/<Shift><Super>ampersand' string "flameshot gui -c -d 5000"
+xfconf-set '/commands/custom/<Primary><Shift><Super>ampersand' string "flameshot gui -p \"$screenshot_dir\" -c -d 5000"
+xfconf-set '/commands/custom/<Shift><Super>asterisk' string "sh -c 'flameshot gui -c --region \"\$(active-window-geometry)\" -d 5000'"
+xfconf-set '/commands/custom/<Primary><Shift><Super>asterisk' string "sh -c 'flameshot gui -p \"$screenshot_dir\" -c --region \"\$(active-window-geometry)\" -d 5000'"
+xfconf-set '/commands/custom/<Shift><Super>parenleft' string "flameshot gui -c"
+xfconf-set '/commands/custom/<Primary><Shift><Super>parenleft' string "flameshot gui -p \"$screenshot_dir\" -c"
+
+note_dir=${LK_NOTE_DIR:-~/Desktop}
+settings_repo=~/Code/lk/lk-settings
+xfconf-set '/commands/custom/<Primary><Super>apostrophe' string "libreoffice --writer"
+xfconf-set '/commands/custom/<Primary><Super>b' string "galculator"
+xfconf-set '/commands/custom/<Primary><Shift><Super>b' string "speedcrunch"
+xfconf-set '/commands/custom/<Primary><Super>c' string "code"
+xfconf-set '/commands/custom/<Primary><Shift><Super>c' string "\"$settings_repo/bin/open-project.sh\""
+xfconf-set '/commands/custom/<Primary><Super>d' string "dbeaver"
+xfconf-set '/commands/custom/<Primary><Shift><Super>greater' string "code \"$HOME/Nextcloud/dotfiles/dotfiles.code-workspace\""
+xfconf-set '/commands/custom/<Primary><Shift><Super>e' string "code \"$HOME/.config/espanso/\""
+xfconf-set '/commands/custom/<Primary><Super>g' string "\"$settings_repo/bin/open-repo.sh\""
+xfconf-set '/commands/custom/<Primary><Shift><Super>g' string "\"$settings_repo/bin/open-repo.sh\" smerge --new-window '{}'"
+xfconf-set '/commands/custom/<Primary><Shift><Super>h' string "code /etc/hosts"
+xfconf-set '/commands/custom/<Primary><Super>i' string "nomacs"
+xfconf-set '/commands/custom/<Primary><Super>k' string "keepassxc"
+xfconf-set '/commands/custom/<Primary><Super>l' string "gtk-launch devilspie2"
+xfconf-set '/commands/custom/<Primary><Super>n' string "lk-note-open.sh"
+xfconf-set '/commands/custom/<Primary><Shift><Super>n' string "code \"$note_dir\""
+xfconf-set '/commands/custom/<Primary><Super>o' string "todoist"
+xfconf-set '/commands/custom/<Primary><Super>p' string "clockify"
+xfconf-set '/commands/custom/<Primary><Shift><Super>r' string "code \"$HOME/.bashrc\""
+xfconf-set '/commands/custom/<Primary><Super>s' string "exo-open --launch TerminalEmulator bash -ic '~/.local/bin/audit-repos.sh --offline; lk_tty_pause'"
+xfconf-set '/commands/custom/<Primary><Shift><Super>s' string "exo-open --launch TerminalEmulator bash -ic '~/.local/bin/audit-repos.sh; lk_tty_pause'"
+xfconf-set '/commands/custom/<Primary><Super>semicolon' string "libreoffice --calc"
+xfconf-set '/commands/custom/<Primary><Shift><Super>t' string "\"$settings_repo/bin/open-repo.sh\" git -C '{}' cola"
+xfconf-set '/commands/custom/<Primary><Super>v' string "virt-manager"
+xfconf-set '/commands/custom/<Primary><Super>x' string "autorandr --change --force"
+xfconf-set '/commands/custom/<Primary><Alt>x' string "autorandr --change --force"
+xfconf-set '/commands/custom/<Primary><Shift><Super>x' string "sh -c 'for a in remove add; do env ACTION=\$a autorandr --change --force; done'"
+xfconf-set '/commands/custom/<Primary><Shift><Alt>x' string "sh -c 'for a in remove add; do env ACTION=\$a autorandr --change --force; done'"
+xfconf-set '/commands/custom/<Primary><Super>y' string "spotify"
+xfconf-set '/commands/custom/<Primary><Shift><Super>y' string "clementine"
+xfconf-set '/commands/custom/<Shift><Super>space' string "recoll"
+
+xfconf-set '/commands/custom/<Primary><Alt>i' string "xrandr-invert-colors"
+xfconf-set '/commands/custom/<Primary><Alt>q' string "sh -c 'xfconf-query -c xfce4-notifyd -p /do-not-disturb -T || xfconf-query -c xfce4-notifyd -p /do-not-disturb -n -t bool -s true'"
+xfconf-set '/commands/custom/<Primary><Alt>a' string "xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/presentation-mode -n -t bool -s true"
+xfconf-set '/commands/custom/<Primary><Alt>s' string "xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/presentation-mode -n -t bool -s false"
+xfconf-set '/commands/custom/<Primary><Alt>slash' string "sh -c 'sh=\$(xdotool getactivewindow getwindowgeometry --shell) && eval \"\$sh\" && X=\$((X + WIDTH / 2)) && Y=\$((Y + HEIGHT / 2)) && xdotool mousemove \$X \$Y'"
+
+channel=xfce4-desktop
+! reset-all || xfconf-reset /
+xfconf-set /desktop-icons/file-icons/show-filesystem bool false
+xfconf-set /desktop-icons/file-icons/show-home bool false
+xfconf-set /desktop-icons/file-icons/show-removable bool false
+xfconf-set /desktop-icons/file-icons/show-trash bool true
+xfconf-set /desktop-icons/gravity int 3
+xfconf-set /desktop-icons/primary bool true
+xfconf-set /desktop-icons/style int 2
+xfconf-set /windowlist-menu/show-add-remove-workspaces bool false
+xfconf-set /windowlist-menu/show-sticky-once bool true
+
+channel=xfce4-notifyd
+! reset-all || xfconf-reset /
+xfconf-set /date-time-format string relative-times
+xfconf-set /do-fadeout bool true
+xfconf-set /do-slideout bool true
+xfconf-set /expire-timeout int 5
+xfconf-set /expire-timeout-allow-override bool true
+xfconf-set /initial-opacity double 0.95
+xfconf-set /log-level string always
+xfconf-set /log-level-apps string all
+xfconf-set /log-max-size-enabled bool false
+xfconf-set /mute-sounds bool true
+xfconf-set /notification-log bool true
+xfconf-set /notify-location string top-right
+xfconf-set /show-notifications-on string primary-monitor
+xfconf-set /theme string Qogir-Dark
+
+# xsecurelock provides screen locking
+channel=xfce4-screensaver
+xfconf-reset /
+
+channel=xfce4-session
+xfconf-reset /
+xfconf-set /compat/LaunchGNOME bool true
+xfconf-set /general/AutoSave bool false
+xfconf-set /general/LockCommand string "xset s activate"
+xfconf-set /general/SaveOnExit bool false
+xfconf-set /shutdown/LockScreen bool true
+
+# Don't prompt when clearing the notification log
+xfconf-set /plugin/hide-clear-prompt bool true
+
+channel=thunar
+xfconf-reset /
+xfconf-set /default-view string ThunarDetailsView
+xfconf-set /misc-change-window-icon bool false
+xfconf-set /misc-date-style string THUNAR_DATE_STYLE_SHORT
+xfconf-set /misc-directory-specific-settings bool true
+xfconf-set /misc-show-delete-action bool true
+
+channel=thunar-volman
+xfconf-reset /
+
+channel=xsettings
+xfconf-reset /Net/EnableEventSounds
+
+maybe killall plank 2>/dev/null || true
+
+maybe dconf reset -f /net/launchpad/plank/
+maybe dconf load / <<"EOF"
 [net/launchpad/plank/docks/dock1]
 current-workspace-only=true
 dock-items=['xfce4-terminal.dockitem', 'firefox.dockitem', 'caprine.dockitem', 'teams-for-linux.dockitem', 'org.mozilla.Thunderbird.dockitem', 'code.dockitem', 'sublime_merge.dockitem', 'clockify.dockitem', 'org.keepassxc.KeePassXC.dockitem']
@@ -13,5 +305,9 @@ lock-items=true
 theme='Transparent'
 EOF
 
-nohup plank &>/dev/null &
-disown
+if [[ -n ${df_dryrun:+1} ]]; then
+    echo "  - would have run (in background): plank"
+else
+    nohup plank &>/dev/null &
+    disown
+fi

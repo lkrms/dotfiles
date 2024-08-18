@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+function extract() {
+    local tar=$1 txt=${1%.tar.bz2}.txt
+    if [[ ! -f $txt ]] || [[ $tar -nt $txt ]]; then
+        local output
+        output=$(tar -jtf "$tar")
+        if [[ $output != config.txt ]]; then
+            output=${output//$'\n'/, }
+            die "Expected 'config.txt' in $tar, got: $output"
+        fi
+        local command=(tar -jxf "$tar" -O config.txt)
+        if [[ -n ${df_dryrun:+1} ]]; then
+            printf '  - would have run:%s >%s\n' \
+                "$(printf ' %q' "${command[@]}")" \
+                "$(printf '%q' "$txt")"
+        else
+            echo " -> Extracting: $tar"
+            "${command[@]}" >"$txt"
+        fi
+        maybe touch -r "$tar" "$txt"
+    elif [[ $tar -ot $txt ]]; then
+        die "$tar must be newer than $txt when cleaning"
+    fi
+}
+
+with_each 'files/.local/share/xfce4-panel-profiles/*.tar.bz2' extract '{}'

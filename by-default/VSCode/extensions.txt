@@ -95,7 +95,6 @@ humao.rest-client
 idleberg.applescript
 jq-syntax-highlighting.jq-syntax-highlighting
 Kasik96.latte
-kisstkondoros.typelens
 LoranKloeze.ruby-rubocop-revived
 maelvalais.autoconf
 mrmlnc.vscode-apache

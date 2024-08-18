@@ -1,0 +1,136 @@
+/configver 2
+/panels [<1>]
+/panels/panel-1/autohide-behavior uint32 0
+/panels/panel-1/background-alpha uint32 100
+/panels/panel-1/background-style uint32 0
+/panels/panel-1/enable-struts true
+/panels/panel-1/enter-opacity uint32 100
+/panels/panel-1/icon-size 16
+/panels/panel-1/leave-opacity uint32 100
+/panels/panel-1/length uint32 100
+/panels/panel-1/mode uint32 0
+/panels/panel-1/nrows uint32 1
+/panels/panel-1/output-name 'Primary'
+/panels/panel-1/plugin-ids [<1>, <2>, <3>, <14>, <18>, <7>, <17>, <4>, <11>, <6>, <9>, <8>, <10>, <16>, <15>, <5>, <12>, <13>]
+/panels/panel-1/position 'p=6;x=0;y=0'
+/panels/panel-1/position-locked true
+/panels/panel-1/size 24
+/plugins/plugin-1 'whiskermenu'
+/plugins/plugin-1/command-logoutuser "loginctl terminate-session ''"
+/plugins/plugin-1/command-restart 'systemctl reboot'
+/plugins/plugin-1/command-shutdown 'systemctl poweroff'
+/plugins/plugin-1/command-switchuser 'dm-tool switch-to-greeter'
+/plugins/plugin-1/default-category 1
+/plugins/plugin-1/favorites-in-recent true
+/plugins/plugin-1/launcher-icon-size 3
+/plugins/plugin-1/launcher-show-description false
+/plugins/plugin-1/position-search-alternate true
+/plugins/plugin-1/recent-items-max 20
+/plugins/plugin-1/search-actions 4
+/plugins/plugin-1/search-actions/action-0/command 'exo-open --launch TerminalEmulator man \\1'
+/plugins/plugin-1/search-actions/action-0/name 'Open man page'
+/plugins/plugin-1/search-actions/action-0/pattern '^(?:# *|m +)(.+)'
+/plugins/plugin-1/search-actions/action-0/regex true
+/plugins/plugin-1/search-actions/action-1/command 'exo-open --launch TerminalEmulator \\1'
+/plugins/plugin-1/search-actions/action-1/name 'Run in terminal'
+/plugins/plugin-1/search-actions/action-1/pattern '^(?:! *|t +)(.+)'
+/plugins/plugin-1/search-actions/action-1/regex true
+/plugins/plugin-1/search-actions/action-2/command 'recoll -a -q \\1'
+/plugins/plugin-1/search-actions/action-2/name 'Search'
+/plugins/plugin-1/search-actions/action-2/pattern '^\\?(?: +|(?=[^?]))(.+)'
+/plugins/plugin-1/search-actions/action-2/regex true
+/plugins/plugin-1/search-actions/action-3/command 'recoll -f -q \\1'
+/plugins/plugin-1/search-actions/action-3/name 'Search file names'
+/plugins/plugin-1/search-actions/action-3/pattern '^(?:\\?\\? ?|f )(.+)'
+/plugins/plugin-1/search-actions/action-3/regex true
+/plugins/plugin-1/show-command-logout false
+/plugins/plugin-1/show-command-logoutuser true
+/plugins/plugin-1/show-command-menueditor false
+/plugins/plugin-1/show-command-restart true
+/plugins/plugin-1/show-command-shutdown true
+/plugins/plugin-1/show-command-switchuser true
+/plugins/plugin-1/sort-categories false
+/plugins/plugin-1/view-mode 2
+/plugins/plugin-10 'notification-plugin'
+/plugins/plugin-11 'separator'
+/plugins/plugin-11/style uint32 0
+/plugins/plugin-12 'clock'
+/plugins/plugin-12/mode uint32 4
+/plugins/plugin-12/show-seconds true
+/plugins/plugin-13 'separator'
+/plugins/plugin-13/style uint32 0
+/plugins/plugin-14 'genmon'
+/plugins/plugin-14/command 'compact-uptime'
+/plugins/plugin-14/enable-single-row true
+/plugins/plugin-14/font 'Sans 9'
+/plugins/plugin-14/text '(genmon)'
+/plugins/plugin-14/update-period 60000
+/plugins/plugin-14/use-label false
+/plugins/plugin-15 'clock'
+/plugins/plugin-15/digital-format '%a %-d %b'
+/plugins/plugin-15/digital-layout uint32 3
+/plugins/plugin-15/digital-time-format '%a %-d %b'
+/plugins/plugin-15/tooltip-format 'week %V'
+/plugins/plugin-16 'separator'
+/plugins/plugin-16/style uint32 0
+/plugins/plugin-17 'separator'
+/plugins/plugin-17/style uint32 0
+/plugins/plugin-18 'separator'
+/plugins/plugin-18/style uint32 0
+/plugins/plugin-2 'tasklist'
+/plugins/plugin-2/grouping uint32 0
+/plugins/plugin-2/include-all-monitors true
+/plugins/plugin-2/middle-click uint32 0
+/plugins/plugin-2/show-handle false
+/plugins/plugin-2/show-wireframes true
+/plugins/plugin-2/sort-order uint32 1
+/plugins/plugin-2/window-scrolling false
+/plugins/plugin-3 'separator'
+/plugins/plugin-3/expand true
+/plugins/plugin-3/style uint32 0
+/plugins/plugin-4 'pager'
+/plugins/plugin-4/miniature-view false
+/plugins/plugin-4/rows uint32 1
+/plugins/plugin-4/workspace-scrolling true
+/plugins/plugin-5 'separator'
+/plugins/plugin-5/style uint32 0
+/plugins/plugin-6 'systray'
+/plugins/plugin-6/hidden-items [<'Todoist1'>, <'remmina-icon'>, <'blueman'>, <'Clockify1'>, <'flameshot'>, <'Zeal'>]
+/plugins/plugin-6/hidden-legacy-items [<'networkmanager applet'>, <'clockify'>, <'stretchly'>, <'thunar'>, <'system-config-printer'>, <'remmina'>, <'wi-fi network connection “s.t.e.m.j.a.k.l” active: s.t.e.m.j.a.k.l (75%)'>]
+/plugins/plugin-6/hide-new-items true
+/plugins/plugin-6/icon-size 18
+/plugins/plugin-6/known-items [<'Clockify1'>, <'blueman'>, <'Stretchly1'>, <'copyq'>, <'flameshot'>, <'RescueTime'>, <'Nextcloud'>, <'Todoist1'>, <'remmina-icon'>, <'Microsoft Teams - Preview1'>, <'Skype1'>, <'Caprine1'>, <'zoom'>, <'Zeal'>]
+/plugins/plugin-6/known-legacy-items [<'wi-fi network connection “s.t.e.m.j.a.k.l” active: s.t.e.m.j.a.k.l (75%)'>, <'clockify'>, <'stretchly'>, <'system-config-printer'>, <'thunar'>, <'networkmanager applet'>, <'bluetooth enabled'>, <'todoist'>, <'remmina'>, <'teams'>, <'skypeforlinux'>, <'electron'>]
+/plugins/plugin-6/show-frame false
+/plugins/plugin-6/square-icons true
+/plugins/plugin-7 'cpugraph'
+/plugins/plugin-7/background [<1.0>, <1.0>, <1.0>, <0.0>]
+/plugins/plugin-7/bars 0
+/plugins/plugin-7/border 0
+/plugins/plugin-7/color-mode 1
+/plugins/plugin-7/command ''
+/plugins/plugin-7/foreground-1 [<0.0>, <1.0>, <0.0>, <1.0>]
+/plugins/plugin-7/foreground-2 [<1.0>, <0.0>, <0.0>, <1.0>]
+/plugins/plugin-7/foreground-3 [<0.0>, <0.0>, <0.0>, <0.0>]
+/plugins/plugin-7/foreground-iowait [<0.20000000000000001>, <0.90000000000000002>, <0.40000000000000002>, <1.0>]
+/plugins/plugin-7/foreground-nice [<0.90000000000000002>, <0.80000000000000004>, <0.20000000000000001>, <1.0>]
+/plugins/plugin-7/foreground-system [<0.90000000000000002>, <0.10000000000000001>, <0.10000000000000001>, <1.0>]
+/plugins/plugin-7/foreground-user [<0.10000000000000001>, <0.40000000000000002>, <0.90000000000000002>, <1.0>]
+/plugins/plugin-7/frame 0
+/plugins/plugin-7/in-terminal 1
+/plugins/plugin-7/load-threshold 0
+/plugins/plugin-7/mode 2
+/plugins/plugin-7/per-core 0
+/plugins/plugin-7/per-core-spacing 1
+/plugins/plugin-7/size 72
+/plugins/plugin-7/smt-issues 0
+/plugins/plugin-7/smt-issues-color [<0.90000000000000002>, <0.0>, <0.0>, <1.0>]
+/plugins/plugin-7/smt-stats 0
+/plugins/plugin-7/startup-notification 0
+/plugins/plugin-7/time-scale 0
+/plugins/plugin-7/tracked-core 0
+/plugins/plugin-7/update-interval 2
+/plugins/plugin-8 'pulseaudio'
+/plugins/plugin-8/enable-keyboard-shortcuts true
+/plugins/plugin-8/show-notifications false
+/plugins/plugin-9 'power-manager-plugin'
