@@ -268,6 +268,9 @@ xfconf-set /notify-location string top-right
 xfconf-set /show-notifications-on string primary-monitor
 xfconf-set /theme string Qogir-Dark
 
+# Don't prompt when clearing the notification log
+xfconf-set /plugin/hide-clear-prompt bool true
+
 # xsecurelock provides screen locking
 channel=xfce4-screensaver
 xfconf-reset /
@@ -279,9 +282,6 @@ xfconf-set /general/AutoSave bool false
 xfconf-set /general/LockCommand string "xset s activate"
 xfconf-set /general/SaveOnExit bool false
 xfconf-set /shutdown/LockScreen bool true
-
-# Don't prompt when clearing the notification log
-xfconf-set /plugin/hide-clear-prompt bool true
 
 channel=xfce4-terminal
 ! reset-all || xfconf-reset /
