@@ -184,6 +184,8 @@ The following environment variables are passed to `target`, `configure` and
 - **`df_platform`:** either `linux` or `macos`.
 - **`df_dryrun`:** non-empty if the installer is running in dry-run mode,
   otherwise unset or empty.
+- **`df_reset`:** non-empty if the `--reset` option is passed to the installer,
+  otherwise unset or empty.
 - **`df_target`:** the absolute path where symbolic links to the application's
   dotfiles are created.
 

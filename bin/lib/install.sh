@@ -36,10 +36,14 @@ function git() {
 
 by_app=0
 offline=0
+all_apps=1
 while [[ ${1-} == --* ]]; do
     case "$1" in
     --check)
         export df_dryrun=1
+        ;;
+    --reset)
+        export df_reset=1
         ;;
     --offline)
         offline=1
@@ -62,6 +66,11 @@ set_app_roots
 IFS=$'\n'
 apps=($(printf '%s\0' $(printf '%q/*\n' "${local_app_roots[@]}") | xargs -0r basename -a -- | sort -u))
 
+if (($#)); then
+    apps=($(comm -12 <(printf '%s\n' "$@" | sort -u) <(printf '%s\n' ${apps+"${apps[@]}"})))
+    all_apps=0
+fi
+
 if ((!by_app)); then
     link_file "$df_root/bin/add" ~/.local/bin/dotfiles-add-by-long-host
     link_file "$df_root/bin/add" ~/.local/bin/dotfiles-add-by-host
@@ -75,7 +84,7 @@ if ((!by_app)); then
     link_file "$df_root/bin/install" ~/.local/bin/dotfiles-install
 fi
 
-[[ ! -e $df_root/by-app ]] || {
+[[ ! -e $df_root/by-app ]] || ((!all_apps && !by_app)) || {
     maybe chmod -R +w "$df_root/by-app" &&
         maybe rm -rf -- "$df_root/by-app" || die "error removing $df_root/by-app"
 }
@@ -92,15 +101,17 @@ for app in ${apps+"${apps[@]}"}; do
     # Mitigate race condition where settings for an app are removed before they can be applied
     [[ -n ${local_app_dirs+${app_dirs+1}} ]] || continue
     # 1. Populate by-app/ with settings for every host and platform
-    while IFS= read -r path; do
-        by_app_path=${path#"$df_root/"}
-        by_app_path=${by_app_path#private/}
-        [[ $by_app_path =~ ^(by-(host|platform)/[^/]+|by-default)/(.*) ]] ||
-            die "invalid pathname: $path"
-        by_app_path=$df_root/by-app/$app/${BASH_REMATCH[1]}/${BASH_REMATCH[3]#*/}
-        link_file "$path" "$by_app_path" >/dev/null
-    done < <(find_all "${app_dirs[@]}")
-    ((!by_app)) || continue
+    if ((all_apps || by_app)); then
+        while IFS= read -r path; do
+            by_app_path=${path#"$df_root/"}
+            by_app_path=${by_app_path#private/}
+            [[ $by_app_path =~ ^(by-(host|platform)/[^/]+|by-default)/(.*) ]] ||
+                die "invalid pathname: $path"
+            by_app_path=$df_root/by-app/$app/${BASH_REMATCH[1]}/${BASH_REMATCH[3]#*/}
+            link_file "$path" "$by_app_path" >/dev/null
+        done < <(find_all "${app_dirs[@]}")
+        ((!by_app)) || continue
+    fi
     # 2. Perform the actual installation
     export df_target=~ df_filter=
     filter=
