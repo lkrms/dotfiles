@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+(($# >= 2)) || exit
+
+file=$(basename "$1" | sed -E 's/\.[^.]+$//')
+yad --question \
+    --width=400 \
+    --title="Combine selected PDF files" \
+    --text="Merge the $# PDFs you've selected into a new one called <b>$file</b>?\n\nIf there are no errors, <b>the original files will be moved to the trash</b>." \
+    --skip-taskbar || exit
+
+output=$(
+    LK_TTY_NO_COLOUR=1 lk-pdf-combine.sh "$@" 2>&1
+) ||
+    yad --error \
+        --width=400 \
+        --title="Combine selected PDF files" \
+        --text="Error combining selected PDF files:\n\n$output" \
+        --skip-taskbar

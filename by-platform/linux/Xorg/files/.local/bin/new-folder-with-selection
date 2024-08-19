@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+folder="untitled folder"
+i=1
+while [[ -e $folder ]] || [[ -L $folder ]]; do
+    ((++i))
+    folder="untitled folder $i"
+done
+
+folder=$(
+    yad --entry \
+        --width=350 \
+        --title="New folder with selection" \
+        --text="Folder name:" \
+        --entry-text="$folder" \
+        --skip-taskbar
+) || exit
+
+output=$({
+    mkdir "$folder" &&
+        mv -n "$@" "$folder/"
+} 2>&1) ||
+    yad --error \
+        --width=400 \
+        --title="New folder with selection" \
+        --text="Error creating new folder with selection:\n\n$output" \
+        --skip-taskbar

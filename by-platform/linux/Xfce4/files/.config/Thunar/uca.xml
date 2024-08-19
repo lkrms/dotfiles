@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+<action>
+	<icon>insert-text-frame</icon>
+	<name>Edit in nomacs</name>
+	<submenu></submenu>
+	<unique-id>1586299476189427-1</unique-id>
+	<command>nomacs %f</command>
+	<description>Open this image in nomacs</description>
+	<range></range>
+	<patterns>*</patterns>
+	<image-files/>
+</action>
+<action>
+	<icon>folder-new</icon>
+	<name>New folder with selection</name>
+	<submenu></submenu>
+	<unique-id>1576288731185254-6</unique-id>
+	<command>new-folder-with-selection %F</command>
+	<description>Send one or more items to a new folder</description>
+	<range></range>
+	<patterns>*</patterns>
+	<directories/>
+	<audio-files/>
+	<image-files/>
+	<other-files/>
+	<text-files/>
+	<video-files/>
+</action>
+<action>
+	<icon>application-pdf</icon>
+	<name>Combine selected PDF files</name>
+	<submenu></submenu>
+	<unique-id>1580612606085046-1</unique-id>
+	<command>combine-selected-pdf-files %F</command>
+	<description>Merge two or more PDFs into one</description>
+	<range></range>
+	<patterns>*.pdf</patterns>
+	<audio-files/>
+	<image-files/>
+	<other-files/>
+	<text-files/>
+	<video-files/>
+</action>
+<action>
+	<icon>utilities-terminal</icon>
+	<name>Open in terminal</name>
+	<submenu></submenu>
+	<unique-id>1574113675147262-1</unique-id>
+	<command>exo-open --working-directory %f --launch TerminalEmulator</command>
+	<description>Open a terminal in this directory</description>
+	<range></range>
+	<patterns>*</patterns>
+	<directories/>
+</action>
+<action>
+	<icon>utilities-terminal</icon>
+	<name>Open in terminal</name>
+	<submenu></submenu>
+	<unique-id>1574113675147285-2</unique-id>
+	<command>exo-open --working-directory %d --launch TerminalEmulator</command>
+	<description>Open a terminal in the containing directory</description>
+	<range></range>
+	<patterns>*</patterns>
+	<audio-files/>
+	<image-files/>
+	<other-files/>
+	<text-files/>
+	<video-files/>
+</action>
+<action>
+	<icon>visualstudiocode</icon>
+	<name>Open in VS Code</name>
+	<submenu></submenu>
+	<unique-id>1622004381003641-1</unique-id>
+	<command>code %f</command>
+	<description>Open VS Code in this directory</description>
+	<range></range>
+	<patterns>*</patterns>
+	<directories/>
+</action>
+<action>
+	<icon>visualstudiocode</icon>
+	<name>Open in VS Code</name>
+	<submenu></submenu>
+	<unique-id>1622042146177639-1</unique-id>
+	<command>code %d</command>
+	<description>Open VS Code in the containing directory</description>
+	<range></range>
+	<patterns>*</patterns>
+	<audio-files/>
+	<image-files/>
+	<other-files/>
+	<text-files/>
+	<video-files/>
+</action>
+<action>
+	<icon>sublime-merge</icon>
+	<name>Open in Sublime Merge</name>
+	<submenu></submenu>
+	<unique-id>1584495832566667-1</unique-id>
+	<command>smerge %f</command>
+	<description>Open Sublime Merge in this directory</description>
+	<range></range>
+	<patterns>*</patterns>
+	<directories/>
+</action>
+<action>
+	<icon>sublime-merge</icon>
+	<name>Open in Sublime Merge</name>
+	<submenu></submenu>
+	<unique-id>1584496009132002-2</unique-id>
+	<command>smerge %d</command>
+	<description>Open Sublime Merge in the containing directory</description>
+	<range></range>
+	<patterns>*</patterns>
+	<audio-files/>
+	<image-files/>
+	<other-files/>
+	<text-files/>
+	<video-files/>
+</action>
+<action>
+	<icon>filefind</icon>
+	<name>Find in this folder</name>
+	<submenu></submenu>
+	<unique-id>1574113675147322-3</unique-id>
+	<command>catfish --path=%f</command>
+	<description>Search for files within this folder</description>
+	<range></range>
+	<patterns>*</patterns>
+	<directories/>
+</action>
+</actions>
