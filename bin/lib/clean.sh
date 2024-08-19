@@ -12,19 +12,26 @@ set_app_roots
 IFS=$'\n'
 apps=($(printf '%s\0' $(printf '%q/*\n' "${app_roots[@]}") | xargs -0r basename -a -- | sort -u))
 
+if (($#)); then
+    apps=($(comm -12 <(printf '%s\n' "$@" | sort -u) <(printf '%s\n' ${apps+"${apps[@]}"})))
+fi
+
 i=0
 count=${#apps[@]}
 error_apps=()
 for app in ${apps+"${apps[@]}"}; do
     ((!i++)) || echo
     echo "==> [$i/$count] Checking $app"
-    path=$df_root/by-default/$app/clean
-    [[ -e $path ]] && [[ -s $path ]] || continue
-    [[ -f $path ]] && [[ -x $path ]] || die "not executable: $path"
     # Get a list of directories that actually exist by expanding !(?)
     app_dirs=($(printf '%s\n' $(IFS=$' \t\n' && printf '%q!(?)\n' "${app_roots[@]/%//$app}")))
     # Mitigate race condition where settings for an app are removed before they can be cleaned
     [[ -n ${app_dirs+1} ]] || continue
+    for dir in "${app_dirs[@]}"; do
+        path=$dir/clean
+        [[ ! -e $path ]] || break
+    done
+    [[ -s $path ]] || continue
+    [[ -f $path ]] && [[ -x $path ]] || die "not executable: $path"
     echo " -> Running: $path"
     "$path" "${app_dirs[@]}" && status=0 || status=$?
     case "$status" in
