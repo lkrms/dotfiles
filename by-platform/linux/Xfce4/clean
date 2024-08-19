@@ -27,3 +27,12 @@ function extract() {
 }
 
 with_each 'files/.local/share/xfce4-panel-profiles/*.tar.bz2' extract '{}'
+
+# normalise_gtk_accel_map <file>
+function normalise_gtk_accel_map() {
+    sed -E '/^;/!d; /^; \(gtk_accel_path /d' "$1"
+    sed -E '/^;/d' "$1" | LC_ALL=C sort
+}
+
+with_each files/.config/xfce4/terminal/accels.scm \
+    replace_file '{}' - normalise_gtk_accel_map '{}'

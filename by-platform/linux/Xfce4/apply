@@ -280,6 +280,47 @@ xfconf-set /shutdown/LockScreen bool true
 # Don't prompt when clearing the notification log
 xfconf-set /plugin/hide-clear-prompt bool true
 
+channel=xfce4-terminal
+xfconf-reset /
+xfconf-set /background-darkness double 1.000000
+xfconf-set /color-background string "#041a3b"
+xfconf-set /color-cursor string "#f2f2f2"
+xfconf-set /color-cursor-use-default bool false
+xfconf-set /color-foreground string "#f2f2f2"
+xfconf-set /color-palette string "#303030;#e1321a;#6ab017;#ffc005;#729fcf;#ec0048;#2aa7e7;#f2f2f2;#6a6a6a;#ff361e;#7bc91f;#ffd00a;#0071ff;#ff1d62;#4bb8fd;#ffffff"
+xfconf-set /font-use-system bool true
+xfconf-set /misc-always-show-tabs bool false
+xfconf-set /misc-bell bool false
+xfconf-set /misc-bell-urgent bool false
+xfconf-set /misc-borders-default bool true
+xfconf-set /misc-confirm-close bool true
+xfconf-set /misc-copy-on-select bool true
+xfconf-set /misc-cursor-blinks bool true
+xfconf-set /misc-cursor-shape string TERMINAL_CURSOR_SHAPE_BLOCK
+xfconf-set /misc-cycle-tabs bool true
+xfconf-set /misc-default-geometry string 120x35
+xfconf-set /misc-highlight-urls bool true
+xfconf-set /misc-inherit-geometry bool false
+xfconf-set /misc-menubar-default bool true
+xfconf-set /misc-middle-click-opens-uri bool false
+xfconf-set /misc-mouse-autohide bool false
+xfconf-set /misc-mouse-wheel-zoom bool true
+xfconf-set /misc-new-tab-adjacent bool true
+xfconf-set /misc-rewrap-on-resize bool true
+xfconf-set /misc-right-click-action string TERMINAL_RIGHT_CLICK_ACTION_CONTEXT_MENU
+xfconf-set /misc-search-dialog-opacity uint 100
+xfconf-set /misc-show-relaunch-dialog bool true
+xfconf-set /misc-show-unsafe-paste-dialog bool true
+xfconf-set /misc-slim-tabs bool false
+xfconf-set /misc-tab-close-buttons bool true
+xfconf-set /misc-tab-close-middle-click bool false
+xfconf-set /misc-tab-position string GTK_POS_TOP
+xfconf-set /misc-toolbar-default bool false
+xfconf-set /overlay-scrolling bool true
+xfconf-set /scrolling-unlimited bool true
+xfconf-set /shortcuts-no-menukey bool true
+xfconf-set /shortcuts-no-mnemonics bool true
+
 channel=thunar
 xfconf-reset /
 xfconf-set /default-view string ThunarDetailsView
