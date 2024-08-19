@@ -118,6 +118,9 @@ xfconf-set-array /general/workspace_names array -t string -s 1 -t string -s 2 -t
 #xfconf-set /general/wrap_layout bool true
 xfconf-set /general/wrap_windows bool false
 
+xfconf-set /general/theme string "Qogir-Dark"
+xfconf-set /general/title_font string "Source Sans Pro Bold 8"
+
 channel=xfce4-keyboard-shortcuts
 xfconf-reset /
 xfconf-set-array /providers -t string -s xfwm4 -t string -s commands
@@ -281,7 +284,7 @@ xfconf-set /shutdown/LockScreen bool true
 xfconf-set /plugin/hide-clear-prompt bool true
 
 channel=xfce4-terminal
-xfconf-reset /
+! reset-all || xfconf-reset /
 xfconf-set /background-darkness double 1.000000
 xfconf-set /color-background string "#041a3b"
 xfconf-set /color-cursor string "#f2f2f2"
@@ -333,7 +336,22 @@ channel=thunar-volman
 xfconf-reset /
 
 channel=xsettings
+xfconf-set /Gtk/ButtonImages bool false
+xfconf-set /Gtk/MenuImages bool true
 xfconf-reset /Net/EnableEventSounds
+
+xfconf-set /Gtk/CursorThemeName string "Qogir-dark"
+xfconf-set /Gtk/FontName string "Source Sans Pro 9"
+xfconf-set /Gtk/MonospaceFontName string "JetBrains Mono NL 9"
+xfconf-set /Net/IconThemeName string "Tela-dark"
+xfconf-set /Net/ThemeName string "Qogir-Dark"
+
+maybe dconf load / <<"EOF"
+[org/gnome/desktop/interface]
+document-font-name='Source Sans Pro 9'
+font-name='Source Sans Pro 9'
+monospace-font-name='JetBrains Mono NL 9'
+EOF
 
 maybe killall plank 2>/dev/null || true
 
