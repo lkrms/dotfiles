@@ -27,17 +27,17 @@
 		"prefix": "Creates",
 		"body": "Creates a new ${TM_FILENAME_BASE/[^a-zA-Z0-9]+//g} object"
 	},
-	"PHPStan: assert": {
+	"PHPStan: assert not null": {
 		"prefix": "@phpstan",
-		"body": "@phpstan-assert ${1:Type, e.g. !null} $0"
+		"body": "@phpstan-assert !null $0"
 	},
-	"PHPStan: assert if true": {
+	"PHPStan: assert not null if true": {
 		"prefix": "@phpstan",
-		"body": "@phpstan-assert-if-true ${1:Type, e.g. !null} $0"
+		"body": "@phpstan-assert-if-true !null $0"
 	},
-	"PHPStan: ignore next line": {
+	"PHPStan: ignore": {
 		"prefix": "@phpstan",
-		"body": "@phpstan-ignore-next-line"
+		"body": "@phpstan-ignore $0"
 	},
 	"PHPStan: impure method": {
 		"prefix": "@phpstan",
@@ -50,5 +50,9 @@
 	"PHPStan: dump type": {
 		"prefix": "dump",
 		"body": "\\PHPStan\\dumpType($0);"
+	},
+	"Intelephense: @disregard P1006": {
+		"prefix": "@disregard",
+		"body": "/** @disregard P1006 */"
 	}
 }

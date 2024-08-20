@@ -407,6 +407,29 @@
         }
     },
     {
+        "key": "alt+l",
+        "command": "toggle",
+        "args": {
+            "id": "intelephense.codeLens",
+            "value": [
+                {
+                    "intelephense.codeLens.implementations.enable": true,
+                    "intelephense.codeLens.overrides.enable": true,
+                    "intelephense.codeLens.parent.enable": true,
+                    "intelephense.codeLens.references.enable": true,
+                    "intelephense.codeLens.usages.enable": true
+                },
+                {
+                    "intelephense.codeLens.implementations.enable": false,
+                    "intelephense.codeLens.overrides.enable": false,
+                    "intelephense.codeLens.parent.enable": false,
+                    "intelephense.codeLens.references.enable": false,
+                    "intelephense.codeLens.usages.enable": false
+                }
+            ]
+        }
+    },
+    {
         "key": "alt+p",
         "command": "toggle",
         "when": "editorTextFocus",
