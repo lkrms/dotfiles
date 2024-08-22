@@ -42,7 +42,7 @@
 	gpgSign = true
 
 [url "github.com:"]
-	pushInsteadOf = https://github.com/
+	insteadOf = https://github.com/
 
 [url "https://aur.archlinux.org/"]
 	insteadOf = aur:
