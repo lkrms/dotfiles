@@ -2,10 +2,10 @@
 
 case "$df_platform" in
 linux)
-    printf '%s\n' ~/.config
+    printf '%s\n' ~/.config/keepassxc
     ;;
 macos)
-    printf '%s\n' ~/"Library/Application Support"
+    printf '%s\n' ~/"Library/Application Support/KeePassXC"
     ;;
 *)
     exit 3
