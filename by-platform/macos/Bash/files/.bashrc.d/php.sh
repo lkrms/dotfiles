@@ -75,11 +75,15 @@ function php-build-xdebug() {
         php-with "$@" -- "$FUNCNAME"
         return
     fi
-    local php_ini php_extension_dir file version=
+    local php_ini php_extension_dir file version source
     lk_tty_print "Building xdebug extension"
     php -r "if (PHP_VERSION_ID < 80000) { exit (1); }" || version=-3.1.6
-    #php -r "if (PHP_VERSION_ID >= 80300) { exit (1); }" || version=-3.3.0alpha3
-    _pecl install -f "xdebug$version" &&
+    php -r "if (PHP_VERSION_ID >= 80400) { exit (1); }" ||
+        { source=$(mktemp -d)/xdebug-master/package.xml &&
+            curl -fL https://github.com/xdebug/xdebug/archive/refs/heads/master.tar.gz |
+            tar -zxC "${source%/*/*}" ||
+            return; }
+    _pecl install -f "${source:-xdebug${version-}}" &&
         file=$php_ini/conf.d/ext-xdebug.ini &&
         lk_install -m 00644 "$file" &&
         lk_file_replace "$file" <<'EOF'
@@ -92,9 +96,18 @@ function php-build-pcov() {
         php-with "$@" -- "$FUNCNAME"
         return
     fi
-    local php_ini php_extension_dir file
+    local php_ini php_extension_dir file source
     lk_tty_print "Building pcov extension"
-    _pecl install -f pcov &&
+    php -r "if (PHP_VERSION_ID >= 80400) { exit (1); }" ||
+        { source=$(mktemp -d)/pcov-develop/package.xml &&
+            curl -fL https://github.com/krakjoe/pcov/archive/refs/heads/develop.tar.gz |
+            tar -zxC "${source%/*/*}" &&
+            curl -fL https://github.com/krakjoe/pcov/commit/7d764c7c2555e8287351961d72be3ebec4d8743f.patch |
+            patch -d "${source%/*}" -p1 &&
+            curl -fL https://github.com/krakjoe/pcov/compare/develop...release.diff |
+            patch -d "${source%/*}" -p1 ||
+            return; }
+    _pecl install -f "${source:-pcov}" &&
         file=$php_ini/conf.d/ext-pcov.ini &&
         lk_install -m 00644 "$file" &&
         lk_file_replace "$file" <<'EOF'
