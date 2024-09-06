@@ -327,7 +327,7 @@
         "when": "editorTextFocus"
     },
     {
-        "command": "sortLines.sortLinesNatural",
+        "command": "editor.action.sortLinesAscending",
         "key": "f9",
         "when": "editorTextFocus && editorHasSelection && !inDebugMode"
     },
