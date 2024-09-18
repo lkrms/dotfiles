@@ -202,6 +202,11 @@
         "when": "editorTextFocus"
     },
     {
+        "command": "editor.action.sortLinesAscending",
+        "key": "f9",
+        "when": "editorTextFocus && editorHasSelection && !inDebugMode"
+    },
+    {
         "command": "editor.action.transformToCamelcase",
         "key": "cmd+k l"
     },
@@ -326,11 +331,6 @@
         "command": "sortLines.sortLinesNatural",
         "key": "cmd+k f5",
         "when": "editorTextFocus"
-    },
-    {
-        "command": "editor.action.sortLinesAscending",
-        "key": "f9",
-        "when": "editorTextFocus && editorHasSelection && !inDebugMode"
     },
     {
         "key": "shift+alt+q",

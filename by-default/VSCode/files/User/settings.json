@@ -701,6 +701,7 @@
     "workbench.preferredLightColorTheme": "Quiet Light",
     "workbench.settings.editor": "json",
     "workbench.settings.enableNaturalLanguageSearch": false,
+    "workbench.sideBar.location": "right",
     "workbench.startupEditor": "newUntitledFile",
     "workbench.tips.enabled": false,
     "xml.format.emptyElements": "collapse",
