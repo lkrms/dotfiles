@@ -48,6 +48,9 @@ if [[ $df_platform == macos ]]; then
         fi
         replace_file "$inicli" sed -E 's/^[[:blank:]]*;*[[:blank:]]*memory_limit[[:blank:]]*=.*/memory_limit = -1/'
     done
+elif source=$(type -P php); then
+    target=$(php -r "echo 'php' . \PHP_MAJOR_VERSION . \PHP_MINOR_VERSION . \PHP_EOL;")
+    link_file "$source" ~/".local/bin/$target"
 fi
 
 extensions=$(mktemp)
