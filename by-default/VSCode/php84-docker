@@ -1,0 +1,5 @@
+#!/bin/sh
+
+exec docker run -it --rm \
+    -v "$PWD":/usr/src/app -w /usr/src/app \
+    php:8.4-rc-alpine "$@"
