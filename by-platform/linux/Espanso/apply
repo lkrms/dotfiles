@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+type -P espanso >/dev/null || exit 0
+
+if ! espanso service check &>/dev/null; then
+    maybe espanso service register
+fi
