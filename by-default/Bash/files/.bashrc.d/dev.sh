@@ -56,6 +56,14 @@ function http-toolkit-enable() {
   eval "$(curl -sS localhost:8001/setup)"
 }
 
+function php-tokenize() {
+  ~/Code/lk/pretty-php/scripts/parse.php --tokenize-for-comparison --dump "$@"
+}
+
+function php74-tokenize() {
+  php74 ~/Code/lk/pretty-php/scripts/parse.php --tokenize-for-comparison --dump "$@"
+}
+
 function phpstan-neon-create() {
   cat >phpstan.neon <<EOF
 includes:
