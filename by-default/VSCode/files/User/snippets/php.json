@@ -19,6 +19,22 @@
 			" */"
 		]
 	},
+	"PHPDoc: @api": {
+		"prefix": "@api",
+		"body": [
+			"/**",
+			" * @api",
+			" */"
+		]
+	},
+	"PHPDoc: @internal": {
+		"prefix": "@internal",
+		"body": [
+			"/**",
+			" * @internal",
+			" */"
+		]
+	},
 	"PHPDoc: @deprecated": {
 		"prefix": "@deprecated",
 		"body": "@deprecated Use {@see $0} instead"
