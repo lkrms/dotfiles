@@ -7,8 +7,6 @@
 # 3. Run "pecl <arg>..."
 # 4. Restore the $php_ini directory from the backup
 function _pecl() {
-    ! lk_is_apple_silicon ||
-        lk_warn "Apple Silicon not supported" || return
     local temp file status=0
     php_ini=$(php -r "echo php_ini_loaded_file();") || return
     php_extension_dir=$(php -r "echo ini_get('extension_dir');") || return
@@ -96,7 +94,7 @@ function php-build-pcov() {
         php-with "$@" -- "$FUNCNAME"
         return
     fi
-    local php_ini php_extension_dir file source
+    local php_ini php_extension_dir file source include_dir
     lk_tty_print "Building pcov extension"
     php -r "if (PHP_VERSION_ID >= 80400) { exit (1); }" ||
         { source=$(mktemp -d)/pcov-develop/package.xml &&
@@ -107,6 +105,10 @@ function php-build-pcov() {
             curl -fL https://github.com/krakjoe/pcov/compare/develop...release.diff |
             patch -d "${source%/*}" -p1 ||
             return; }
+    include_dir=$(php -r "echo dirname(PHP_BINARY, 2);")/include/php/ext/pcre && {
+        [[ -e "$include_dir/pcre2.h" ]] ||
+            ln -sfnv /opt/homebrew/include/pcre2.h "$include_dir/pcre2.h"
+    } || return
     _pecl install -f "${source:-pcov}" &&
         file=$php_ini/conf.d/ext-pcov.ini &&
         lk_install -m 00644 "$file" &&
@@ -117,8 +119,6 @@ EOF
 }
 
 function php-build-memprof() {
-    ! lk_is_apple_silicon ||
-        lk_warn "Apple Silicon not supported" || return
     lk_command_exists pecl ||
         lk_warn "pecl must be installed" || return
     if (($#)); then
@@ -129,7 +129,8 @@ function php-build-memprof() {
         brew install judy || return
     local php_ini php_extension_dir file
     lk_tty_print "Building memprof extension"
-    _pecl install -f memprof &&
+    JUDY_DIR="$(brew --prefix judy)" \
+        _pecl install -f memprof &&
         file=$php_ini/conf.d/ext-memprof.ini &&
         lk_install -m 00644 "$file" &&
         lk_file_replace "$file" <<'EOF'
@@ -138,8 +139,6 @@ EOF
 }
 
 function php-build-sqlsrv() {
-    ! lk_is_apple_silicon ||
-        lk_warn "Apple Silicon not supported" || return
     lk_command_exists pecl ||
         lk_warn "pecl must be installed" || return
     if (($#)); then
@@ -152,7 +151,9 @@ function php-build-sqlsrv() {
         HOMEBREW_ACCEPT_EULA=Y brew install msodbcsql18 mssql-tools18 || return
     local php_ini php_extension_dir file
     lk_tty_print "Building sqlsrv extension"
-    _pecl install -f sqlsrv &&
+    CXXFLAGS="-I$(brew --prefix unixodbc)/include" \
+    LDFLAGS="-L$(brew --prefix)/lib" \
+        _pecl install -f sqlsrv &&
         file=$php_ini/conf.d/ext-sqlsrv.ini &&
         lk_install -m 00644 "$file" &&
         lk_file_replace "$file" <<'EOF'
@@ -160,34 +161,41 @@ extension="sqlsrv.so"
 EOF
 }
 
-# php-build-db2 [/path/to/macos64_odbc_cli.tar.gz]
+# php-build-db2 [-p /path/to/macos64_odbc_cli.tar.gz]
 #
-# Download clidriver from:
+# On x86_64, download clidriver from:
 # - https://public.dhe.ibm.com/ibmdl/export/pub/software/data/db2/drivers/odbc_cli/macos64_odbc_cli.tar.gz
+#
+# On arm64, extract it from the dsdriver dmg via:
+# - https://www.ibm.com/support/pages/download-db2-121-clients-and-drivers
 function php-build-db2() { {
-    ! lk_is_apple_silicon ||
-        lk_warn "Apple Silicon not supported" || return
     lk_command_exists pecl odbcinst ||
         lk_warn "pecl and unixodbc must be installed" || return
+    local clidriver_file=macos64_odbc_cli.tar.gz
+    if (($# > 1)) && [[ $1 == -p ]]; then
+        clidriver_file=$2
+        shift 2
+    fi
     if (($#)); then
         php-with "$@" -- "$FUNCNAME"
         return
     fi
-    local php_ini php_extension_dir file temp _LK_FD=3
-    [[ -d /opt/clidriver ]] || {
+    local clidriver_dir=/opt/clidriver-arm64 php_ini php_extension_dir temp _LK_FD=3
+    lk_is_apple_silicon || clidriver_dir=/opt/clidriver
+    [[ -d $clidriver_dir ]] || {
         lk_tty_print "Installing Db2 clidriver"
-        local file=${1-macos64_odbc_cli.tar.gz}
-        [[ -f $file ]] ||
+        [[ -f $clidriver_file ]] ||
             lk_warn "clidriver package not found" || return
-        lk_mktemp_dir_with temp tar -zxf "$file" &&
-            sudo mv "$temp/clidriver" /opt/ &&
-            sudo xattr -dr com.apple.quarantine /opt/clidriver || return
+        lk_mktemp_dir_with temp tar -zxf "$clidriver_file" &&
+            sudo mkdir -p "${clidriver_dir%/*}" &&
+            sudo mv "$temp/clidriver" "$clidriver_dir" &&
+            sudo xattr -dr com.apple.quarantine "$clidriver_dir" || return
         lk_tty_success "Db2 clidriver installed successfully"
     }
     ! lk_confirm "Test Db2 installation?" N || (
-        [[ :$PATH: == *:/opt/clidriver/bin:* ]] ||
-            export PATH=/opt/clidriver/bin:$PATH \
-                DYLD_LIBRARY_PATH=/opt/clidriver/lib${DYLD_LIBRARY_PATH:+:$DYLD_LIBRARY_PATH}
+        [[ :$PATH: == *:"$clidriver_dir/bin":* ]] ||
+            export PATH=$clidriver_dir/bin:$PATH \
+                DYLD_LIBRARY_PATH=$clidriver_dir/lib${DYLD_LIBRARY_PATH:+:$DYLD_LIBRARY_PATH}
         lk_tty_read "Database?" _DB PLAYSCHO &&
             lk_tty_read "Host?" _HOST 10.1.3.12 &&
             lk_tty_read "Port?" _PORT 50001 &&
@@ -204,11 +212,11 @@ function php-build-db2() { {
         lk_tty_pause
     ) || lk_confirm "Ignore errors and continue?" N || return
     lk_tty_print "Building ibm_db2 extension"
-    IBM_DB_HOME=/opt/clidriver \
+    IBM_DB_HOME="$clidriver_dir" \
         CFLAGS="-DODBC64" \
         _pecl install -f -D 'with-IBM_DB2="yes"' ibm_db2 &&
         lk_tty_run_detail install_name_tool \
-            -change libdb2.dylib /opt/clidriver/lib/libdb2.dylib \
+            -change libdb2.dylib "$clidriver_dir/lib/libdb2.dylib" \
             "$php_extension_dir/ibm_db2.so" &&
         file=$php_ini/conf.d/ext-ibm_db2.ini &&
         lk_install -m 00644 "$file" &&
@@ -216,10 +224,10 @@ function php-build-db2() { {
 extension="ibm_db2.so"
 EOF
         odbcinst -d -u -n "Db2" -v &&
-        odbcinst -d -i -n "Db2" -v -r <<'EOF' || return
+        odbcinst -d -i -n "Db2" -v -r <<EOF || return
 [Db2]
 Description=IBM Db2 Driver
-Driver=/opt/clidriver/lib/libdb2.dylib
+Driver=$clidriver_dir/lib/libdb2.dylib
 DontDLClose=1
 FileUsage=1
 EOF
