@@ -17,6 +17,7 @@ spadin.memento-inputs
 
 # Generate/sort/manipulate text
 
+acarreiro.calculate
 aprilandjan.ascii-tree-generator
 dakshmiglani.hex-to-rgba
 henriiik.vscode-sort
