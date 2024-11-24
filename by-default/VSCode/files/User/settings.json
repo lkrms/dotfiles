@@ -699,7 +699,7 @@
     "workbench.enableExperiments": false,
     "workbench.iconTheme": "Monokai Pro (Filter Octagon) Icons",
     "workbench.preferredDarkColorTheme": "Monokai Pro (Filter Octagon)",
-    "workbench.preferredLightColorTheme": "Quiet Light",
+    "workbench.preferredLightColorTheme": "Monokai Pro Light",
     "workbench.settings.editor": "json",
     "workbench.settings.enableNaturalLanguageSearch": false,
     "workbench.sideBar.location": "right",
