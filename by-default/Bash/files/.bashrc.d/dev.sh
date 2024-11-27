@@ -86,5 +86,5 @@ function phpstan-update-baseline() {
   [[ ! -f phpstan-baseline-7.4.neon ]] ||
     php74 vendor/bin/phpstan -bphpstan-baseline-7.4.neon --allow-empty-baseline || return
   [[ ! -f phpstan-baseline.neon ]] ||
-    phpstan -b --allow-empty-baseline || return
+    vendor/bin/phpstan -b --allow-empty-baseline
 }
