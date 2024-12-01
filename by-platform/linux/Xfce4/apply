@@ -214,6 +214,7 @@ xfconf-set '/commands/custom/<Primary><Shift><Super>g' string "\"$settings_repo/
 xfconf-set '/commands/custom/<Primary><Shift><Super>h' string "code /etc/hosts"
 xfconf-set '/commands/custom/<Primary><Super>i' string "nomacs"
 xfconf-set '/commands/custom/<Primary><Super>k' string "keepassxc"
+xfconf-set '/commands/custom/<Primary><Shift><Super>k' string "sh -c 'pgrep -x keepassxc >/dev/null || lk-keepassxc.sh \"$HOME/Nextcloud/Shared/shared passwords.kdbx\" \"$HOME/Nextcloud/passwords.kdbx\"'"
 xfconf-set '/commands/custom/<Primary><Super>l' string "gtk-launch devilspie2"
 xfconf-set '/commands/custom/<Primary><Super>n' string "lk-note-open.sh"
 xfconf-set '/commands/custom/<Primary><Shift><Super>n' string "code \"$note_dir\""
