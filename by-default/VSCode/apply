@@ -12,9 +12,9 @@ for version in "" 84 83 82 81 80 74; do
     if php=$(find_first "php$version-xdebug"); then
         link_file "$php" ~/.local/bin/"php$version-xdebug"
     fi
-    if [[ $df_platform != macos ]] && php=$(find_first "php$version-docker"); then
-        link_file "$php" ~/.local/bin/"php$version"
-    fi
+    #if [[ $df_platform != macos ]] && php=$(find_first "php$version-docker"); then
+    #    link_file "$php" ~/.local/bin/"php$version"
+    #fi
 done
 
 if [[ $df_platform == linux ]]; then
