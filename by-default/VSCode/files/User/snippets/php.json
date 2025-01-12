@@ -67,6 +67,10 @@
 		"prefix": "dump",
 		"body": "\\PHPStan\\dumpType($0);"
 	},
+	"PHPUnit: ignore block": {
+		"prefix": "@code",
+		"body": "@codeCoverageIgnore"
+	},
 	"Intelephense: @disregard P1006": {
 		"prefix": "@disregard",
 		"body": "/** @disregard P1006 */"

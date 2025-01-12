@@ -690,7 +690,7 @@
     "window.newWindowDimensions": "inherit",
     "window.title": "${dirty}${rootName}${separator}${activeEditorShort}${separator}${appName}",
     "window.titleBarStyle": "custom",
-    "workbench.colorTheme": "Monokai Pro (Filter Octagon)",
+    "workbench.colorTheme": "Catppuccin Macchiato",
     "workbench.editor.closeEmptyGroups": false,
     "workbench.editor.empty.hint": "hidden",
     "workbench.editor.highlightModifiedTabs": true,
