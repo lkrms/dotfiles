@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+function aur-list-my-packages() {
+    curl -fsSL "https://aur.archlinux.org/rpc/?v=5&type=search&by=maintainer&arg=${1-lkrms}" |
+        jq -r '[.results[].PackageBase]|unique[]'
+}
+
 function aur-PKGBUILD-check-aur() { (
     declare IFS=$' \t\n' STATUS=0 DIR=$PWD
     lk_tty_log "Checking AUR remote(s) in $DIR"
