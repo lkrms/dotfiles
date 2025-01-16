@@ -57,6 +57,7 @@
 
 [user]
 	name = Luke Arms
+	email = luke@linacreative.com
 	useConfigOnly = true
 
 [alias]

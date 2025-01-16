@@ -23,6 +23,31 @@ function changelog() {
 EOF
 }
 
+function code-workspace-create() {
+  (($#)) || set -- .
+  local dir
+  for dir in "$@"; do (
+    cd "$dir" || exit
+    file=${PWD##*/}.code-workspace
+    [[ ! -e $file ]] || exit 0
+    [[ -d .git ]] || {
+      echo "Not a git repository: $PWD" >&2
+      exit 1
+    }
+    echo "Creating $PWD/$file"
+    cat >"$file" <<'EOF'
+{
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "settings": {}
+}
+EOF
+  ) || return; done
+}
+
 function git-changelog() {
   if ((!$#)); then
     local latest previous
