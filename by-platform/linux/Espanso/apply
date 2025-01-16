@@ -4,6 +4,11 @@
 
 type -P espanso >/dev/null || exit 0
 
+for key in has_completed_wizard has_displayed_welcome; do
+    file=~/.cache/espanso/kvs/$key
+    replace_file "$file" < <(printf '%s' "true")
+done
+
 if ! espanso service check &>/dev/null; then
     maybe espanso service register
 fi
