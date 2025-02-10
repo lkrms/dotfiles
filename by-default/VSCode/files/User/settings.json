@@ -284,9 +284,9 @@
     "github.copilot.editor.enableAutoCompletions": true,
     "github.copilot.editor.enableCodeActions": false,
     "github.copilot.enable": {
-        "*": true,
+        "*": false,
         "plaintext": false,
-        "markdown": true,
+        "markdown": false,
         "scminput": false
     },
     "githubIssues.queries": [

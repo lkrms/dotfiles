@@ -257,10 +257,6 @@
         "when": "editorHasSelection && editorTextFocus"
     },
     {
-        "key": "ctrl+cmd+/",
-        "command": "github.copilot.toggleCopilot"
-    },
-    {
         "key": "ctrl+alt+v",
         "command": "gitlens.copyShaToClipboard"
     },
@@ -456,6 +452,27 @@
                 },
                 {
                     "phpunit.php": "php-xdebug"
+                }
+            ]
+        }
+    },
+    {
+        "key": "ctrl+cmd+/",
+        "command": "toggle",
+        "args": {
+            "id": "github.copilot.enable",
+            "value": [
+                {
+                    "*": true,
+                    "plaintext": false,
+                    "markdown": true,
+                    "scminput": false
+                },
+                {
+                    "*": false,
+                    "plaintext": false,
+                    "markdown": false,
+                    "scminput": false
                 }
             ]
         }
