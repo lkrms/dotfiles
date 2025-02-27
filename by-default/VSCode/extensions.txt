@@ -37,12 +37,11 @@ yatki.vscode-surround
 
 # Integrate with other software/services
 
+continue.continue
 deerawan.vscode-dash
 eamodio.gitlens
 fabiospampinato.vscode-open-in-github
 giovdk21.vscode-sublime-merge
-GitHub.copilot
-GitHub.copilot-chat
 github.vscode-github-actions
 GitHub.vscode-pull-request-github
 ms-azuretools.vscode-azurefunctions

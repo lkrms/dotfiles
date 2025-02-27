@@ -117,6 +117,9 @@
         "space_before_conditional": true,
         "wrap_line_length": 80
     },
+    "chat.commandCenter.enabled": false,
+    "continue.enableTabAutocomplete": true,
+    "continue.showInlineTip": true,
     "css.format.newlineBetweenRules": false,
     "css.format.newlineBetweenSelectors": false,
     "dash.languageIdToDocsetMap": {
@@ -281,14 +284,6 @@
     "git.ignoreLimitWarning": true,
     "git.mergeEditor": false,
     "git.openRepositoryInParentFolders": "never",
-    "github.copilot.editor.enableAutoCompletions": true,
-    "github.copilot.editor.enableCodeActions": false,
-    "github.copilot.enable": {
-        "*": false,
-        "plaintext": false,
-        "markdown": false,
-        "scminput": false
-    },
     "githubIssues.queries": [
         {
             "label": "My Issues",
@@ -315,11 +310,11 @@
     "html.format.maxPreserveNewLines": 1,
     "html.format.wrapLineLength": 0,
     "inlineChat.mode": "preview",
-    "intelephense.codeLens.implementations.enable": true,
-    "intelephense.codeLens.overrides.enable": true,
-    "intelephense.codeLens.parent.enable": true,
-    "intelephense.codeLens.references.enable": true,
-    "intelephense.codeLens.usages.enable": true,
+    "intelephense.codeLens.implementations.enable": false,
+    "intelephense.codeLens.overrides.enable": false,
+    "intelephense.codeLens.parent.enable": false,
+    "intelephense.codeLens.references.enable": false,
+    "intelephense.codeLens.usages.enable": false,
     "intelephense.files.exclude": [
         "**/.ci/**",
         "**/.DS_Store/**",

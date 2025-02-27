@@ -42,6 +42,16 @@
         "command": "breadcrumbs.toggle"
     },
     {
+        "key": "cmd+k cmd+a",
+        "command": "-continue.toggleTabAutocompleteEnabled",
+        "when": "!terminalFocus"
+    },
+    {
+        "key": "ctrl+cmd+/",
+        "command": "continue.toggleTabAutocompleteEnabled",
+        "when": "!terminalFocus"
+    },
+    {
         "key": "shift+alt+cmd+left",
         "command": "-cursorColumnSelectLeft",
         "when": "textInputFocus"
@@ -452,27 +462,6 @@
                 },
                 {
                     "phpunit.php": "php-xdebug"
-                }
-            ]
-        }
-    },
-    {
-        "key": "ctrl+cmd+/",
-        "command": "toggle",
-        "args": {
-            "id": "github.copilot.enable",
-            "value": [
-                {
-                    "*": true,
-                    "plaintext": false,
-                    "markdown": true,
-                    "scminput": false
-                },
-                {
-                    "*": false,
-                    "plaintext": false,
-                    "markdown": false,
-                    "scminput": false
                 }
             ]
         }
