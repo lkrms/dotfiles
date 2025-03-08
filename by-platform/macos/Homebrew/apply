@@ -13,7 +13,7 @@ fi
 
 if brewfile=$(find_first Brewfile) ||
     brewfile=$(find_first Brewfile-arm64); then
-    maybe brew bundle install --file "$brewfile" --no-lock --no-upgrade
+    maybe brew bundle install --file "$brewfile" --no-upgrade
 fi
 
 if ! brewfile=$(find_first Brewfile-x86_64) ||
@@ -26,4 +26,4 @@ PATH=$(printf '%s:' "$PATH" |
     awk -vRS=':' '
 /^\/opt\/homebrew(\/|$)/ { next } ! i++ { printf "%s", $0; next } { printf ":%s", $0 }')
 
-maybe arch -x86_64 /usr/local/bin/brew bundle install --file "$brewfile" --no-lock --no-upgrade
+maybe arch -x86_64 /usr/local/bin/brew bundle install --file "$brewfile" --no-upgrade

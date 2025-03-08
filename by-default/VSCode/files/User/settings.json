@@ -119,7 +119,7 @@
     },
     "chat.commandCenter.enabled": false,
     "continue.enableTabAutocomplete": true,
-    "continue.showInlineTip": true,
+    "continue.showInlineTip": false,
     "css.format.newlineBetweenRules": false,
     "css.format.newlineBetweenSelectors": false,
     "dash.languageIdToDocsetMap": {
