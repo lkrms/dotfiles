@@ -53,7 +53,7 @@ if [[ $df_platform == macos ]]; then
         replace_file "$inicli" sed -E 's/^[[:blank:]]*;*[[:blank:]]*short_open_tag[[:blank:]]*=.*/short_open_tag = On/'
     done
 elif source=$(type -P php); then
-    target=$(php -r "echo 'php' . \PHP_MAJOR_VERSION . \PHP_MINOR_VERSION . \PHP_EOL;")
+    target=$(php -ddisplay_errors=stderr -r "echo 'php' . \PHP_MAJOR_VERSION . \PHP_MINOR_VERSION . \PHP_EOL;")
     link_file "$source" ~/".local/bin/$target"
 fi
 
