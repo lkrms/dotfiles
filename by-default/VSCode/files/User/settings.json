@@ -586,6 +586,17 @@
     "powershell.scriptAnalysis.settingsPath": "",
     "powershell.startAutomatically": false,
     "prettier.proseWrap": "never",
+    "print.folder.exclude": [
+        "{bin,obj,out}",
+        "node_modules",
+        "data",
+        "**/*.{bin,exe,dll,hex,pdb,pdf,pfx,png,jpg,gif,bmp,suo,design}"
+    ],
+    "print.folder.fileNames": true,
+    "print.folder.include": [],
+    "print.folder.includeFileList": false,
+    "print.folder.maxFiles": 30,
+    "print.folder.maxLines": 1200,
     "python.experiments.enabled": false,
     "redhat.telemetry.enabled": false,
     "regex-previewer.enableCodeLens": false,
