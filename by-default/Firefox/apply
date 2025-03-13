@@ -36,6 +36,7 @@ replace_file --sudo "$file" <<'EOF'
 // IMPORTANT: Start your code on the 2nd line
 defaultPref("mousewheel.system_scroll_override.enabled", false);
 defaultPref("network.protocol-handler.external.ext+container", true);
+defaultPref("security.enterprise_roots.enabled", false);
 defaultPref("services.sync.prefs.dangerously_allow_arbitrary", true);
 defaultPref("services.sync.addons.ignoreUserEnabledChanges", true);
 EOF
