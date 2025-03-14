@@ -2,6 +2,11 @@
 
 . "$df_root/bin/lib/bash-helpers.sh" || exit
 
+# Do nothing if Xfce4 is not running
+if [[ ${XDG_CURRENT_DESKTOP-} != XFCE ]]; then
+    exit 1
+fi
+
 function reset-all() {
     [[ -n ${df_reset:+1} ]]
 }
@@ -370,4 +375,9 @@ if [[ -n ${df_dryrun:+1} ]]; then
 else
     nohup plank &>/dev/null &
     disown
+fi
+
+file=/usr/share/doc/gtk3-nocsd/etc/xinit/xinitrc.d/30-gtk3-nocsd.sh
+if [[ -f $file ]]; then
+    link_file --sudo "$file" /etc/X11/xinit/xinitrc.d/30-gtk3-nocsd.sh
 fi
