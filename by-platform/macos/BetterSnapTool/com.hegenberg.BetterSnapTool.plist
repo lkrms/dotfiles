@@ -2,10 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>BSTAskedForReview</key>
+	<true/>
 	<key>BSTDidAlreadyLaunchOnElCapitan</key>
 	<true/>
 	<key>BSTDidAlreadyLaunchOnce</key>
 	<true/>
+	<key>BSTSequoiaUseClassicSnapping</key>
+	<integer>1</integer>
 	<key>cycle_lrm</key>
 	<false/>
 	<key>launchOnStartup</key>
@@ -34,6 +38,34 @@
 			<integer>0</integer>
 		</dict>
 		<key>100</key>
+		<dict>
+			<key>keyCode</key>
+			<integer>-1</integer>
+			<key>modifiers</key>
+			<integer>0</integer>
+		</dict>
+		<key>110</key>
+		<dict>
+			<key>keyCode</key>
+			<integer>-1</integer>
+			<key>modifiers</key>
+			<integer>0</integer>
+		</dict>
+		<key>111</key>
+		<dict>
+			<key>keyCode</key>
+			<integer>-1</integer>
+			<key>modifiers</key>
+			<integer>0</integer>
+		</dict>
+		<key>112</key>
+		<dict>
+			<key>keyCode</key>
+			<integer>-1</integer>
+			<key>modifiers</key>
+			<integer>0</integer>
+		</dict>
+		<key>113</key>
 		<dict>
 			<key>keyCode</key>
 			<integer>-1</integer>
