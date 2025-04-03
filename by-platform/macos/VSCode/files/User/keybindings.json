@@ -284,6 +284,11 @@
         "command": "markdown.extension.checkTaskList"
     },
     {
+        "key": "cmd+m",
+        "command": "-markdown.extension.editing.toggleMath",
+        "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^markdown$|^rmd$|^quarto$/"
+    },
+    {
         "command": "-markdown.extension.onShiftTabKey",
         "key": "shift+tab",
         "when": "editorTextFocus && markdown.extension.editor.cursor.inList && !editorHasMultipleSelections && !editorReadonly && !editorTabMovesFocus && !hasOtherSuggestions && !hasSnippetCompletions && !inSnippetMode && !markdown.extension.editor.cursor.inFencedCodeBlock && !markdown.extension.editor.cursor.inMathEnv && !suggestWidgetVisible && editorLangId =~ /^markdown$|^rmd$|^quarto$/"
@@ -569,6 +574,11 @@
     {
         "key": "ctrl+cmd+u",
         "command": "vscsm.openInSublimeMerge"
+    },
+    {
+        "key": "shift+cmd+i",
+        "command": "-workbench.action.chat.openEditSession",
+        "when": "chatEditingParticipantRegistered && view != 'workbench.panel.chat.view.edits'"
     },
     {
         "key": "alt+w",
@@ -912,6 +922,16 @@
     {
         "command": "-workbench.extensions.action.showRecommendedKeymapExtensions",
         "key": "cmd+k cmd+m"
+    },
+    {
+        "key": "ctrl+cmd+i",
+        "command": "-workbench.panel.chat",
+        "when": "workbench.panel.chat.view.copilot.active"
+    },
+    {
+        "key": "shift+cmd+i",
+        "command": "-workbench.panel.chatEditing",
+        "when": "workbench.panel.chat.view.edits.active"
     },
     {
         "key": "shift+cmd+a",
