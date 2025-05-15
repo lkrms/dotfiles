@@ -42,6 +42,10 @@
         "command": "breadcrumbs.toggle"
     },
     {
+        "key": "cmd+i",
+        "command": "-continue.focusEdit"
+    },
+    {
         "key": "cmd+k cmd+a",
         "command": "-continue.toggleTabAutocompleteEnabled",
         "when": "!terminalFocus"
@@ -574,11 +578,6 @@
     {
         "key": "ctrl+cmd+u",
         "command": "vscsm.openInSublimeMerge"
-    },
-    {
-        "key": "shift+cmd+i",
-        "command": "-workbench.action.chat.openEditSession",
-        "when": "chatEditingParticipantRegistered && view != 'workbench.panel.chat.view.edits'"
     },
     {
         "key": "alt+w",
