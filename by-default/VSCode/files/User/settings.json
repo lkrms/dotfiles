@@ -126,6 +126,9 @@
         "php": [
             "php"
         ],
+        "nginx": [
+            "nginx"
+        ],
         "typescript": [
             "nodejs"
         ]
@@ -234,6 +237,7 @@
     "extensions.ignoreRecommendations": true,
     "files.associations": {
         "**/.git/info/attributes": "properties",
+        "**/.nginx/*.conf": "nginx",
         "**/.nginx/*/*": "nginx",
         "**/bash/*": "shellscript",
         "**/git/ignore": "ignore",
@@ -653,7 +657,6 @@
     "terminal.integrated.fontSize": 12,
     "terminal.integrated.lineHeight": 1.2,
     "terminal.integrated.macOptionIsMeta": true,
-    "terminal.integrated.minimumContrastRatio": 1,
     "terminal.integrated.persistentSessionReviveProcess": "never",
     "terminal.integrated.profiles.linux": {
         "bash": {
