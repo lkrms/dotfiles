@@ -136,6 +136,7 @@
     "debug.internalConsoleOptions": "openOnSessionStart",
     "debug.saveBeforeStart": "none",
     "debug.toolBarLocation": "docked",
+    "editor.accessibilitySupport": "off",
     "editor.autoClosingBrackets": "never",
     "editor.autoClosingQuotes": "never",
     "editor.autoIndent": "advanced",

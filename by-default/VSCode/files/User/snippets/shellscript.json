@@ -1,4 +1,15 @@
 {
+	"shebang": {
+		"prefix": [
+			"shebang",
+			"hashbang",
+			"crunchbang"
+		],
+		"body": [
+			"#!/usr/bin/env bash",
+			""
+		]
+	},
 	"array: elements": {
 		"prefix": "array",
 		"body": [

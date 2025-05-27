@@ -29,7 +29,7 @@ function code-workspace-create() {
     for dir in "$@"; do (
         cd "$dir" || exit
         file=${PWD##*/}.code-workspace
-        [[ ! -e $file ]] || exit 0
+        [[ ! -e .vscode ]] && [[ ! -e $file ]] || exit 0
         [[ -d .git ]] || {
             echo "Not a git repository: $PWD" >&2
             exit 1
@@ -41,8 +41,7 @@ function code-workspace-create() {
         {
             "path": "."
         }
-    ],
-    "settings": {}
+    ]
 }
 EOF
     ) || return; done
