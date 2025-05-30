@@ -1,34 +1,27 @@
 -- One of: "nothing", "error", "warning", "info", "debug", "verbose"
 hs.logger.defaultLogLevel = "info"
 logger = hs.logger.new("init")
-wf = hs.window.filter
+logEv = false
+
 hs.window.animationDuration = 0
+wf = hs.window.filter
 
-defaultGrid = {6, 2}
-showScreenLayoutChangeNotification = false
-reportEv = false
+_op = {
+    AND = "and",
+    OR = "or",
+}
 
-function extend(copyTable, updateTable)
-    local copy = hs.fnutils.copy(copyTable)
-    for k, v in pairs(updateTable) do
-        copy[k] = v
-    end
-    return copy
-end
-
-function keys(arrayTable)
-    local keysTable = {}
-    for k, v in pairs(arrayTable) do
-        table.insert(keysTable, k)
-    end
-    return keysTable
-end
+_grid = {6, 2}
 
 -- Configure preferred apps with:
--- - `bundleID` (required): string
--- - `commandLine` (optional): string, "{{app}}" is replaced with path to .app
--- - `menuItem` (optional): passed to hs.application:selectMenuItem(), overrides
---   `commandLine` if both are set
+--
+-- - `bundleID` (required): passed to `open()`
+-- - `commandLine` (optional): passed to `run()` after "{{app}}" is replaced
+--   with the path to the application
+-- - `menuItem` (optional): passed to `hs.application:selectMenuItem()`
+--
+-- If the app is already running, `menuItem` is tried first (if present), then
+-- `commandLine` (if present) and finally `bundleID`.
 _app = {
     terminal = {
         bundleID = "com.googlecode.iterm2",
@@ -49,55 +42,7 @@ _app = {
     },
 }
 
-_zone = {
-    left = "left",
-    centre = "centre",
-    right = "right",
-    right23 = "right23",
-    topLeft = "topLeft",
-    topCentre = "topCentre",
-    topRight = "topRight",
-    topRight23 = "topRight23",
-    bottomLeft = "bottomLeft",
-    bottomCentre = "bottomCentre",
-    bottomRight = "bottomRight",
-    bottomRight23 = "bottomRight23",
-}
-
-_allZones = keys(_zone)
-
-_operator = {
-    AND = "and",
-    OR = "or",
-}
-
-_criteria = {
-    has_multiple_displays = function()
-        return _screen2 and true or false
-    end,
-    on_secondary_display = function(ev)
-        return ev.screen:getUUID() ~= _screen1:getUUID()
-    end,
-    is_initialising = function()
-        return _initialising
-    end,
-}
-
-_criteria.pinnable = {
-    _operator.AND,
-    _criteria.has_multiple_displays,
-    {
-        _operator.OR,
-        event = wf.windowCreated,
-        {
-            _operator.AND,
-            event = {wf.windowFocused, wf.windowUnfocused},
-            _criteria.on_secondary_display,
-        },
-    },
-}
-
-_groups = {
+_group = {
     mail = {
         ["Mail"] = {
             criteria = {
@@ -159,8 +104,58 @@ _groups = {
     },
 }
 
+_zone = {
+    left = "left",
+    centre = "centre",
+    right = "right",
+    right23 = "right23",
+    topLeft = "topLeft",
+    topCentre = "topCentre",
+    topRight = "topRight",
+    topRight23 = "topRight23",
+    bottomLeft = "bottomLeft",
+    bottomCentre = "bottomCentre",
+    bottomRight = "bottomRight",
+    bottomRight23 = "bottomRight23",
+}
+
+_zoneKey = {
+    help = {_zone.topLeft},
+    home = {_zone.topCentre},
+    pageup = {_zone.topRight, _zone.topRight23},
+    f13 = {_zone.left},
+    f14 = {_zone.centre},
+    f15 = {_zone.right, _zone.right23},
+    forwarddelete = {_zone.bottomLeft},
+    ["end"] = {_zone.bottomCentre},
+    pagedown = {_zone.bottomRight, _zone.bottomRight23},
+}
+
+_zoneModifier = {
+    {"ctrl", "alt"},
+    {"ctrl", "alt", "shift"},
+}
+
+-- Copy array and apply values to it, preserving keys
+function extend(array, values)
+    local copy = hs.fnutils.copy(array)
+    for k, v in pairs(values) do
+        copy[k] = v
+    end
+    return copy
+end
+
+-- Get keys in array
+function keys(array)
+    local keys = {}
+    for k in pairs(array) do
+        table.insert(keys, k)
+    end
+    return keys
+end
+
 _apps = {}
-for group, apps in pairs(_groups) do
+for group, apps in pairs(_group) do
     local criteria = apps["criteria"]
     for app, settings in pairs(apps) do
         if app ~= "criteria" then
@@ -223,7 +218,7 @@ _layouts = {
 function normalisePlace(place, ev)
     local p = {
         display = place.display or ev.display,
-        grid = place.grid or defaultGrid or {3, 1},
+        grid = place.grid or _grid or {3, 1},
         xy = place.xy or {place.column1 or 0, place.row1 or 0},
         wh = place.wh or {place.columns or 0, place.rows or 0},
     }
@@ -235,7 +230,7 @@ end
 function toPlace(place, ev, force)
     local p = normalisePlace(place, ev)
     if p.display ~= nil and p.display ~= ev.display then
-        logger.d("Moving " .. ev.appName .. " to display " .. p.display .. maybeReportEv(ev))
+        logger.d("Moving " .. ev.appName .. " to display " .. p.display .. maybeGetEv(ev))
         maybeWithAXEnhancedUserInterfaceDisabled(ev.window, function() ev.window:moveToScreen(_screen[p.display]) end)
     end
     local x, y = table.unpack(p.xy)
@@ -273,7 +268,7 @@ function toPlace(place, ev, force)
         -- If the window falls within 1 pixel of alignment with the grid or a
         -- split display boundary, it has probably been placed here deliberately
         if ((_x < 2 and _y < 2) and (_w < 2 and _h < 2)) or ((_gx < 2 and _gy < 2) and (_gw < 2 and _gh < 2)) then
-            logger.i("Already aligned: " .. ev.appName .. maybeReportEv(ev))
+            logger.i("Already aligned: " .. ev.appName .. maybeGetEv(ev))
             do return end
         end
     end
@@ -284,7 +279,7 @@ function toPlace(place, ev, force)
     end
     do return end
     ::move::
-    logger.i("Moving " .. ev.appName .. " to " .. hs.inspect.inspect(rect) .. maybeReportEv(ev))
+    logger.i("Moving " .. ev.appName .. " to " .. hs.inspect.inspect(rect) .. maybeGetEv(ev))
     maybeWithAXEnhancedUserInterfaceDisabled(ev.window, function() ev.window:moveToUnit(rect) end)
 end
 
@@ -362,8 +357,8 @@ function getZone(zone, ev)
     end
 end
 
-function maybeReportEv(ev)
-    if reportEv then
+function maybeGetEv(ev)
+    if logEv then
         return " on ev " .. hs.inspect.inspect(ev)
     end
     return ""
@@ -387,7 +382,7 @@ _rule = {
     },
     {
         criteria = {
-            event = _allZones,
+            event = keys(_zone),
             function(ev)
                 ev.place = getZone(ev.event, ev)
                 return ev.place ~= nil
@@ -421,16 +416,16 @@ function checkCriteria(criteria, ev)
     for k, v in pairs(criteria) do
         local result
         if type(k) == "number" then
-            if v == "AND" or v == _operator.AND then
+            if v == "AND" or v == _op.AND then
                 if andResult == false then
                     return false
                 end
-                op = _operator.AND
-            elseif v == "OR" or v == _operator.OR then
+                op = _op.AND
+            elseif v == "OR" or v == _op.OR then
                 if orResult == true then
                     return true
                 end
-                op = _operator.OR
+                op = _op.OR
             elseif type(v) == "function" then
                 result = v(ev)
             elseif type(v) == "table" then
@@ -444,9 +439,9 @@ function checkCriteria(criteria, ev)
         if result ~= nil then
             andResult = andResult and result
             orResult = orResult or result
-            if op == _operator.AND and andResult == false then
+            if op == _op.AND and andResult == false then
                 return false
-            elseif op == _operator.OR and orResult == true then
+            elseif op == _op.OR and orResult == true then
                 return true
             end
         end
@@ -671,15 +666,6 @@ _screenwatcher = hs.screen.watcher.new(function()
         return
     end
     logger.i("Screen layout changed from " .. hs.inspect.inspect(prev) .. " to " .. hs.inspect.inspect(current))
-    if showScreenLayoutChangeNotification then
-        hs.notify.new(
-            {
-                title = "Hammerspoon",
-                informativeText = "Screen layout change detected",
-                withdrawAfter = 5,
-            }
-        ):send()
-    end
     _filter:unsubscribeAll()
     initWindowFilter()
 end)
@@ -998,7 +984,7 @@ hs.hotkey.bind(
                 ev.windowGeometry["w"],
                 ev.windowGeometry["h"]
             )
-            logger.i("Moving " .. ev.appName .. " to " .. hs.inspect.inspect(rect) .. maybeReportEv(ev))
+            logger.i("Moving " .. ev.appName .. " to " .. hs.inspect.inspect(rect) .. maybeGetEv(ev))
             window:move(rect)
         end
     end
@@ -1013,30 +999,10 @@ function toZone(zone)
     end
 end
 
-_zoneKeys = {
-    help = _zone.topLeft,
-    home = _zone.topCentre,
-    pageup = {_zone.topRight, _zone.topRight23},
-    f13 = _zone.left,
-    f14 = _zone.centre,
-    f15 = {_zone.right, _zone.right23},
-    forwarddelete = _zone.bottomLeft,
-    ["end"] = _zone.bottomCentre,
-    pagedown = {_zone.bottomRight, _zone.bottomRight23},
-}
-
-_zoneModifiers = {
-    {"ctrl", "alt"},
-    {"ctrl", "alt", "shift"},
-}
-
-for key, zones in pairs(_zoneKeys) do
-    if type(zones) ~= "table" then
-        zones = {zones}
-    end
+for key, zones in pairs(_zoneKey) do
     for i, zone in ipairs(zones) do
         hs.hotkey.bind(
-            _zoneModifiers[i],
+            _zoneModifier[i],
             key,
             function()
                 toZone(zone)
@@ -1045,10 +1011,10 @@ for key, zones in pairs(_zoneKeys) do
     end
 end
 
-hs.notify.new(
-    {
-        title = "Hammerspoon",
-        informativeText = "Config reloaded",
-        withdrawAfter = 2,
-    }
-):send()
+--hs.notify.new(
+--    {
+--        title = "Hammerspoon",
+--        informativeText = "Config reloaded",
+--        withdrawAfter = 2,
+--    }
+--):send()
