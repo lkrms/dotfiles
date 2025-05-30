@@ -8,6 +8,7 @@ bierner.markdown-mermaid
 bierner.markdown-preview-github-styles
 bierner.markdown-yaml-preamble
 catppuccin.catppuccin-vsc
+catppuccin.catppuccin-vsc-icons
 GitHub.github-vscode-theme
 monokai.theme-monokai-pro-vscode
 pdconsec.vscode-print
@@ -46,7 +47,7 @@ github.vscode-github-actions
 GitHub.vscode-pull-request-github
 ms-azuretools.vscode-azurefunctions
 ms-azuretools.vscode-azureresourcegroups
-ms-azuretools.vscode-docker
+ms-azuretools.vscode-containers
 ms-vscode-remote.remote-containers
 ms-vscode.azure-account
 
@@ -90,6 +91,7 @@ ahmadalli.vscode-nginx-conf
 beaglefoot.awk-ide-vscode
 chrmarti.regex
 daohong-emilio.yash
+docker.docker
 esbenp.prettier-vscode
 HookyQR.beautify
 humao.rest-client
