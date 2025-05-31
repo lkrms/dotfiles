@@ -97,6 +97,7 @@ unbold=$'\E[22m'
 dim=$'\E[2m'
 undim=$'\E[22m'
 clear=$'\E[2J\E[H'
+private_branch_regex='(^|[^[:alnum:]_])private([^[:alnum:]_]|$)'
 
 offline=0
 ignore_fetch_errors=1
@@ -180,8 +181,12 @@ trap 'rm -f ${files+"${files[@]}"}' EXIT
                     fi
                     continue
                 else
-                    ohno "branch '$branch' has no upstream"
-                    no_upstreams[i]=
+                    if [[ $branch =~ $private_branch_regex ]]; then
+                        uhoh "ignoring branch '$branch' with no upstream"
+                    else
+                        ohno "branch '$branch' has no upstream"
+                        no_upstreams[i]=
+                    fi
                     continue
                 fi
             ahead=$(git rev-list --count "$upstream..$branch")
