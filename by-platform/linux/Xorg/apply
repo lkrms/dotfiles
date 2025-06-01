@@ -2,7 +2,41 @@
 
 . "$df_root/bin/lib/bash-helpers.sh" || exit
 
+shopt -s extglob nullglob
+
+mimeinfo=({~/.local,/usr/local,/usr}/share/applications/mimeinfo.cache!(?))
+
+default_apps=(
+    code+geany+vim          # Assign types opened by Geany and Vim to VS Code
+    firefox                 # Prefer Firefox for `text/html`
+    org.mozilla.Thunderbird # Prefer Thunderbird for `x-scheme-handler/mailto`
+    thunar                  # Prefer Thunar for `inode/directory`
+    org.nomacs.ImageLounge
+    org.xfce.ristretto
+    typora
+    org.gnome.Evince
+    vlc
+)
+
+function app_handles() {
+    awk -F= -vapp=";$1;" 'index(";" $2 ";", app) { print $1 }' "${mimeinfo[@]}"
+}
+
 maybe update-desktop-database ~/.local/share/applications
+
+replace_file ~/.config/mimeapps.list < <(
+    IFS=+
+    for app in "${default_apps[@]}"; do
+        apps=($app)
+        apps=("${apps[@]/%/.desktop}")
+        for app in "${apps[@]}"; do
+            app_handles "$app"
+        done | awk -vapp="${apps[0]}" '{ print $0 "=" app }'
+    done | awk -F= '
+BEGIN { print "[Default Applications]" }
+      { m[$1] = $2 }
+END   { for (t in m) { print t "=" m[t] | "sort" } close("sort") }'
+)
 
 # Stop updates triggering `/usr/bin/udevadm trigger -c change`
 replace_file --sudo /etc/systemd/do-not-udevadm-trigger-on-update </dev/null
