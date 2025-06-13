@@ -112,3 +112,13 @@ function phpstan-update-baseline() {
     [[ ! -f phpstan-baseline.neon ]] ||
         vendor/bin/phpstan -b --allow-empty-baseline
 }
+
+# rsync-win10-unattended [rsync_arg...] target
+function rsync-win10-unattended() {
+    (($#)) || return
+    local target=${*:$#}
+    [[ -d $target ]] || return
+    rsync -rtvi --delete --modify-window=1 "${@:1:$#-1}" \
+        ~/Code/lk/win10-unattended/{Extra,Tools,Office365,Unattended,*.xml} \
+        "${target%/}/"
+}
