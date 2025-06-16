@@ -46,6 +46,20 @@
         "key": "ctrl+alt+b"
     },
     {
+        "key": "ctrl+i",
+        "command": "-continue.focusEdit"
+    },
+    {
+        "key": "ctrl+k ctrl+a",
+        "command": "-continue.toggleTabAutocompleteEnabled",
+        "when": "!terminalFocus"
+    },
+    {
+        "key": "ctrl+meta+/",
+        "command": "continue.toggleTabAutocompleteEnabled",
+        "when": "!terminalFocus"
+    },
+    {
         "command": "-editor.action.addCommentLine",
         "key": "ctrl+k ctrl+c",
         "when": "editorTextFocus && !editorReadonly"
@@ -269,6 +283,11 @@
         "key": "ctrl+k ctrl+g"
     },
     {
+        "key": "ctrl+m",
+        "command": "-markdown.extension.editing.toggleMath",
+        "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^markdown$|^rmd$|^quarto$/"
+    },
+    {
         "command": "-markdown.extension.onShiftTabKey",
         "key": "shift+tab",
         "when": "editorTextFocus && markdown.extension.editor.cursor.inList && !editorHasMultipleSelections && !editorReadonly && !editorTabMovesFocus && !hasOtherSuggestions && !hasSnippetCompletions && !inSnippetMode && !markdown.extension.editor.cursor.inFencedCodeBlock && !markdown.extension.editor.cursor.inMathEnv && !suggestWidgetVisible && editorLangId =~ /^markdown$|^rmd$|^quarto$/"
@@ -452,22 +471,16 @@
         }
     },
     {
-        "key": "ctrl+meta+/",
+        "key": "ctrl+shift+alt+w",
         "command": "toggle",
         "args": {
-            "id": "github.copilot.enable",
+            "id": "wordSeparators",
             "value": [
                 {
-                    "*": true,
-                    "plaintext": false,
-                    "markdown": true,
-                    "scminput": false
+                    "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\|;:'\",.<>/?"
                 },
                 {
-                    "*": false,
-                    "plaintext": false,
-                    "markdown": false,
-                    "scminput": false
+                    "editor.wordSeparators": ""
                 }
             ]
         }
@@ -829,5 +842,10 @@
     {
         "command": "-workbench.action.zoomOut",
         "key": "ctrl+-"
+    },
+    {
+        "key": "ctrl+alt+i",
+        "command": "-workbench.panel.chat",
+        "when": "workbench.panel.chat.view.copilot.active"
     }
 ]
