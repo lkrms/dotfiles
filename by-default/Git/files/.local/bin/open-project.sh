@@ -30,18 +30,6 @@ function generate_list() {
         sort -u >"$LIST_FILE"
 }
 
-COMMAND=(yad)
-! lk_is_macos || COMMAND=(bash -c "$(
-    function run() {
-        zenity "$@" &
-        sleep 0.2
-        "$LK_BASE/lib/macos/process-focus.js" $! >>"/tmp/${0##*/}.log" 2>&1
-        wait
-    }
-    declare -f run
-    echo 'run "$@"'
-)" bash)
-
 if [[ -e $LIST_FILE ]]; then
     lk_mapfile LIST <"$LIST_FILE"
     generate_list &
@@ -59,8 +47,9 @@ OPEN=($(
             grep -Fof <(lk_arr LIST) "$HIST_FILE" | tail -n24 ||
             test "${PIPESTATUS[*]}" = 10; }; } |
         tac | lk_uniq |
-        awk -v ORS='\0' '{ print; sub(/^Code\//, ""); print }' |
-        xargs -0r "${COMMAND[@]}" \
+        awk '{ print; sub(/^Code\//, ""); print }' |
+        tr '\n' '\0' |
+        xargs -0r zenity \
             --list \
             --separator='\n' \
             --multiple \

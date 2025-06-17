@@ -26,22 +26,10 @@ HIST_FILE=$DIR/git-repo.history
 HIST_FILE2=$DIR/code-workspace.history
 
 function generate_list() {
-    find -H ./Code/* ./.dotfiles!(?) -maxdepth 4 -type d -name .git -prune -print0 |
+    find -H Code/* .dotfiles!(?) -maxdepth 4 -type d -name .git -prune -print0 |
         xargs -0r dirname |
         sort >"$LIST_FILE"
 }
-
-COMMAND=(yad)
-! lk_is_macos || COMMAND=(bash -c "$(
-    function run() {
-        zenity "$@" &
-        sleep 0.2
-        "$LK_BASE/lib/macos/process-focus.js" $! >>"/tmp/${0##*/}.log" 2>&1
-        wait
-    }
-    declare -f run
-    echo 'run "$@"'
-)" bash)
 
 if [[ -e $LIST_FILE ]]; then
     lk_mapfile LIST <"$LIST_FILE"
@@ -63,8 +51,9 @@ OPEN=($(
             grep -Fof <(lk_arr LIST) "$HIST_FILE2" | tail -n24 ||
             test "${PIPESTATUS[*]}" = 10; }; } |
         tac | lk_uniq |
-        awk -v ORS='\0' '{ print; sub(/^Code\//, ""); print }' |
-        xargs -0r "${COMMAND[@]}" \
+        awk '{ print; sub(/^Code\//, ""); print }' |
+        tr '\n' '\0' |
+        xargs -0r zenity \
             --list \
             --separator='\n' \
             --multiple \
