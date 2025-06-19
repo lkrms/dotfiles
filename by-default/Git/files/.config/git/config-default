@@ -11,6 +11,11 @@
 
 [core]
 	autocrlf = input
+	pager = delta
+
+[delta]
+	navigate = true
+	side-by-side = true
 
 [diff]
 	guitool = smerge
@@ -19,13 +24,14 @@
 [gui]
 	editor = code
 
-[icdiff]
-	options = -NU3
-
 [init]
 	defaultBranch = main
 
+[interactive]
+	diffFilter = delta --color-only
+
 [merge]
+	conflictstyle = zdiff3
 	tool = meld
 
 [pull]
