@@ -28,9 +28,9 @@ function mount-qemu-img() {
     done
 }
 
-function reset-win11-unattended() {
-    local images=/var/lib/libvirt/images vm=${FUNCNAME#reset-}
-    local fixed=$images/$vm.qcow2 removable=$images/$vm-1.qcow2
+function _reset-win10-unattended() {
+    local images=/var/lib/libvirt/images vm=${FUNCNAME[1]#reset-}
+    local fixed=$images/$vm.qcow2 removable=$images/$vm-1.qcow2 vm_if
     (
         mount-qemu-img "$removable" &&
             part=${QEMU_IMG_NBD}p1 &&
@@ -38,13 +38,17 @@ function reset-win11-unattended() {
             lk_tty_run_detail gio mount --device "$part" &&
             target=$(findmnt --list --noheadings --output TARGET "$part") &&
             lk_trap_add -f EXIT lk_tty_run_detail umount "$target" &&
-            lk_tty_success "$removable mounted at:" "$target" || exit
-        for file in {Autounattend,Audit}.xml Office365/ Unattended/ Tools/; do
-            lk_tty_run_detail rsync -rtvi --delete --modify-window=1 \
-                ~/Code/lk/win10-unattended/"$file" "$target/$file" || exit
-        done
-        lk_tty_yn "$target synced. Proceed?" Y
+            lk_tty_success "$removable mounted at:" "$target" &&
+            rsync-win10-virtio-test "$@" &&
+            lk_tty_yn "$target synced. Proceed?" Y
     ) || return
-    lk_tty_run_detail lk_elevate qemu-img create -f qcow2 "$fixed" 128G &&
-        sudo virsh start "$vm"
+    lk_tty_run_detail lk_elevate qemu-img create -f qcow2 -o lazy_refcounts=on "$fixed" 128G &&
+        lk_tty_run_detail lk_elevate virsh start "$vm" &&
+        vm_if=$(lk_elevate virsh domiflist "$vm" | awk 'NR == 3 { print $1 }' | grep .) &&
+        lk_tty_run_detail lk_elevate virsh domif-setlink "$vm" "$vm_if" down &&
+        while ! lk_tty_yn "$vm started. Is it \"Waiting for Internet connection\"?" Y; do continue; done &&
+        lk_tty_run_detail lk_elevate virsh domif-setlink "$vm" "$vm_if" up
 }
+
+function reset-win10x86pro() { _reset-win10-unattended --exclude "/Updates/Windows 11*/" "$@"; }
+function reset-win11home() { _reset-win10-unattended --exclude "/Updates/Windows 10*/" "$@"; }

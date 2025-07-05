@@ -2,6 +2,8 @@
 
 . "$df_root/bin/lib/bash-helpers.sh" || exit
 
+shopt -s globstar
+
 function extract() {
     local tar=$1 txt=${1%.tar.bz2}.txt
     if [[ ! -f $txt ]] || [[ $tar -nt $txt ]]; then
@@ -34,5 +36,5 @@ function normalise_gtk_accel_map() {
     sed -E '/^;/d' "$1" | LC_ALL=C sort
 }
 
-with_each files/.config/xfce4/terminal/accels.scm \
+with_each 'files/.config/**/accels.scm' \
     replace_file '{}' - normalise_gtk_accel_map '{}'

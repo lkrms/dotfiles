@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+(($#)) || exit
+
+function die() {
+    local s=$?
+    zenity --error \
+        --width=400 \
+        --title="Export via block device" \
+        --text="Error connecting image to /dev/nbdX:\n\n${1-command failed with exit status $s}" \
+        --skip-taskbar
+    exit $s
+}
+
+grep -wq '^nbd' /proc/modules || sudo modprobe nbd ||
+    die "could not load kernel module 'nbd'"
+
+i=0
+while [[ -e /sys/class/block/nbd$i/pid ]]; do
+    ((++i))
+done
+
+dev=/dev/nbd$i
+sudo qemu-nbd --connect "$dev" "$1" || die
+
+while gio mount --monitor | grep -Eq '^(Mount|Volume) removed:'; do
+    [[ -e /sys/class/block/nbd$i/pid ]] || exit 0
+    awk '{ print $1 }' /etc/mtab | grep -Eq "^$dev(p|\$)" || break
+done
+
+sudo qemu-nbd --disconnect "$dev"

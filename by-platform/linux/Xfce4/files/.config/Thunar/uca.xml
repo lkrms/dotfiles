@@ -121,6 +121,21 @@
 	<video-files/>
 </action>
 <action>
+	<icon>drive-harddisk</icon>
+	<name>Export via block device</name>
+	<submenu></submenu>
+	<unique-id>1750520691032129-1</unique-id>
+	<command>export-qemu-image-via-nbd %f</command>
+	<description>Connect the image to /dev/nbdX</description>
+	<range></range>
+	<patterns>*.qcow2;*.raw</patterns>
+	<audio-files/>
+	<image-files/>
+	<other-files/>
+	<text-files/>
+	<video-files/>
+</action>
+<action>
 	<icon>filefind</icon>
 	<name>Find in this folder</name>
 	<submenu></submenu>

@@ -584,6 +584,7 @@
     "powershell.codeFormatting.trimWhitespaceAroundPipe": true,
     "powershell.codeFormatting.useCorrectCasing": true,
     "powershell.codeFormatting.whitespaceBetweenParameters": true,
+    "powershell.promptToUpdatePowerShell": false,
     "powershell.scriptAnalysis.settingsPath": "",
     "powershell.startAutomatically": false,
     "prettier.proseWrap": "never",

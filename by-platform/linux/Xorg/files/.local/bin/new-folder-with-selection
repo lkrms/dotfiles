@@ -10,7 +10,7 @@ while [[ -e $folder ]] || [[ -L $folder ]]; do
 done
 
 folder=$(
-    yad --entry \
+    zenity --entry \
         --width=350 \
         --title="New folder with selection" \
         --text="Folder name:" \
@@ -22,7 +22,7 @@ output=$({
     mkdir "$folder" &&
         mv -n "$@" "$folder/"
 } 2>&1) ||
-    yad --error \
+    zenity --error \
         --width=400 \
         --title="New folder with selection" \
         --text="Error creating new folder with selection:\n\n$output" \

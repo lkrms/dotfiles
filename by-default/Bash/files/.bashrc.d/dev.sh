@@ -118,7 +118,26 @@ function rsync-win10-unattended() {
     (($#)) || return
     local target=${*:$#}
     [[ -d $target ]] || return
-    rsync -rtvi --delete --modify-window=1 "${@:1:$#-1}" \
-        ~/Code/lk/win10-unattended/{Extra,Tools,Office365,Unattended,*.xml} \
+    rsync -rtvi --delete --delete-excluded --modify-window=1 "${@:1:$#-1}" \
+        ~/Code/lk/win10-unattended/{Tools,Office365,Unattended,Updates,*.xml} \
         "${target%/}/"
+}
+
+function rsync-win10-virtio-test() {
+    cd ~/Downloads/Keep/Windows/Drivers || return
+    local media=/run/media/$USER
+    if [[ -d $media/UNATTENDED ]]; then
+        rsync "$@" -rtiv --exclude '/*.msi' --exclude '/qxldod' --modify-window=1 virtio-w10-amd64/ "$media"/UNATTENDED/Drivers/virtio-w10-amd64/ &&
+            rsync "$@" -rtiv --include '/*.msi' --exclude '/*' --modify-window=1 virtio-w10-amd64/ "$media"/UNATTENDED/Drivers2/ &&
+            rsync "$@" -rtiv --include '/qxldod' --exclude '/*' --modify-window=1 virtio-w10-amd64/ "$media"/UNATTENDED/Drivers2/virtio-w10-amd64/ &&
+            rsync "$@" -rtiv --modify-window=1 brother-HL-* "$media"/UNATTENDED/Drivers2/ &&
+            rsync-win10-unattended "$@" --exclude /Wi-Fi.xml "$media"/UNATTENDED/ || return
+    fi
+    if [[ -d $media/UNATTENDX86 ]]; then
+        rsync "$@" -rtiv --exclude '/*.msi' --exclude '/qxldod' --modify-window=1 virtio-x86/ "$media"/UNATTENDX86/Drivers/virtio-x86/ &&
+            rsync "$@" -rtiv --include '/*.msi' --exclude '/*' --modify-window=1 virtio-x86/ "$media"/UNATTENDX86/Drivers2/ &&
+            rsync "$@" -rtiv --include '/qxldod' --exclude '/*' --modify-window=1 virtio-x86/ "$media"/UNATTENDX86/Drivers2/virtio-x86/ &&
+            rsync "$@" -rtiv --modify-window=1 brother-HL-* "$media"/UNATTENDX86/Drivers2/ &&
+            rsync-win10-unattended "$@" --exclude /Wi-Fi.xml --exclude /Office365 "$media"/UNATTENDX86/ || return
+    fi
 }
