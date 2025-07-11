@@ -16,9 +16,11 @@
 /panels/panel-1/position-locked true
 /panels/panel-1/size 24
 /plugins/plugin-1 'whiskermenu'
+/plugins/plugin-1/command-hibernate 'systemctl hibernate'
 /plugins/plugin-1/command-logoutuser "loginctl terminate-session ''"
 /plugins/plugin-1/command-restart 'systemctl reboot'
 /plugins/plugin-1/command-shutdown 'systemctl poweroff'
+/plugins/plugin-1/command-suspend 'systemctl sleep'
 /plugins/plugin-1/command-switchuser 'dm-tool switch-to-greeter'
 /plugins/plugin-1/default-category 1
 /plugins/plugin-1/favorites-in-recent true
@@ -43,11 +45,13 @@
 /plugins/plugin-1/search-actions/action-3/name 'Search file names'
 /plugins/plugin-1/search-actions/action-3/pattern '^(?:\\?\\? ?|f )(.+)'
 /plugins/plugin-1/search-actions/action-3/regex true
+/plugins/plugin-1/show-command-hibernate false
 /plugins/plugin-1/show-command-logout false
 /plugins/plugin-1/show-command-logoutuser true
 /plugins/plugin-1/show-command-menueditor false
 /plugins/plugin-1/show-command-restart true
 /plugins/plugin-1/show-command-shutdown true
+/plugins/plugin-1/show-command-suspend true
 /plugins/plugin-1/show-command-switchuser true
 /plugins/plugin-1/sort-categories false
 /plugins/plugin-1/view-mode 2
@@ -95,12 +99,12 @@
 /plugins/plugin-5 'separator'
 /plugins/plugin-5/style uint32 0
 /plugins/plugin-6 'systray'
-/plugins/plugin-6/hidden-items [<'Todoist1'>, <'remmina-icon'>, <'blueman'>, <'Clockify1'>, <'flameshot'>, <'Zeal'>]
-/plugins/plugin-6/hidden-legacy-items [<'networkmanager applet'>, <'clockify'>, <'stretchly'>, <'thunar'>, <'system-config-printer'>, <'remmina'>, <'wi-fi network connection “s.t.e.m.j.a.k.l” active: s.t.e.m.j.a.k.l (75%)'>]
+/plugins/plugin-6/hidden-items [<'chrome_status_icon_1'>, <'blueman'>, <'CopyQ_copyq'>]
+/plugins/plugin-6/hidden-legacy-items [<'networkmanager applet'>]
 /plugins/plugin-6/hide-new-items true
 /plugins/plugin-6/icon-size 18
-/plugins/plugin-6/known-items [<'Clockify1'>, <'blueman'>, <'Stretchly1'>, <'copyq'>, <'flameshot'>, <'RescueTime'>, <'Nextcloud'>, <'Todoist1'>, <'remmina-icon'>, <'Microsoft Teams - Preview1'>, <'Skype1'>, <'Caprine1'>, <'zoom'>, <'Zeal'>]
-/plugins/plugin-6/known-legacy-items [<'wi-fi network connection “s.t.e.m.j.a.k.l” active: s.t.e.m.j.a.k.l (75%)'>, <'clockify'>, <'stretchly'>, <'system-config-printer'>, <'thunar'>, <'networkmanager applet'>, <'bluetooth enabled'>, <'todoist'>, <'remmina'>, <'teams'>, <'skypeforlinux'>, <'electron'>]
+/plugins/plugin-6/known-items [<'blueman'>, <'CopyQ_copyq'>, <'Nextcloud'>, <'chrome_status_icon_1'>]
+/plugins/plugin-6/known-legacy-items [<'networkmanager applet'>]
 /plugins/plugin-6/show-frame false
 /plugins/plugin-6/square-icons true
 /plugins/plugin-7 'cpugraph'
