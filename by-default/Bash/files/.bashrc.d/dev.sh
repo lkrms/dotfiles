@@ -113,31 +113,72 @@ function phpstan-update-baseline() {
         vendor/bin/phpstan -b --allow-empty-baseline
 }
 
-# rsync-win10-unattended [rsync_arg...] target
-function rsync-win10-unattended() {
+# rsync-unattended [rsync_arg...] target
+function rsync-unattended() {
     (($#)) || return
     local target=${*:$#}
     [[ -d $target ]] || return
     rsync -rtvi --delete --delete-excluded --modify-window=1 "${@:1:$#-1}" \
-        ~/Code/lk/win10-unattended/{Tools,Office365,Unattended,Updates,*.xml} \
+        ~/Code/lk/win10-unattended/{Unattended,*.xml,MSI,Office365,Tools,Updates} \
         "${target%/}/"
 }
 
-function rsync-win10-virtio-test() {
+# rsync-unattended-virtio-test [rsync_arg...]
+function rsync-unattended-virtio-test() {
     cd ~/Downloads/Keep/Windows/Drivers || return
     local media=/run/media/$USER
     if [[ -d $media/UNATTENDED ]]; then
-        rsync "$@" -rtiv --exclude '/*.msi' --exclude '/qxldod' --modify-window=1 virtio-w10-amd64/ "$media"/UNATTENDED/Drivers/virtio-w10-amd64/ &&
-            rsync "$@" -rtiv --include '/*.msi' --exclude '/*' --modify-window=1 virtio-w10-amd64/ "$media"/UNATTENDED/Drivers2/ &&
-            rsync "$@" -rtiv --include '/qxldod' --exclude '/*' --modify-window=1 virtio-w10-amd64/ "$media"/UNATTENDED/Drivers2/virtio-w10-amd64/ &&
-            rsync "$@" -rtiv --modify-window=1 brother-HL-* "$media"/UNATTENDED/Drivers2/ &&
-            rsync-win10-unattended "$@" --exclude /Wi-Fi.xml "$media"/UNATTENDED/ || return
+        rsync "$@" -rtvi --include '/vioscsi' --include '/viostor' --exclude '/*' --modify-window=1 virtio-w11-amd64/ "$media"/UNATTENDED/Drivers/virtio-w11-amd64/ &&
+            rsync "$@" -rtvi --exclude '/*.msi' --exclude '/vioscsi' --exclude '/viostor' --modify-window=1 virtio-w11-amd64/ "$media"/UNATTENDED/Drivers2/virtio-w11-amd64/ &&
+            rsync "$@" -rtvi --include '/*.msi' --exclude '/*' --modify-window=1 virtio-w11-amd64/ "$media"/UNATTENDED/Drivers2/ &&
+            rsync "$@" -rtvi --modify-window=1 brother-HL-* "$media"/UNATTENDED/Drivers2/ &&
+            rsync-unattended "$@" --exclude /Wi-Fi.xml "$media"/UNATTENDED/ || return
     fi
     if [[ -d $media/UNATTENDX86 ]]; then
-        rsync "$@" -rtiv --exclude '/*.msi' --exclude '/qxldod' --modify-window=1 virtio-x86/ "$media"/UNATTENDX86/Drivers/virtio-x86/ &&
-            rsync "$@" -rtiv --include '/*.msi' --exclude '/*' --modify-window=1 virtio-x86/ "$media"/UNATTENDX86/Drivers2/ &&
-            rsync "$@" -rtiv --include '/qxldod' --exclude '/*' --modify-window=1 virtio-x86/ "$media"/UNATTENDX86/Drivers2/virtio-x86/ &&
-            rsync "$@" -rtiv --modify-window=1 brother-HL-* "$media"/UNATTENDX86/Drivers2/ &&
-            rsync-win10-unattended "$@" --exclude /Wi-Fi.xml --exclude /Office365 "$media"/UNATTENDX86/ || return
+        rsync "$@" -rtvi --include '/vioscsi' --include '/viostor' --exclude '/*' --modify-window=1 virtio-w10-x86/ "$media"/UNATTENDX86/Drivers/virtio-w10-x86/ &&
+            rsync "$@" -rtvi --exclude '/*.msi' --exclude '/vioscsi' --exclude '/viostor' --modify-window=1 virtio-w10-x86/ "$media"/UNATTENDX86/Drivers2/virtio-w10-x86/ &&
+            rsync "$@" -rtvi --include '/*.msi' --exclude '/*' --modify-window=1 virtio-w10-x86/ "$media"/UNATTENDX86/Drivers2/ &&
+            rsync "$@" -rtvi --modify-window=1 brother-HL-* "$media"/UNATTENDX86/Drivers2/ &&
+            rsync-unattended "$@" --exclude /Wi-Fi.xml --exclude /Office365 "$media"/UNATTENDX86/ || return
     fi
+}
+
+# virtio-win-extract-drivers version arch [target [source]]
+function virtio-win-extract-drivers() {
+    (($# > 1)) || return
+    local version=$1 arch=$2 target=${3-virtio-$1-$2} source=${4-} in out xarch
+    if [[ ! -d $source ]]; then
+        if [[ -f $source ]]; then
+            local iso=$source
+        else
+            local isos=(~/Downloads/Keep/isos/virtio-win-*.iso)
+            local iso=${isos[${#isos[@]} - 1]}
+            [[ -f $iso ]] || lk_warn 'virtio-win ISO not found' || return
+        fi
+        [[ -d ${virtio_win_source-} ]] ||
+            lk_mktemp_dir_with virtio_win_source 7z x "$iso" || return
+        source=$virtio_win_source
+    fi
+    case "$arch" in
+    amd64 | ARM64)
+        lk_tty_run_detail cp -af "$source/guest-agent/qemu-ga-x86_64.msi" "${target%/}/"
+        xarch=x64
+        ;;
+    x86)
+        lk_tty_run_detail cp -af "$source/guest-agent/qemu-ga-i386.msi" "${target%/}/"
+        xarch=x86
+        ;;
+    *)
+        false
+        ;;
+    esac || return
+    for in in "$source"/*/"$version/$arch"; do
+        out=${in%/*/*}
+        out=${target%/}/${out##*/}
+        [[ ! -e $out ]] || lk_warn "target already exists: $out" || return
+        lk_tty_run_detail cp -an "$in" "$out" || return
+    done
+    local url=https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/virtio-win-pkg-scripts-input/latest-build
+    url+=/spice-vdagent-$xarch-$(curl -fsSL "$url/buildversions.json" | jq -r '.["spice-vdagent-win"].version').msi &&
+        lk_tty_run_detail curl -fLRo "${target%/}/${url##*/}" "$url"
 }
