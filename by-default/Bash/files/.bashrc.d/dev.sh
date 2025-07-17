@@ -126,20 +126,28 @@ function rsync-unattended() {
 # rsync-unattended-virtio-test [rsync_arg...]
 function rsync-unattended-virtio-test() {
     cd ~/Downloads/Keep/Windows/Drivers || return
+    if [[ -d ${arm64_target-} ]]; then
+        #rsync "$@" -rtvi --include '/vioscsi' --include '/viostor' --exclude '/*' --modify-window=1 virtio-w11-ARM64/ "$arm64_target"/Drivers/virtio-w11-ARM64/ &&
+        #rsync "$@" -rtvi --exclude '/*.msi' --exclude '/vioscsi' --exclude '/viostor' --modify-window=1 virtio-w11-ARM64/ "$arm64_target"/Drivers2/virtio-w11-ARM64/ &&
+        rsync "$@" -rtvi --include '/*.msi' --exclude '/*' --modify-window=1 virtio-w11-ARM64/ "$arm64_target"/Drivers2/ &&
+            #rsync "$@" -rtvi --modify-window=1 brother-HL-* "$arm64_target"/Drivers2/ &&
+            rsync-unattended "$@" --exclude Wi-Fi.xml --exclude /Office365 "$arm64_target"/ || return
+        return
+    fi
     local media=/run/media/$USER
     if [[ -d $media/UNATTENDED ]]; then
         rsync "$@" -rtvi --include '/vioscsi' --include '/viostor' --exclude '/*' --modify-window=1 virtio-w11-amd64/ "$media"/UNATTENDED/Drivers/virtio-w11-amd64/ &&
             rsync "$@" -rtvi --exclude '/*.msi' --exclude '/vioscsi' --exclude '/viostor' --modify-window=1 virtio-w11-amd64/ "$media"/UNATTENDED/Drivers2/virtio-w11-amd64/ &&
             rsync "$@" -rtvi --include '/*.msi' --exclude '/*' --modify-window=1 virtio-w11-amd64/ "$media"/UNATTENDED/Drivers2/ &&
             rsync "$@" -rtvi --modify-window=1 brother-HL-* "$media"/UNATTENDED/Drivers2/ &&
-            rsync-unattended "$@" --exclude /Wi-Fi.xml "$media"/UNATTENDED/ || return
+            rsync-unattended "$@" --exclude Wi-Fi.xml "$media"/UNATTENDED/ || return
     fi
     if [[ -d $media/UNATTENDX86 ]]; then
         rsync "$@" -rtvi --include '/vioscsi' --include '/viostor' --exclude '/*' --modify-window=1 virtio-w10-x86/ "$media"/UNATTENDX86/Drivers/virtio-w10-x86/ &&
             rsync "$@" -rtvi --exclude '/*.msi' --exclude '/vioscsi' --exclude '/viostor' --modify-window=1 virtio-w10-x86/ "$media"/UNATTENDX86/Drivers2/virtio-w10-x86/ &&
             rsync "$@" -rtvi --include '/*.msi' --exclude '/*' --modify-window=1 virtio-w10-x86/ "$media"/UNATTENDX86/Drivers2/ &&
             rsync "$@" -rtvi --modify-window=1 brother-HL-* "$media"/UNATTENDX86/Drivers2/ &&
-            rsync-unattended "$@" --exclude /Wi-Fi.xml --exclude /Office365 "$media"/UNATTENDX86/ || return
+            rsync-unattended "$@" --exclude Wi-Fi.xml --exclude /Office365 "$media"/UNATTENDX86/ || return
     fi
 }
 
@@ -178,6 +186,8 @@ function virtio-win-extract-drivers() {
         [[ ! -e $out ]] || lk_warn "target already exists: $out" || return
         lk_tty_run_detail cp -an "$in" "$out" || return
     done
+    # SPICE isn't supported on ARM64
+    [[ $arch != ARM64 ]] || return 0
     local url=https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/virtio-win-pkg-scripts-input/latest-build
     url+=/spice-vdagent-$xarch-$(curl -fsSL "$url/buildversions.json" | jq -r '.["spice-vdagent-win"].version').msi &&
         lk_tty_run_detail curl -fLRo "${target%/}/${url##*/}" "$url"
