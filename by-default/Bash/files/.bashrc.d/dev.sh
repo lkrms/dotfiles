@@ -131,7 +131,7 @@ function rsync-unattended-virtio-test() {
         #rsync "$@" -rtvi --exclude '/*.msi' --exclude '/vioscsi' --exclude '/viostor' --modify-window=1 virtio-w11-ARM64/ "$arm64_target"/Drivers2/virtio-w11-ARM64/ &&
         rsync "$@" -rtvi --include '/*.msi' --exclude '/*' --modify-window=1 virtio-w11-ARM64/ "$arm64_target"/Drivers2/ &&
             #rsync "$@" -rtvi --modify-window=1 brother-HL-* "$arm64_target"/Drivers2/ &&
-            rsync-unattended "$@" --exclude Wi-Fi.xml --exclude /Office365 "$arm64_target"/ || return
+            rsync-unattended "$@" --exclude Wi-Fi.xml "$arm64_target"/ || return
         return
     fi
     local media=/run/media/$USER
