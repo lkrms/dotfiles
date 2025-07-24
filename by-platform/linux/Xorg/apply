@@ -7,15 +7,22 @@ shopt -s extglob nullglob
 mimeinfo=({~/.local,/usr/local,/usr}/share/applications/mimeinfo.cache!(?))
 
 default_apps=(
-    code+geany+vim          # Assign types opened by Geany and Vim to VS Code
-    firefox                 # Prefer Firefox for `text/html`
-    org.mozilla.Thunderbird # Prefer Thunderbird for `x-scheme-handler/mailto`
-    thunar                  # Prefer Thunar for `inode/directory`
+    # Assign types opened by Geany and Vim to VS Code
+    code+geany+vim
+    # Prefer Firefox for `text/html`
+    firefox
+    # Prefer Thunderbird for `x-scheme-handler/mailto`
+    org.mozilla.Thunderbird
+    # Prefer Thunar for `inode/directory`
+    thunar
     org.nomacs.ImageLounge
     org.xfce.ristretto
     typora
     org.gnome.Evince
     vlc
+    # Prefer Engrampa Archive Manager for `application/x-cd-image` and other
+    # types opened by Archive Mounter or VLC
+    engrampa
 )
 
 function app_handles() {
