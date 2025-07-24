@@ -20,4 +20,4 @@ function _reset-win10-unattended() {
         lk_tty_run_detail virsh qemu-monitor-command "$vm" --hmp set_link "$vm_link" on
 }
 
-function reset-win11pro() { _reset-win10-unattended "$@"; }
+function reset-win11pro() { _reset-win10-unattended --include "/Updates/Windows 11 24H2 ARM64/" --exclude "/Updates/*/" "$@"; }

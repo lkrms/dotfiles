@@ -154,7 +154,7 @@ function rsync-unattended-virtio-test() {
 # virtio-win-extract-drivers version arch [target [source]]
 function virtio-win-extract-drivers() {
     (($# > 1)) || return
-    local version=$1 arch=$2 target=${3-virtio-$1-$2} source=${4-} in out xarch
+    local version=$1 arch=$2 target=${3:-virtio-$1-$2} source=${4-} in out xarch
     if [[ ! -d $source ]]; then
         if [[ -f $source ]]; then
             local iso=$source
@@ -167,6 +167,7 @@ function virtio-win-extract-drivers() {
             lk_mktemp_dir_with virtio_win_source 7z x "$iso" || return
         source=$virtio_win_source
     fi
+    [[ -d $target ]] || lk_tty_run_detail mkdir -p "$target" || return
     case "$arch" in
     amd64 | ARM64)
         lk_tty_run_detail cp -af "$source/guest-agent/qemu-ga-x86_64.msi" "${target%/}/"

@@ -30,7 +30,7 @@ function mount-qemu-img() {
 
 function _reset-win10-unattended() {
     local images=/var/lib/libvirt/images vm=${FUNCNAME[1]#reset-}
-    local fixed=$images/$vm.qcow2 removable=$images/$vm-1.qcow2 vm_if
+    local fixed=$images/$vm.qcow2 removable=$images/$vm-1.qcow2 vm_link
     (
         mount-qemu-img "$removable" &&
             part=${QEMU_IMG_NBD}p1 &&
@@ -44,15 +44,15 @@ function _reset-win10-unattended() {
     ) || return
     lk_tty_run_detail lk_elevate qemu-img create -f qcow2 -o cluster_size=128k,extended_l2=on,lazy_refcounts=on "$fixed" 128G &&
         lk_tty_run_detail lk_elevate virsh start "$vm" &&
-        vm_if=$(lk_elevate virsh domiflist "$vm" | awk 'NR == 3 { print $1 }' | grep .) &&
-        lk_tty_run_detail lk_elevate virsh domif-setlink "$vm" "$vm_if" down &&
+        vm_link=$(lk_elevate virsh qemu-monitor-command "$vm" --hmp info network | awk -F '[ \t:\\\\]+' 'NR == 2 { print $2 }' | grep .) &&
+        lk_tty_run_detail lk_elevate virsh qemu-monitor-command "$vm" --hmp set_link "$vm_link" off &&
         {
             lk_elevate nohup virt-viewer "$vm" &>/dev/null &
             disown
         } &&
         lk_tty_run_detail lk_elevate virsh await "$vm" --condition guest-agent-available &&
-        lk_tty_run_detail lk_elevate virsh domif-setlink "$vm" "$vm_if" up
+        lk_tty_run_detail lk_elevate virsh qemu-monitor-command "$vm" --hmp set_link "$vm_link" on
 }
 
-function reset-win10x86pro() { _reset-win10-unattended --exclude "/Updates/Windows 11*/" "$@"; }
-function reset-win11home() { _reset-win10-unattended --exclude "/Updates/Windows 10*/" "$@"; }
+function reset-win10x86pro() { _reset-win10-unattended --include "/Updates/Windows 10 22H2/" --exclude "/Updates/*/" "$@"; }
+function reset-win11home() { _reset-win10-unattended --include "/Updates/Windows 11 24H2/" --exclude "/Updates/*/" "$@"; }
