@@ -29,8 +29,9 @@ function mount-qemu-img() {
 }
 
 function _reset-win10-unattended() {
-    local images=/var/lib/libvirt/images vm=${FUNCNAME[1]#reset-}
+    local images=/var/lib/libvirt/images vm=${FUNCNAME[1]#reset-} install=$1
     local fixed=$images/$vm.qcow2 removable=$images/$vm-1.qcow2 vm_link
+    shift
     (
         mount-qemu-img "$removable" &&
             part=${QEMU_IMG_NBD}p1 &&
@@ -43,6 +44,11 @@ function _reset-win10-unattended() {
             lk_tty_yn "$target synced. Proceed?" Y
     ) || return
     lk_tty_run_detail lk_elevate qemu-img create -f qcow2 -o cluster_size=128k,extended_l2=on,lazy_refcounts=on "$fixed" 128G &&
+        {
+            lk_elevate virsh domblklist "$vm" | awk -v i="$install" 'NR > 2 && $NF == i' | grep . >/dev/null ||
+                lk_tty_run_detail lk_elevate virt-xml "$vm" --add-device \
+                    --disk type=file,device=disk,driver.name=qemu,driver.type=qcow2,source.file="$install",target.dev=vdb,target.bus=virtio,readonly=yes,boot.order=2
+        } &&
         lk_tty_run_detail lk_elevate virsh start "$vm" &&
         vm_link=$(lk_elevate virsh qemu-monitor-command "$vm" --hmp info network | awk -F '[ \t:\\\\]+' 'NR == 2 { print $2 }' | grep .) &&
         lk_tty_run_detail lk_elevate virsh qemu-monitor-command "$vm" --hmp set_link "$vm_link" off &&
@@ -54,5 +60,12 @@ function _reset-win10-unattended() {
         lk_tty_run_detail lk_elevate virsh qemu-monitor-command "$vm" --hmp set_link "$vm_link" on
 }
 
-function reset-win10x86pro() { _reset-win10-unattended --include "/Updates/Windows 10 22H2/" --exclude "/Updates/*/" "$@"; }
-function reset-win11home() { _reset-win10-unattended --include "/Updates/Windows 11 24H2/" --exclude "/Updates/*/" "$@"; }
+function reset-win10x86pro() {
+    _reset-win10-unattended ~/Downloads/Keep/libvirt/win10-install-with-updates-x86.qcow2 \
+        --include "/Updates/Windows 10 22H2/" --exclude "/Updates/*/" "$@"
+}
+
+function reset-win11home() {
+    _reset-win10-unattended ~/Downloads/Keep/libvirt/win11-install-with-updates-and-virtio-x64.qcow2 \
+        --include "/Updates/Windows 11 24H2/" --exclude "/Updates/*/" "$@"
+}

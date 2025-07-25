@@ -65,6 +65,13 @@ _criteria.private = {
     },
 }
 
+_criteria.ignore = {
+    class_instance_name = {
+        "virt-manager",
+        "virt-viewer",
+    },
+}
+
 _criteria.pinnable = {
     operator.AND,
     _criteria.has_multiple_displays,
@@ -457,7 +464,8 @@ rules = {
             {window_type = "WINDOW_TYPE_NORMAL"},
             function(state)
                 return not state.window_state["_NET_WM_STATE_MODAL"] and
-                    not state.window_state["_NET_WM_STATE_SKIP_TASKBAR"]
+                    not state.window_state["_NET_WM_STATE_SKIP_TASKBAR"] and
+                    not check_criteria(_criteria.ignore, state)
             end,
             function(state)
                 state.place = get_place(state)
