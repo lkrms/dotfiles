@@ -45,6 +45,9 @@ linux-gnu)
 darwin*)
     df_platform=macos
     ;;
+cygwin | msys)
+    df_platform=windows
+    ;;
 *)
     die "unsupported OS: $OSTYPE"
     ;;
