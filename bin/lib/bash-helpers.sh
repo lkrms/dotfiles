@@ -9,8 +9,12 @@ function set_local_app_roots() {
     local IFS=$'\n' host
     # Match qualified (i.e. more specific) hostnames first
     host=($(
-        { hostname -f &&
-            hostname -s; } | uniq
+        if [[ $df_platform == windows ]]; then
+            hostname
+        else
+            { hostname -f &&
+                hostname -s; } | uniq
+        fi
     )) || die "error getting hostname"
     local_app_roots=(
         "${host[@]/#/$df_root/private/by-host/}"

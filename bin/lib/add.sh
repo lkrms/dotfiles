@@ -14,9 +14,15 @@ set_local_app_roots
 (($# > 1)) && paths_exist "${@:2}" ||
     { echo "Usage: ${0##*/} <appname> <path>..." >&2 && exit 1; }
 
-case "${0##*/}" in
+case "${df_platform}:${0##*/}" in
+windows:*-by-long-host)
+    die "not supported on Windows: ${0##*/}"
+    ;;
 *-private-by-long-host)
     app_root=$df_root/private/by-host/$(hostname -f)
+    ;;
+windows:*-private-by-host)
+    app_root=$df_root/private/by-host/$(hostname)
     ;;
 *-private-by-host)
     app_root=$df_root/private/by-host/$(hostname -s)
@@ -29,6 +35,9 @@ case "${0##*/}" in
     ;;
 *-by-long-host)
     app_root=$df_root/by-host/$(hostname -f)
+    ;;
+windows:*-by-host)
+    app_root=$df_root/by-host/$(hostname)
     ;;
 *-by-host)
     app_root=$df_root/by-host/$(hostname -s)

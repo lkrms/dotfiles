@@ -24,6 +24,8 @@ Settings are added to the following directories:
    For host-specific settings. Short (`bamm-bamm`) and long
    (`bamm-bamm.localdomain`) hostnames are both recognised.
 
+   - Only short hostnames are supported on Windows.
+
 2. **[by-platform]/(`linux`|`macos`|`windows`)/`<appname>`**
 
    For platform-specific settings. `linux`, `macos` and `windows` are
