@@ -27,6 +27,5 @@ function _reset-win10-unattended() {
 }
 
 function reset-win11pro() {
-    _reset-win10-unattended ~/Downloads/Keep/libvirt/win11-install-with-updates-and-virtio-arm64.qcow2 \
-        --include "/Updates/Windows 11 24H2 ARM64/" --exclude "/Updates/*/" "$@"
+    _reset-win10-unattended ~/Downloads/Keep/libvirt/win11-install-with-updates-and-virtio-arm64.qcow2 "$@"
 }

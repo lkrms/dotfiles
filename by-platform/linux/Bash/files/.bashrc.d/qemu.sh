@@ -61,11 +61,9 @@ function _reset-win10-unattended() {
 }
 
 function reset-win10x86pro() {
-    _reset-win10-unattended ~/Downloads/Keep/libvirt/win10-install-with-updates-x86.qcow2 \
-        --include "/Updates/Windows 10 22H2/" --exclude "/Updates/*/" "$@"
+    _reset-win10-unattended ~/Downloads/Keep/libvirt/win10-install-with-updates-x86.qcow2 "$@"
 }
 
 function reset-win11home() {
-    _reset-win10-unattended ~/Downloads/Keep/libvirt/win11-install-with-updates-and-virtio-x64.qcow2 \
-        --include "/Updates/Windows 11 24H2/" --exclude "/Updates/*/" "$@"
+    _reset-win10-unattended ~/Downloads/Keep/libvirt/win11-install-with-updates-and-virtio-x64.qcow2 "$@"
 }
