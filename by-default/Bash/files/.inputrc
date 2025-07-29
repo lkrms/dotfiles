@@ -1,5 +1,8 @@
 $include /etc/inputrc
 
+# Prevent window flashing on Git Bash (MINGW)
+set bell-style none
+
 # Use LS_COLORS and append a character to filename completions to indicate type
 set colored-stats On
 set visible-stats On
