@@ -24,10 +24,17 @@ Settings are added to the following directories:
    For host-specific settings. Short (`bamm-bamm`) and long
    (`bamm-bamm.localdomain`) hostnames are both recognised.
 
-2. **[by-platform]/(`linux`|`macos`)/`<appname>`**
+   - Only short hostnames are supported on Windows.
 
-   For platform-specific settings. Only `linux` and `macos` are recognised for
-   now.
+2. **[by-platform]/(`linux`|`macos`|`windows`)/`<appname>`**
+
+   For platform-specific settings. `linux`, `macos` and `windows` are
+   recognised.
+
+   - Cygwin and MINGW/MSYS2 environments, including [Git Bash], are treated as
+     `windows`.
+
+   - WSL is treated as `linux`.
 
 3. **[by-default]/`<appname>`**
 
@@ -38,6 +45,8 @@ added for each application. The install script operates on the most specific
 instance of each individual file, ignoring files with the same name in a
 less-specific directory.
 
+> [!NOTE]
+>
 > `<appname>` is case-sensitive and must be unique to each application.
 
 #### Example
@@ -181,7 +190,7 @@ The following environment variables are passed to `target`, `configure` and
   directory, e.g. `/home/lkrms/.dotfiles`.
 - **`friendly_df_root`:** the location of the `dotfiles` repository for display
   purposes, e.g. `~/.dotfiles` (with a literal `~`).
-- **`df_platform`:** either `linux` or `macos`.
+- **`df_platform`:** either `linux`, `macos` or `windows`.
 - **`df_dryrun`:** non-empty if the installer is running in dry-run mode,
   otherwise unset or empty.
 - **`df_reset`:** non-empty if the `--reset` option is passed to the installer,
@@ -206,4 +215,5 @@ symbolic link.
 [by-host]: by-host
 [by-platform]: by-platform
 [by-default]: by-default
+[Git Bash]: https://gitforwindows.org/
 [Writing scripts]: #writing-scripts
