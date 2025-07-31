@@ -129,23 +129,31 @@ function rsync-unattended-virtio-test() {
     if [[ -d ${arm64_target-} ]]; then
         #rsync "$@" -rtvi --include '/vioscsi' --include '/viostor' --exclude '/*' --modify-window=1 virtio-w11-ARM64/ "$arm64_target"/Drivers/virtio-w11-ARM64/ &&
         #rsync "$@" -rtvi --exclude '/*.msi' --exclude '/vioscsi' --exclude '/viostor' --modify-window=1 virtio-w11-ARM64/ "$arm64_target"/Drivers2/virtio-w11-ARM64/ &&
-        rsync "$@" -rtvi --include '/*.msi' --exclude '/*' --modify-window=1 virtio-w11-ARM64/ "$arm64_target"/Drivers2/ &&
+        rsync "$@" -rtOvi --include '/*.msi' --exclude '/*' --modify-window=1 virtio-w11-ARM64/ "$arm64_target"/Drivers2/ &&
             #rsync "$@" -rtvi --modify-window=1 brother-HL-* "$arm64_target"/Drivers2/ &&
             rsync-unattended "$@" --exclude Wi-Fi.xml "$arm64_target"/ || return
+        return
+    fi
+    if [[ -d ${amd64_target-} ]]; then
+        #rsync "$@" -rtvi --include '/vioscsi' --include '/viostor' --exclude '/*' --modify-window=1 virtio-w11-amd64/ "$amd64_target"/Drivers/virtio-w11-amd64/ &&
+        #rsync "$@" -rtvi --exclude '/*.msi' --exclude '/vioscsi' --exclude '/viostor' --modify-window=1 virtio-w11-amd64/ "$amd64_target"/Drivers2/virtio-w11-amd64/ &&
+        rsync "$@" -rtOvi --exclude '/spice-*' --include '/*.msi' --exclude '/*' --modify-window=1 virtio-w11-amd64/ "$amd64_target"/Drivers2/ &&
+            rsync "$@" -rtvi --modify-window=1 brother-HL-* "$amd64_target"/Drivers2/ &&
+            rsync-unattended "$@" --exclude Wi-Fi.xml "$amd64_target"/ || return
         return
     fi
     local media=/run/media/$USER
     if [[ -d $media/UNATTENDED ]]; then
         rsync "$@" -rtvi --include '/vioscsi' --include '/viostor' --exclude '/*' --modify-window=1 virtio-w11-amd64/ "$media"/UNATTENDED/Drivers/virtio-w11-amd64/ &&
             rsync "$@" -rtvi --exclude '/*.msi' --exclude '/vioscsi' --exclude '/viostor' --modify-window=1 virtio-w11-amd64/ "$media"/UNATTENDED/Drivers2/virtio-w11-amd64/ &&
-            rsync "$@" -rtvi --include '/*.msi' --exclude '/*' --modify-window=1 virtio-w11-amd64/ "$media"/UNATTENDED/Drivers2/ &&
+            rsync "$@" -rtOvi --include '/*.msi' --exclude '/*' --modify-window=1 virtio-w11-amd64/ "$media"/UNATTENDED/Drivers2/ &&
             rsync "$@" -rtvi --modify-window=1 brother-HL-* "$media"/UNATTENDED/Drivers2/ &&
             rsync-unattended "$@" --exclude Wi-Fi.xml "$media"/UNATTENDED/ || return
     fi
     if [[ -d $media/UNATTENDX86 ]]; then
         rsync "$@" -rtvi --include '/vioscsi' --include '/viostor' --exclude '/*' --modify-window=1 virtio-w10-x86/ "$media"/UNATTENDX86/Drivers/virtio-w10-x86/ &&
             rsync "$@" -rtvi --exclude '/*.msi' --exclude '/vioscsi' --exclude '/viostor' --modify-window=1 virtio-w10-x86/ "$media"/UNATTENDX86/Drivers2/virtio-w10-x86/ &&
-            rsync "$@" -rtvi --include '/*.msi' --exclude '/*' --modify-window=1 virtio-w10-x86/ "$media"/UNATTENDX86/Drivers2/ &&
+            rsync "$@" -rtOvi --include '/*.msi' --exclude '/*' --modify-window=1 virtio-w10-x86/ "$media"/UNATTENDX86/Drivers2/ &&
             rsync "$@" -rtvi --modify-window=1 brother-HL-* "$media"/UNATTENDX86/Drivers2/ &&
             rsync-unattended "$@" --exclude Wi-Fi.xml --exclude /Office365 "$media"/UNATTENDX86/ || return
     fi
