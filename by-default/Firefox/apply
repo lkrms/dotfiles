@@ -4,8 +4,20 @@
 
 shopt -s nullglob
 
-[[ $df_platform == linux ]] && dir=/usr/lib/firefox ||
+case "$df_platform" in
+linux)
+    dir=/usr/lib/firefox
+    ;;
+macos)
     dir=/Applications/Firefox.app/Contents/Resources
+    ;;
+windows)
+    dir="$(path_get ProgramFiles)/Mozilla Firefox"
+    ;;
+*)
+    exit 3
+    ;;
+esac
 
 if [[ ! -d $dir ]]; then
     exit

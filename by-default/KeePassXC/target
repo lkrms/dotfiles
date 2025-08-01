@@ -7,6 +7,10 @@ linux)
 macos)
     printf '%s\n' ~/"Library/Application Support/KeePassXC"
     ;;
+windows)
+    dir=$(path_get AppData)/KeePassXC/keepassxc.ini
+    printf '%s\n' "$dir"
+    ;;
 *)
     exit 3
     ;;
