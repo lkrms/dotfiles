@@ -6,7 +6,7 @@ function aur-list-my-packages() {
 }
 
 function aur-PKGBUILD-check-aur() { (
-    declare IFS=$' \t\n' STATUS=0 DIR=$PWD
+    declare IFS=$' \t\n' DIR=$PWD
     lk_tty_log "Checking AUR remote(s) in $DIR"
     (i=0 && for pkg in PKGBUILD */PKGBUILD; do
         pkg=$DIR/$pkg
@@ -43,7 +43,7 @@ git rev-list --count HEAD..aur/master | grep -Fx 0 >/dev/null || echo "Not curre
 ); }
 
 function aur-PKGBUILD-check-github() { (
-    declare IFS=$' \t\n' STATUS=0 DIR=$PWD
+    declare IFS=$' \t\n' DIR=$PWD
     lk_tty_log "Checking GitHub remote(s) in $DIR"
     (i=0 && for pkg in PKGBUILD */PKGBUILD; do
         pkg=$DIR/$pkg
@@ -57,16 +57,23 @@ function aur-PKGBUILD-check-github() { (
             continue
         }
         lk_tty_yn "Add '${pkg##*/}' to GitHub?" Y || continue
+        if lk_tty_yn "Is '${pkg##*/}' a fork of an AUR package?"; then
+            prefix="Fork of "
+            topic=fork
+        else
+            prefix=
+            topic=aur
+        fi
         lk_tty_detail "Adding to GitHub:" "${pkg##*/}"
         gh repo create \
             lkrms-pkgbuilds/pkgbuild-"${pkg##*/}" \
             --public \
-            --description "AUR package ${pkg##*/}" \
+            --description "${prefix}AUR package ${pkg##*/}" \
             --homepage "https://aur.archlinux.org/packages/${pkg##*/}" \
             --source . \
             --remote origin \
             --push &&
-            gh repo edit --add-topic aur || return
+            gh repo edit --add-topic "$topic" || return
         ! REMOTES=$(git remote | grep -Fxv origin >/dev/null) || {
             git fetch --multiple --prune --tags $REMOTES &>/dev/null &
             ((++i))
