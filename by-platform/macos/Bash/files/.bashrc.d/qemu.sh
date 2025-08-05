@@ -34,7 +34,7 @@ function _reset-win10-unattended() {
 }
 
 function reset-win11pro() {
-    local install=~/Downloads/Keep/libvirt/win11-install-with-updates-and-virtio-x64.qcow2
-    ! lk_is_apple_silicon || install=~/Downloads/Keep/libvirt/win11-install-with-updates-and-virtio-arm64.qcow2
+    local install=~/Downloads/Keep/libvirt/win11-install-with-virtio-x64.qcow2
+    ! lk_is_apple_silicon || install=~/Downloads/Keep/libvirt/win11-install-with-virtio-arm64.qcow2
     _reset-win10-unattended "$install" "$@"
 }
