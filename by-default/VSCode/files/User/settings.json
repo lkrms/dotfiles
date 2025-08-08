@@ -116,7 +116,7 @@
         "wrap_line_length": 80
     },
     "chat.commandCenter.enabled": false,
-    "continue.enableTabAutocomplete": true,
+    "continue.enableTabAutocomplete": false,
     "continue.showInlineTip": false,
     "css.format.newlineBetweenRules": false,
     "css.format.newlineBetweenSelectors": false,
