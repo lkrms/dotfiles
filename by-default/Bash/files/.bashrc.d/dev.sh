@@ -159,6 +159,12 @@ function rsync-unattended-virtio-test() {
     fi
 }
 
+function virtio-win-update-iso() { (
+    cd ~/Downloads/Keep/isos &&
+        wget --trust-server-names --timestamping \
+            https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/latest-virtio/virtio-win.iso
+); }
+
 # virtio-win-extract-drivers version arch [target [source]]
 function virtio-win-extract-drivers() {
     (($# > 1)) || return
