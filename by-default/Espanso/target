@@ -4,13 +4,13 @@
 
 case "$df_platform" in
 linux)
-    printf '%s\n' ~/.config/keepassxc
+    printf '%s\n' ~/.config
     ;;
 macos)
-    printf '%s\n' ~/"Library/Application Support/KeePassXC"
+    printf '%s\n' ~/"Library/Application Support"
     ;;
 windows)
-    dir=$(path_get AppData)/KeePassXC
+    dir=$(path_get AppData)
     printf '%s\n' "$dir"
     ;;
 *)

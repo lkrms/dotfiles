@@ -25,13 +25,13 @@ fi
 
 pref_dir=$dir/defaults/pref
 if [[ ! -d $pref_dir ]]; then
-    echo "Creating directory: $pref_dir"
+    echo " -> Creating directory: $pref_dir"
     maybe sudo install -d "$pref_dir"
 fi
 
 file=$pref_dir/autoconfig.js
 if [[ ! -f $file ]]; then
-    echo "Creating file: $file"
+    echo " -> Creating file: $file"
     maybe sudo install -m 0644 /dev/null "$file"
 fi
 replace_file --sudo "$file" <<'EOF'
@@ -41,7 +41,7 @@ EOF
 
 file=$dir/firefox.cfg
 if [[ ! -f $file ]]; then
-    echo "Creating file: $file"
+    echo " -> Creating file: $file"
     maybe sudo install -m 0644 /dev/null "$file"
 fi
 replace_file --sudo "$file" <<'EOF'

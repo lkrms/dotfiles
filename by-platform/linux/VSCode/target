@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-if type -P codium >/dev/null; then
-    printf '%s\n' ~/.config/VSCodium
-    exit
-fi
-
-printf '%s\n' ~/.config/Code

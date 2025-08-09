@@ -1,0 +1,23 @@
+#!/bin/sh
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+case "$df_platform" in
+linux)
+    if type -P codium >/dev/null; then
+        printf '%s\n' ~/.config/VSCodium
+    else
+        printf '%s\n' ~/.config/Code
+    fi
+    ;;
+macos)
+    printf '%s\n' ~/"Library/Application Support/Code"
+    ;;
+windows)
+    dir=$(path_get AppData)/Code
+    printf '%s\n' "$dir"
+    ;;
+*)
+    exit 3
+    ;;
+esac

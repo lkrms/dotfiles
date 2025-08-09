@@ -1,0 +1,16 @@
+#!/bin/sh
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+case "$df_platform" in
+linux | macos)
+    printf '%s\n' ~/.config
+    ;;
+windows)
+    dir=$(path_get AppData)
+    printf '%s\n' "$dir"
+    ;;
+*)
+    exit 3
+    ;;
+esac

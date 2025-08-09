@@ -7,7 +7,7 @@ brew=$(type -P brew) || exit 0
 if [[ ! $MACHTYPE =~ ^(arm|aarch)64- ]] &&
     [[ ! -e /opt/homebrew ]] &&
     [[ $(sysctl -n sysctl.proc_translated 2>/dev/null) != 1 ]]; then
-    echo "Creating symbolic link: /opt/homebrew -> /usr/local"
+    echo " -> Creating symbolic link: /opt/homebrew -> /usr/local"
     maybe sudo ln -s /usr/local /opt/homebrew
 fi
 

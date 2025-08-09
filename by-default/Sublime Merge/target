@@ -1,0 +1,19 @@
+#!/bin/sh
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+case "$df_platform" in
+linux)
+    printf '%s\n' ~/.config/sublime-merge/Packages
+    ;;
+macos)
+    printf '%s\n' ~/"Library/Application Support/Sublime Merge/Packages"
+    ;;
+windows)
+    dir=$(path_get AppData)/"Sublime Merge/Packages"
+    printf '%s\n' "$dir"
+    ;;
+*)
+    exit 3
+    ;;
+esac
