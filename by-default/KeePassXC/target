@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 . "$df_root/bin/lib/bash-helpers.sh" || exit
 
