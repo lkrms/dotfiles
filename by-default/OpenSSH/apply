@@ -2,6 +2,8 @@
 
 . "$df_root/bin/lib/bash-helpers.sh" || exit
 
+[[ -d ~/.ssh ]] || exit 1
+
 # As per sshd(8), revoke read and write access to privileged files in ~/.ssh for
 # everyone except the owner, otherwise authorized_keys won't be honoured
 command=(chmod -c go-rw)
