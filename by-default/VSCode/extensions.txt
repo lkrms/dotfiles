@@ -69,6 +69,7 @@ ms-python.debugpy
 ms-python.isort
 ms-python.python
 ms-python.vscode-pylance
+ms-python.vscode-python-envs
 
 ## JavaScript/TypeScript
 

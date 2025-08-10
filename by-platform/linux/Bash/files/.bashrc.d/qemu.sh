@@ -30,7 +30,7 @@ function mount-qemu-img() {
 
 function _reset-win10-unattended() {
     local images=/var/lib/libvirt/images vm=${FUNCNAME[1]#reset-} install=$1
-    local fixed=$images/$vm.qcow2 removable=$images/$vm-1.qcow2 vm_link
+    local fixed=$images/$vm.qcow2 removable=$images/$vm-1.qcow2
     shift
     (
         mount-qemu-img "$removable" &&
@@ -49,7 +49,12 @@ function _reset-win10-unattended() {
                 lk_tty_run_detail lk_elevate virt-xml "$vm" --add-device \
                     --disk type=file,device=disk,driver.name=qemu,driver.type=qcow2,source.file="$install",target.dev=vdb,target.bus=virtio,readonly=yes,boot.order=2
         } &&
-        lk_tty_run_detail lk_elevate virsh start "$vm" &&
+        start-win10-unattended
+}
+
+function start-win10-unattended() {
+    local vm=${1-${FUNCNAME[2]#reset-}} vm_link
+    lk_tty_run_detail lk_elevate virsh start "$vm" &&
         vm_link=$(lk_elevate virsh qemu-monitor-command "$vm" --hmp info network | awk -F '[ \t:\\\\]+' 'NR == 2 { print $2 }' | grep .) &&
         lk_tty_run_detail lk_elevate virsh qemu-monitor-command "$vm" --hmp set_link "$vm_link" off &&
         {
