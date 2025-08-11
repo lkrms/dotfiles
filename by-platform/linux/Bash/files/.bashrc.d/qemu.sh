@@ -70,5 +70,5 @@ function reset-win10x86pro() {
 }
 
 function reset-win11home() {
-    _reset-win10-unattended ~/Downloads/Keep/libvirt/win11-install-with-updates-and-virtio-x64.qcow2 "$@"
+    _reset-win10-unattended ~/Downloads/Keep/libvirt/win11-install-with-virtio-x64.qcow2 "$@"
 }
