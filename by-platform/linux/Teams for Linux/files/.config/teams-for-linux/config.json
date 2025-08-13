@@ -2,5 +2,5 @@
 	"disableNotificationSound": true,
 	"disableNotificationWindowFlash": true,
 	"watchConfigFile": true,
-	"optInTeamsV2": true
+	"customCSSName": "compactDark"
 }
