@@ -241,12 +241,15 @@ function vmware-win-extract-drivers() {
         case "$arch" in
         ARM64)
             drivers=("$source"/*/)
+            vmware_arch=arm
             ;;
         amd64)
             drivers=("$source"/**/Drivers/*/Win10/amd64)
+            vmware_arch=x64
             ;;
         x86)
             drivers=("$source"/**/Drivers/*/Win8/i386)
+            vmware_arch=i386
             ;;
         *)
             false
@@ -265,5 +268,6 @@ function vmware-win-extract-drivers() {
             [[ ! -e $out ]] || lk_warn "target already exists: $out" || return
             lk_tty_run_detail cp -an "$in" "$out" || return
         done
+        lk_tty_run_detail cp -af "$source/setup.exe" "${target%/}/VMware-tools-${vmware_arch}.exe"
     )
 }

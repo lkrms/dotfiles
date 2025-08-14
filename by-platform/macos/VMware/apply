@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+plist=~/Library/Preferences/com.vmware.fusion.plist
+
+toolbar=$(find_first "Toolbar Identifiers.plist") || exit 3
+
+plist_import \
+    ":NSToolbar Configuration PLVMSingleWindowToolbar2:TB Item Identifiers" \
+    "$toolbar" array
+
+plist_set \
+    ":collectOptionalUserData" bool false

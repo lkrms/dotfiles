@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<string>singleWindow.toolbar.power.suspend/resume</string>
+	<string>singleWindow.toolbar.power.off</string>
+	<string>singleWindow.toolbar.snapshot.window</string>
+	<string>NSToolbarSpaceItem</string>
+	<string>singleWindow.toolbar.ctrlAltDel</string>
+	<string>singleWindow.toolbar.deviceStatus</string>
+	<string>NSToolbarFlexibleSpaceItem</string>
+	<string>singleWindow.toolbar.path</string>
+	<string>NSToolbarFlexibleSpaceItem</string>
+</array>
+</plist>
