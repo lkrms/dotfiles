@@ -43,3 +43,16 @@ function reset-win11pro() {
     ! lk_is_apple_silicon || install=~/Downloads/Keep/libvirt/win11-install-with-virtio-arm64.qcow2
     _reset-win10-unattended "$install" "$@"
 }
+
+function reset-win11pro-vmware() { (
+    shopt -s nullglob
+    declare arch=amd64 vmware_arch=x64
+    ! lk_is_apple_silicon || declare arch=ARM64 vmware_arch=arm
+    cd ~/Code/lk/win10-unattended && Scripts/CreateIso.sh \
+        --iso ~/"Virtual Machines.localized/Unattended-win11pro.iso" \
+        --no-wifi \
+        --no-office \
+        --driver ~/Downloads/Keep/Windows/Drivers/vmware-"$arch"/pvscsi!(?) \
+        --driver2 ~/Downloads/Keep/Windows/Drivers/vmware-"$arch"/!(pvscsi) "$(printf ~/Downloads/Keep/VMware/VMware-tools-*-"$vmware_arch".exe | sort -V | tail -n1)" \
+        --reg Unattended/Extra/{AllowLogonWithoutPassword.reg,DoNotLock-HKLM.reg}
+); }

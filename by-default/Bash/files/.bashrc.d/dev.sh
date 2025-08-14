@@ -211,3 +211,59 @@ function virtio-win-extract-drivers() {
     url+=/spice-vdagent-$xarch-$(curl -fsSL "$url/buildversions.json" | jq -r '.["spice-vdagent-win"].version').msi &&
         lk_tty_run_detail curl -fLRo "${target%/}/${url##*/}" "$url"
 }
+
+# vmware-win-extract-drivers arch [target [source]]
+function vmware-win-extract-drivers() {
+    (($#)) || return
+    local arch=$1 target=${2:-vmware-$1} source=${3-}
+    if [[ ! -d $source ]]; then
+        if [[ -f $source ]]; then
+            local iso=$source
+        else
+            case "$arch" in
+            ARM64)
+                local iso="/Applications/VMware Fusion.app/Contents/Library/isoimages/arm64/windows.iso"
+                ;;
+            x86)
+                local iso="/Applications/VMware Fusion.app/Contents/Library/isoimages/x86_x64/windows-x86.iso"
+                ;;
+            *)
+                local iso="/Applications/VMware Fusion.app/Contents/Library/isoimages/x86_x64/windows.iso"
+                ;;
+            esac
+            [[ -f $iso ]] || lk_warn 'VMware Tools ISO not found' || return
+        fi
+        lk_mktemp_dir_with source 7z x "$iso" || return
+    fi
+    [[ -d $target ]] || lk_tty_run_detail mkdir -p "$target" || return
+    (
+        shopt -s globstar nullglob
+        case "$arch" in
+        ARM64)
+            drivers=("$source"/*/)
+            ;;
+        amd64)
+            drivers=("$source"/**/Drivers/*/Win10/amd64)
+            ;;
+        x86)
+            drivers=("$source"/**/Drivers/*/Win8/i386)
+            ;;
+        *)
+            false
+            ;;
+        esac || exit
+        for in in ${drivers+"${drivers[@]}"}; do
+            case "$arch" in
+            amd64 | x86)
+                out=${in%/*/*}
+                ;;
+            ARM64)
+                out=${in%/}
+                ;;
+            esac
+            out=${target%/}/${out##*/}
+            [[ ! -e $out ]] || lk_warn "target already exists: $out" || return
+            lk_tty_run_detail cp -an "$in" "$out" || return
+        done
+    )
+}
