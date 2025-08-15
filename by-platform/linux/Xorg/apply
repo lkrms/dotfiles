@@ -43,6 +43,19 @@ replace_file ~/.config/mimeapps.list < <(
 BEGIN { print "[Default Applications]" }
       { m[$1] = $2 }
 END   { for (t in m) { print t "=" m[t] | "sort" } close("sort") }'
+    printf '\n[%s]\n' "Added Associations"
+    for app in "${default_apps[@]}"; do
+        first=${app%%+*}
+        app=${app#*+}
+        [[ $app != "$first" ]] || continue
+        first=$first.desktop
+        apps=($app)
+        apps=("${apps[@]/%/.desktop}")
+        for app in "${apps[@]}"; do
+            app_handles "$app"
+        done | grep -Fxvf <(app_handles "$first") |
+            awk -vapp="$first" '{ print $0 "=" app ";" }'
+    done | sort -u
 )
 
 # Stop updates triggering `/usr/bin/udevadm trigger -c change`
