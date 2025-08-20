@@ -4,6 +4,32 @@ function to_lower() {
     sed 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'
 }
 
+# quote <string> [<IFS>]
+#
+# Quote <string> for reuse as shell input, optionally allowing for IFS to differ
+# from its current value. Probably more economical than `printf '%q'`.
+function quote() {
+    if [[ -z ${1:+1} ]]; then
+        printf '%q' ""
+        return
+    fi
+    local regex=$'[] \t\n!"$&'\''()*;<>@\`{|}[]'
+    if [[ ! $1 =~ $regex ]]; then
+        local IFS=${2:-${IFS:-$' \t\n'}}
+        local split=($1)
+        # Don't quote if there are no special characters and the string doesn't
+        # split into multiple words
+        if [[ -z ${split[1]+1} ]]; then
+            printf '%s' "$1"
+            return
+        fi
+    fi
+    local quoted=\'${1//"'"/"'\\''"}\'
+    # Remove empty quotes
+    quoted=${quoted//"\\'''"/"\\'"}
+    printf '%s' "$quoted"
+}
+
 function set_local_app_roots() {
     [[ -z ${local_app_roots+1} ]] || return 0
     local IFS=$'\n' host
