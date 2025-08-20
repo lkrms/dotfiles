@@ -358,7 +358,7 @@ font-name='Source Sans Pro 9'
 monospace-font-name='JetBrains Mono NL 9'
 EOF
 
-maybe killall plank 2>/dev/null || true
+maybe killall -u "$(id -un)" plank 2>/dev/null || true
 
 maybe dconf reset -f /net/launchpad/plank/
 maybe dconf load / <<"EOF"

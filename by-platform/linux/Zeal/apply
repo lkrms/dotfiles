@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+# register_docset <name> <title> [<version> [<revision>]]
+function register_docset() {
+    local dir=~/.local/share/Zeal/Zeal/docsets/$1.docset
+    [[ ! -d $dir ]] || return 0
+    local args=(--arg name "$1" --arg title "$2") version=${3-} revision=${4-}
+    if [[ -z $revision ]]; then
+        # If no revision, ensure version differs
+        if [[ -z $version ]]; then
+            args+=(--arg version '0.0')
+        else
+            args+=(--arg version '')
+        fi
+    elif ((revision > 0)); then
+        args+=(--arg revision '0')
+    else
+        args+=(--arg revision '-1')
+    fi
+    if [[ -n ${df_dryrun:+1} ]]; then
+        echo "  - would have created docset scaffold in: $dir"
+        return
+    fi
+    killall -u "$(id -un)" zeal 2>/dev/null &&
+        trap 'nohup zeal &>/dev/null & disown' EXIT || true
+    mkdir -p "$dir/Contents/Resources/Documents" &&
+        jq -n "${args[@]}" '$ARGS.named' >"$dir/meta.json" &&
+        cat <<XML >"$dir/Contents/Info.plist" &&
+<?xml version="1.0" encoding="UTF-8"?>
+<plist version="1.0">
+<dict>
+    <key>CFBundleName</key>
+    <string>$2</string>
+</dict>
+</plist>
+XML
+        sqlite3 "$dir/Contents/Resources/docSet.dsidx" <<'SQL' &&
+PRAGMA foreign_keys=OFF;
+BEGIN TRANSACTION;
+CREATE TABLE searchIndex(id INTEGER PRIMARY KEY, name TEXT, type TEXT, path TEXT);
+CREATE UNIQUE INDEX anchor ON searchIndex (name, type, path);
+CREATE INDEX __zi_name0001 ON searchIndex (name COLLATE NOCASE);
+COMMIT;
+SQL
+        cat <<HTML >"$dir/Contents/Resources/Documents/index.html" ||
+<!DOCTYPE html>
+<title>$2</title>
+HTML
+        {
+            rm -Rf "$dir" || true
+            die "error creating stub: $dir"
+        }
+}
+
+register_docset ActionScript ActionScript 3 27
+register_docset Apache_HTTP_Server 'Apache HTTP Server' 2.4.65
+register_docset AppleScript AppleScript '' 4
+register_docset Bash Bash '' 8
+register_docset CSS CSS '' 153
+register_docset Docker Docker 28.3.2
+register_docset Emmet Emmet '' 4
+register_docset Font_Awesome 'Font Awesome' 7.0.0
+register_docset HTML HTML '' 142
+register_docset HTTP HTTP '' 24
+register_docset JavaScript JavaScript '' 144
+register_docset jQuery jQuery 3.7.1
+register_docset Markdown Markdown '' 2
+register_docset MongoDB MongoDB 8.0.12
+register_docset MySQL MySQL 8.4
+register_docset Nginx Nginx 1.29.0
+register_docset NodeJS NodeJS 24.4.1
+register_docset Perl Perl 5.26.1
+register_docset PHP PHP '' 144
+register_docset PHPUnit PHPUnit 12.2
+register_docset PostgreSQL PostgreSQL 17.5
+register_docset Python_3 'Python 3' 3.13.4
+register_docset SQLite SQLite 3.50.3
+register_docset TypeScript TypeScript 5.8
+register_docset Vim Vim 9.0
+register_docset WordPress WordPress '' 131

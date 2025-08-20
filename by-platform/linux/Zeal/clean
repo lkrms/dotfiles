@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+eval "docsets=($(jq -r --slurp '.[] | [.name, .title, .version // "", .revision // ""] | @sh' \
+    ~/.local/share/Zeal/Zeal/docsets/*.docset/*.json))"
+
+count=${#docsets[@]}
+((count)) || exit 0
+
+apply=$(find_first apply) &&
+    config=$(find_first files/.config/Zeal/Zeal.conf) || exit 3
+
+replace_file "$apply" < <(
+    awk "/^register_docset / { exit } { print }" "$apply"
+    for ((i = 0; i < count; i += 4)); do
+        printf '%s' register_docset
+        for ((j = 0; j < 4; j++)); do
+            printf ' '
+            quote "${docsets[i + j]}"
+        done
+        printf '\n'
+    done | sed -E "s/( ''){1,2}$//"
+)
+
+replace_file "$config" \
+    sed -E '/^(install_id|version|splitter_geometry|toc_splitter_state|window_geometry)=/d'

@@ -587,7 +587,7 @@
     "powershell.promptToUpdatePowerShell": false,
     "powershell.scriptAnalysis.settingsPath": "",
     "powershell.startAutomatically": false,
-    "prettier.proseWrap": "never",
+    "prettier.proseWrap": "always",
     "print.folder.exclude": [
         "{bin,obj,out}",
         "node_modules",

@@ -113,6 +113,36 @@ function phpstan-update-baseline() {
         vendor/bin/phpstan -b --allow-empty-baseline
 }
 
+# qemu-img-convert-qcow2 <from_image> <to_image> [<guest_cluster_size>]
+function qemu-img-convert-qcow2() {
+    (($# > 1 && $# < 4)) ||
+        lk_usage "Usage: $FUNCNAME <from_image> <to_image> [<guest_cluster_size>]" ||
+        return
+    local cluster_size=${3-} dir
+    dir=$(dirname "$2") || return
+    lk_will_elevate || [[ ! -d $dir ]] || [[ -w $dir ]] || local LK_SUDO=1
+    cluster_size=${cluster_size%[Kk]}
+    cluster_size=${cluster_size:-4}
+    lk_tty_run_detail lk_sudo qemu-img convert -p -O qcow2 \
+        -o extended_l2=on,cluster_size=$((cluster_size * 32))k,lazy_refcounts=on \
+        "$1" "$2"
+}
+
+# qemu-img-create-qcow2 <image> <size> [<guest_cluster_size>]
+function qemu-img-create-qcow2() {
+    (($# > 1 && $# < 4)) ||
+        lk_usage "Usage: $FUNCNAME <image> <size> [<guest_cluster_size>]" ||
+        return
+    local cluster_size=${3-} dir
+    dir=$(dirname "$1") || return
+    lk_will_elevate || [[ ! -d $dir ]] || [[ -w $dir ]] || local LK_SUDO=1
+    cluster_size=${cluster_size%[Kk]}
+    cluster_size=${cluster_size:-4}
+    lk_tty_run_detail lk_sudo qemu-img create -f qcow2 \
+        -o extended_l2=on,cluster_size=$((cluster_size * 32))k,lazy_refcounts=on \
+        "$1" "$2"
+}
+
 # rsync-unattended [rsync_arg...] target
 function rsync-unattended() {
     (($#)) || return
