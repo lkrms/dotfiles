@@ -2,31 +2,25 @@
 
 function _reset-win10-unattended() {
     local images=~/.local/share/libvirt/images vm=${FUNCNAME[1]#reset-} install=$1
-    local fixed=$images/$vm.qcow2 removable=$images/$vm-1.qcow2
+    local fixed=$images/$vm.qcow2 removable=$images/Unattended-$vm.iso
     shift
-    (
-        lk_mktemp_dir_with target mkdir -p src/{Drivers,Drivers2} UNATTENDED &&
-            if lk_is_apple_silicon; then
-                arm64_target=$target/src rsync-unattended-virtio-test "$@"
-            else
-                amd64_target=$target/src rsync-unattended-virtio-test "$@"
-            fi &&
-            lk_tty_yn "$target/src synced. Proceed?" Y || exit
-        lk_tty_run_detail hdiutil create -srcfolder "$target/src" -fs FAT32 -volname UNATTENDED \
-            -layout MBRSPUD -format UDRW -noatomic -nospotlight "$target/image.dmg" &&
-            lk_tty_run_detail hdiutil attach -mountpoint "$target/UNATTENDED" -noverify "$target/image.dmg" &&
-            lk_tty_run_detail find "$target/UNATTENDED" -name '._*' -delete &&
-            lk_tty_yn "$target/UNATTENDED prepared. Proceed?" Y || exit
-        lk_tty_run_detail hdiutil detach "$target/UNATTENDED" &&
-            lk_tty_run_detail qemu-img convert -f raw -O qcow2 -o lazy_refcounts=on "$target/image.dmg" "$removable"
-    ) || return
-    lk_tty_run_detail qemu-img create -f qcow2 -o cluster_size=128k,extended_l2=on,lazy_refcounts=on "$fixed" 128G &&
-        {
-            virsh domblklist "$vm" | awk -v i="$install" 'NR > 2 && $NF == i' | grep . >/dev/null ||
-                lk_tty_run_detail virt-xml "$vm" --add-device \
-                    --disk type=file,device=disk,driver.name=qemu,driver.type=qcow2,source.file="$install",target.dev=vdb,target.bus=virtio,readonly=yes,boot.order=2
-        } &&
+    cd ~/Code/lk/win10-unattended && Scripts/CreateIso.sh \
+        --iso "$removable" \
+        --no-wifi \
+        --no-office \
+        --reg Unattended/Extra/{AllowLogonWithoutPassword.reg,DoNotLock-HKLM.reg} \
+        "$@" &&
+        lk_tty_yn "$removable prepared. Proceed?" Y &&
+        _install-win10-unattended "$install" &&
+        qemu-img-create-qcow2 "$fixed" 128G &&
         start-win10-unattended
+}
+
+function _install-win10-unattended() {
+    local vm=${FUNCNAME[2]#reset-}
+    virsh domblklist "$vm" | awk -v i="$1" 'NR > 2 && $NF == i' | grep . >/dev/null ||
+        lk_tty_run_detail virt-xml "$vm" --add-device \
+            --disk type=file,device=disk,driver.name=qemu,driver.type=qcow2,source.file="$1",target.dev=vdb,target.bus=virtio,readonly=yes,boot.order=2
 }
 
 function start-win10-unattended() {
@@ -38,11 +32,24 @@ function start-win10-unattended() {
         lk_tty_run_detail virsh qemu-monitor-command "$vm" --hmp set_link "$vm_link" on
 }
 
-function reset-win11pro() {
-    local install=~/Downloads/Keep/libvirt/win11-install-with-virtio-x64.qcow2
-    ! lk_is_apple_silicon || install=~/Downloads/Keep/libvirt/win11-install-with-virtio-arm64.qcow2
-    _reset-win10-unattended "$install" "$@"
-}
+function reset-win11pro() { (
+    shopt -s nullglob
+    if lk_is_apple_silicon; then
+        #--driver ~/Downloads/Keep/Windows/Drivers/virtio-w11-ARM64/{vioscsi,viostor}!(?) \
+        #--driver2 ~/Downloads/Keep/Windows/Drivers/virtio-w11-ARM64/!(vioscsi|viostor|spice-*) \
+        #~/Downloads/Keep/Windows/Drivers/brother-HL-* \
+        _reset-win10-unattended ~/Downloads/Keep/libvirt/win11-install-with-virtio-arm64.qcow2 \
+            --driver2 ~/Downloads/Keep/Windows/Drivers/virtio-w11-ARM64/!(spice-*).msi \
+            "$@"
+    else
+        #--driver ~/Downloads/Keep/Windows/Drivers/virtio-w11-amd64/{vioscsi,viostor}!(?) \
+        #--driver2 ~/Downloads/Keep/Windows/Drivers/virtio-w11-amd64/!(vioscsi|viostor|spice-*) \
+        _reset-win10-unattended ~/Downloads/Keep/libvirt/win11-install-with-virtio-x64.qcow2 \
+            --driver2 ~/Downloads/Keep/Windows/Drivers/virtio-w11-amd64/!(spice-*).msi \
+            ~/Downloads/Keep/Windows/Drivers/brother-HL-* \
+            "$@"
+    fi
+); }
 
 function reset-win11pro-vmware() { (
     shopt -s nullglob
@@ -53,6 +60,7 @@ function reset-win11pro-vmware() { (
         --no-wifi \
         --no-office \
         --driver ~/Downloads/Keep/Windows/Drivers/vmware-"$arch"/pvscsi!(?) \
-        --driver2 ~/Downloads/Keep/Windows/Drivers/vmware-"$arch"/!(pvscsi) "$(printf ~/Downloads/Keep/VMware/VMware-tools-*-"$vmware_arch".exe | sort -V | tail -n1)" \
+        --driver2 ~/Downloads/Keep/Windows/Drivers/vmware-"$arch"/!(pvscsi) \
+        "$(printf '%s\n' ~/Downloads/Keep/VMware/VMware-tools-*-"$vmware_arch".exe | sort -V | tail -n1)" \
         --reg Unattended/Extra/{AllowLogonWithoutPassword.reg,DoNotLock-HKLM.reg}
 ); }

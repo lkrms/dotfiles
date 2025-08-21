@@ -128,6 +128,21 @@ function qemu-img-convert-qcow2() {
         "$1" "$2"
 }
 
+# qemu-img-convert-backed-qcow2 <backing_image> <from_image> <to_image> [<guest_cluster_size>]
+function qemu-img-convert-backed-qcow2() {
+    (($# > 2 && $# < 5)) ||
+        lk_usage "Usage: $FUNCNAME <backing_image> <from_image> <to_image> [<guest_cluster_size>]" ||
+        return
+    local cluster_size=${4-} dir
+    dir=$(dirname "$3") || return
+    lk_will_elevate || [[ ! -d $dir ]] || [[ -w $dir ]] || local LK_SUDO=1
+    cluster_size=${cluster_size%[Kk]}
+    cluster_size=${cluster_size:-4}
+    lk_tty_run_detail lk_sudo qemu-img convert -p -O qcow2 \
+        -o extended_l2=on,cluster_size=$((cluster_size * 32))k,lazy_refcounts=on \
+        -B "$1" -F qcow2 "$2" "$3"
+}
+
 # qemu-img-create-qcow2 <image> <size> [<guest_cluster_size>]
 function qemu-img-create-qcow2() {
     (($# > 1 && $# < 4)) ||
@@ -143,54 +158,19 @@ function qemu-img-create-qcow2() {
         "$1" "$2"
 }
 
-# rsync-unattended [rsync_arg...] target
-function rsync-unattended() {
-    (($#)) || return
-    local target=${*:$#}
-    [[ -d $target ]] || return
-    rsync -rtvi --delete --delete-excluded --modify-window=1 "${@:1:$#-1}" \
-        ~/Code/lk/win10-unattended/{Unattended,*.xml,MSI,Office365,Tools,Updates} \
-        "${target%/}/"
-}
-
-# rsync-unattended-virtio-test [rsync_arg...]
-function rsync-unattended-virtio-test() {
-    cd ~/Downloads/Keep/Windows/Drivers || return
-    if [[ -d ${arm64_target-} ]]; then
-        mkdir -p "$arm64_target"/{Drivers,Drivers2} &&
-            #rsync "$@" -rtvi --include '/vioscsi' --include '/viostor' --exclude '/*' --modify-window=1 virtio-w11-ARM64/ "$arm64_target"/Drivers/virtio-w11-ARM64/ &&
-            #rsync "$@" -rtvi --exclude '/*.msi' --exclude '/vioscsi' --exclude '/viostor' --modify-window=1 virtio-w11-ARM64/ "$arm64_target"/Drivers2/virtio-w11-ARM64/ &&
-            rsync "$@" -rtOvi --include '/*.msi' --exclude '/*' --modify-window=1 virtio-w11-ARM64/ "$arm64_target"/Drivers2/ &&
-            #rsync "$@" -rtvi --modify-window=1 brother-HL-* "$arm64_target"/Drivers2/ &&
-            rsync-unattended "$@" --exclude Wi-Fi.xml "$arm64_target"/ || return
+# qemu-img-create-backed-qcow2 <backing_image> <image> [<guest_cluster_size>]
+function qemu-img-create-backed-qcow2() {
+    (($# > 1 && $# < 4)) ||
+        lk_usage "Usage: $FUNCNAME <backing_image> <image> [<guest_cluster_size>]" ||
         return
-    fi
-    if [[ -d ${amd64_target-} ]]; then
-        mkdir -p "$amd64_target"/{Drivers,Drivers2} &&
-            #rsync "$@" -rtvi --include '/vioscsi' --include '/viostor' --exclude '/*' --modify-window=1 virtio-w11-amd64/ "$amd64_target"/Drivers/virtio-w11-amd64/ &&
-            #rsync "$@" -rtvi --exclude '/*.msi' --exclude '/vioscsi' --exclude '/viostor' --modify-window=1 virtio-w11-amd64/ "$amd64_target"/Drivers2/virtio-w11-amd64/ &&
-            rsync "$@" -rtOvi --exclude '/spice-*' --include '/*.msi' --exclude '/*' --modify-window=1 virtio-w11-amd64/ "$amd64_target"/Drivers2/ &&
-            rsync "$@" -rtvi --modify-window=1 brother-HL-* "$amd64_target"/Drivers2/ &&
-            rsync-unattended "$@" --exclude Wi-Fi.xml "$amd64_target"/ || return
-        return
-    fi
-    local media=/run/media/$USER
-    if [[ -d $media/UNATTENDED ]]; then
-        mkdir -p "$media"/UNATTENDED/{Drivers,Drivers2} &&
-            rsync "$@" -rtvi --include '/vioscsi' --include '/viostor' --exclude '/*' --modify-window=1 virtio-w11-amd64/ "$media"/UNATTENDED/Drivers/virtio-w11-amd64/ &&
-            rsync "$@" -rtvi --exclude '/*.msi' --exclude '/vioscsi' --exclude '/viostor' --modify-window=1 virtio-w11-amd64/ "$media"/UNATTENDED/Drivers2/virtio-w11-amd64/ &&
-            rsync "$@" -rtOvi --include '/*.msi' --exclude '/*' --modify-window=1 virtio-w11-amd64/ "$media"/UNATTENDED/Drivers2/ &&
-            rsync "$@" -rtvi --modify-window=1 brother-HL-* "$media"/UNATTENDED/Drivers2/ &&
-            rsync-unattended "$@" --exclude Wi-Fi.xml "$media"/UNATTENDED/ || return
-    fi
-    if [[ -d $media/UNATTENDX86 ]]; then
-        mkdir -p "$media"/UNATTENDX86/{Drivers,Drivers2} &&
-            rsync "$@" -rtvi --include '/vioscsi' --include '/viostor' --exclude '/*' --modify-window=1 virtio-w10-x86/ "$media"/UNATTENDX86/Drivers/virtio-w10-x86/ &&
-            rsync "$@" -rtvi --exclude '/*.msi' --exclude '/vioscsi' --exclude '/viostor' --modify-window=1 virtio-w10-x86/ "$media"/UNATTENDX86/Drivers2/virtio-w10-x86/ &&
-            rsync "$@" -rtOvi --include '/*.msi' --exclude '/*' --modify-window=1 virtio-w10-x86/ "$media"/UNATTENDX86/Drivers2/ &&
-            rsync "$@" -rtvi --modify-window=1 brother-HL-* "$media"/UNATTENDX86/Drivers2/ &&
-            rsync-unattended "$@" --exclude Wi-Fi.xml --exclude /Office365 "$media"/UNATTENDX86/ || return
-    fi
+    local cluster_size=${3-} dir
+    dir=$(dirname "$2") || return
+    lk_will_elevate || [[ ! -d $dir ]] || [[ -w $dir ]] || local LK_SUDO=1
+    cluster_size=${cluster_size%[Kk]}
+    cluster_size=${cluster_size:-4}
+    lk_tty_run_detail lk_sudo qemu-img create -f qcow2 \
+        -o extended_l2=on,cluster_size=$((cluster_size * 32))k,lazy_refcounts=on \
+        -b "$1" -F qcow2 "$2"
 }
 
 function virtio-win-update-iso() { (

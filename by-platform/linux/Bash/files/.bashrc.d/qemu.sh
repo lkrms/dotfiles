@@ -30,26 +30,25 @@ function mount-qemu-img() {
 
 function _reset-win10-unattended() {
     local images=/var/lib/libvirt/images vm=${FUNCNAME[1]#reset-} install=$1
-    local fixed=$images/$vm.qcow2 removable=$images/$vm-1.qcow2
+    local fixed=$images/$vm.qcow2 removable=$images/Unattended-$vm.iso
     shift
-    (
-        mount-qemu-img "$removable" &&
-            part=${QEMU_IMG_NBD}p1 &&
-            sleep 2 &&
-            lk_tty_run_detail gio mount --device "$part" &&
-            target=$(findmnt --list --noheadings --output TARGET "$part") &&
-            lk_trap_add -f EXIT lk_tty_run_detail umount "$target" &&
-            lk_tty_success "$removable mounted at:" "$target" &&
-            rsync-unattended-virtio-test "$@" &&
-            lk_tty_yn "$target synced. Proceed?" Y
-    ) || return
-    lk_tty_run_detail lk_elevate qemu-img create -f qcow2 -o cluster_size=128k,extended_l2=on,lazy_refcounts=on "$fixed" 128G &&
-        {
-            lk_elevate virsh domblklist "$vm" | awk -v i="$install" 'NR > 2 && $NF == i' | grep . >/dev/null ||
-                lk_tty_run_detail lk_elevate virt-xml "$vm" --add-device \
-                    --disk type=file,device=disk,driver.name=qemu,driver.type=qcow2,source.file="$install",target.dev=vdb,target.bus=virtio,readonly=yes,boot.order=2
-        } &&
+    cd ~/Code/lk/win10-unattended && lk_elevate Scripts/CreateIso.sh \
+        --iso "$removable" \
+        --no-wifi \
+        --no-office \
+        --reg Unattended/Extra/{AllowLogonWithoutPassword.reg,DoNotLock-HKLM.reg} \
+        "$@" &&
+        lk_tty_yn "$removable prepared. Proceed?" Y &&
+        _install-win10-unattended "$install" &&
+        qemu-img-create-qcow2 "$fixed" 128G &&
         start-win10-unattended
+}
+
+function _install-win10-unattended() {
+    local vm=${FUNCNAME[2]#reset-}
+    lk_elevate virsh domblklist "$vm" | awk -v i="$1" 'NR > 2 && $NF == i' | grep . >/dev/null ||
+        lk_tty_run_detail lk_elevate virt-xml "$vm" --add-device \
+            --disk type=file,device=disk,driver.name=qemu,driver.type=qcow2,source.file="$1",target.dev=vdb,target.bus=virtio,readonly=yes,boot.order=2
 }
 
 function start-win10-unattended() {
@@ -65,10 +64,30 @@ function start-win10-unattended() {
         lk_tty_run_detail lk_elevate virsh qemu-monitor-command "$vm" --hmp set_link "$vm_link" on
 }
 
-function reset-win10x86pro() {
-    _reset-win10-unattended ~/Downloads/Keep/libvirt/win10-install-with-updates-x86.qcow2 "$@"
-}
+function reset-win10x86pro() { (
+    shopt -s nullglob
+    _reset-win10-unattended ~/Downloads/Keep/libvirt/win10-install-with-updates-x86.qcow2 \
+        --driver ~/Downloads/Keep/Windows/Drivers/virtio-w10-x86/{vioscsi,viostor}!(?) \
+        --driver2 ~/Downloads/Keep/Windows/Drivers/virtio-w10-x86/!(vioscsi|viostor) \
+        ~/Downloads/Keep/Windows/Drivers/brother-HL-* \
+        "$@"
+); }
 
-function reset-win11home() {
-    _reset-win10-unattended ~/Downloads/Keep/libvirt/win11-install-with-virtio-x64.qcow2 "$@"
-}
+function reset-win10x64() { (
+    shopt -s nullglob
+    _reset-win10-unattended ~/Downloads/Keep/libvirt/win10-install-with-updates-x64.qcow2 \
+        --driver ~/Downloads/Keep/Windows/Drivers/virtio-w10-amd64/{vioscsi,viostor}!(?) \
+        --driver2 ~/Downloads/Keep/Windows/Drivers/virtio-w10-amd64/!(vioscsi|viostor) \
+        ~/Downloads/Keep/Windows/Drivers/brother-HL-* \
+        "$@"
+); }
+
+function reset-win11home() { (
+    shopt -s nullglob
+    _reset-win10-unattended ~/Downloads/Keep/libvirt/win11-install-with-virtio-x64.qcow2 \
+        --office \
+        --driver ~/Downloads/Keep/Windows/Drivers/virtio-w11-amd64/{vioscsi,viostor}!(?) \
+        --driver2 ~/Downloads/Keep/Windows/Drivers/virtio-w11-amd64/!(vioscsi|viostor) \
+        ~/Downloads/Keep/Windows/Drivers/brother-HL-* \
+        "$@"
+); }
