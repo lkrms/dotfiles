@@ -11,7 +11,7 @@ function _reset-win10-unattended() {
         --reg Unattended/Extra/{AllowLogonWithoutPassword.reg,DoNotLock-HKLM.reg} \
         "$@" &&
         lk_tty_yn "$removable prepared. Proceed?" Y &&
-        _install-win10-unattended "$install" &&
+        _install-win10-unattended "$install" "$removable" &&
         qemu-img-create-qcow2 "$fixed" 128G &&
         start-win10-unattended
 }
@@ -20,7 +20,11 @@ function _install-win10-unattended() {
     local vm=${FUNCNAME[2]#reset-}
     virsh domblklist "$vm" | awk -v i="$1" 'NR > 2 && $NF == i' | grep . >/dev/null ||
         lk_tty_run_detail virt-xml "$vm" --add-device \
-            --disk type=file,device=disk,driver.name=qemu,driver.type=qcow2,source.file="$1",target.dev=vdb,target.bus=virtio,readonly=yes,boot.order=2
+            --disk type=file,device=disk,driver.name=qemu,driver.type=qcow2,source.file="$1",target.dev=vdb,target.bus=virtio,readonly=yes,boot.order=2 ||
+        return
+    virsh domblklist "$vm" | awk -v i="$2" 'NR > 2 && $NF == i' | grep . >/dev/null ||
+        lk_tty_run_detail virt-xml "$vm" --add-device \
+            --disk type=file,device=cdrom,driver.name=qemu,driver.type=raw,source.file="$2",target.dev=sdb,target.bus=usb,target.removable=on,readonly=yes
 }
 
 function start-win10-unattended() {

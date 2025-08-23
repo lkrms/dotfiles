@@ -182,7 +182,8 @@ function virtio-win-update-iso() { (
 # virtio-win-extract-drivers version arch [target [source]]
 function virtio-win-extract-drivers() {
     (($# > 1)) || return
-    local version=$1 arch=$2 target=${3:-virtio-$1-$2} source=${4-} in out xarch
+    local version=$1 arch=$2 target=${3:-virtio-$1-$2} source=${4-} in out url vfd \
+        vurl=https://fedorapeople.org/groups/virt/virtio-win/direct-downloads xarch
     if [[ ! -d $source ]]; then
         if [[ -f $source ]]; then
             local iso=$source
@@ -198,11 +199,13 @@ function virtio-win-extract-drivers() {
     [[ -d $target ]] || lk_tty_run_detail mkdir -p "$target" || return
     case "$arch" in
     amd64 | ARM64)
-        lk_tty_run_detail cp -af "$source/guest-agent/qemu-ga-x86_64.msi" "${target%/}/"
+        [[ $version == xp ]] ||
+            lk_tty_run_detail cp -af "$source/guest-agent/qemu-ga-x86_64.msi" "${target%/}/"
         xarch=x64
         ;;
     x86)
-        lk_tty_run_detail cp -af "$source/guest-agent/qemu-ga-i386.msi" "${target%/}/"
+        [[ $version == xp ]] ||
+            lk_tty_run_detail cp -af "$source/guest-agent/qemu-ga-i386.msi" "${target%/}/"
         xarch=x86
         ;;
     *)
@@ -215,9 +218,20 @@ function virtio-win-extract-drivers() {
         [[ ! -e $out ]] || lk_warn "target already exists: $out" || return
         lk_tty_run_detail cp -an "$in" "$out" || return
     done
+    if [[ $version == xp ]]; then
+        # - Get the most recent QEMU Guest Agent installer known to work on XP
+        # - Create a floppy disk image for boot-critical drivers
+        url=$vurl/archive-qemu-ga/qemu-ga-win-100.0.0.0-3.el7ev/qemu-ga-$xarch.msi
+        vfd=${target%/}/virtio-$version-$arch.vfd
+        lk_tty_run_detail curl -fLRo "${target%/}/${url##*/}" "$url" &&
+            lk_tty_run_detail dd if=/dev/zero of="$vfd" count=1440 bs=1k status=none &&
+            lk_tty_run_detail mkfs.msdos "$vfd" &&
+            lk_tty_run_detail mcopy -i "$vfd" -Qmv {viostor,qxl,NetKVM}/!(*.pdb) ::/ ||
+            return
+    fi
     # SPICE isn't supported on ARM64
     [[ $arch != ARM64 ]] || return 0
-    local url=https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/virtio-win-pkg-scripts-input/latest-build
+    url=$vurl/virtio-win-pkg-scripts-input/latest-build
     url+=/spice-vdagent-$xarch-$(curl -fsSL "$url/buildversions.json" | jq -r '.["spice-vdagent-win"].version').msi &&
         lk_tty_run_detail curl -fLRo "${target%/}/${url##*/}" "$url"
 }
