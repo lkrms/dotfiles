@@ -182,14 +182,18 @@ function virtio-win-update-iso() { (
 # virtio-win-extract-drivers version arch [target [source]]
 function virtio-win-extract-drivers() {
     (($# > 1)) || return
-    local version=$1 arch=$2 target=${3:-virtio-$1-$2} source=${4-} in out url vfd \
+    local version=$1 arch=$2 target=${3:-virtio-$1-$2} source=${4-} in out url \
         vurl=https://fedorapeople.org/groups/virt/virtio-win/direct-downloads xarch
     if [[ ! -d $source ]]; then
         if [[ -f $source ]]; then
             local iso=$source
         else
-            local isos=(~/Downloads/Keep/isos/virtio-win-*.iso)
-            local iso=${isos[${#isos[@]} - 1]}
+            if [[ $version == xp ]]; then
+                local iso=~/Downloads/Keep/isos/virtio-win-0.1.190.iso virtio_win_source=
+            else
+                local isos=(~/Downloads/Keep/isos/virtio-win-*.iso)
+                local iso=${isos[${#isos[@]} - 1]}
+            fi
             [[ -f $iso ]] || lk_warn 'virtio-win ISO not found' || return
         fi
         [[ -d ${virtio_win_source-} ]] ||
@@ -218,17 +222,52 @@ function virtio-win-extract-drivers() {
         [[ ! -e $out ]] || lk_warn "target already exists: $out" || return
         lk_tty_run_detail cp -an "$in" "$out" || return
     done
-    if [[ $version == xp ]]; then
-        # - Get the most recent QEMU Guest Agent installer known to work on XP
-        # - Create a floppy disk image for boot-critical drivers
+    if [[ $version == xp ]]; then (
+        # Get the most recent QEMU Guest Agent installer known to work on XP
         url=$vurl/archive-qemu-ga/qemu-ga-win-100.0.0.0-3.el7ev/qemu-ga-$xarch.msi
+        lk_tty_run_detail curl -fLRo "${target%/}/${url##*/}" "$url" || exit
+        # Create a floppy disk image for boot-critical drivers
         vfd=${target%/}/virtio-$version-$arch.vfd
-        lk_tty_run_detail curl -fLRo "${target%/}/${url##*/}" "$url" &&
+        shopt -s nullglob
+        lk_mktemp_dir_with stor unzip ~/Downloads/Keep/Windows/Drivers/qemu/Intel-RST/*-last-with-XP/*f6flpy{32,_x86}*.zip &&
             lk_tty_run_detail dd if=/dev/zero of="$vfd" count=1440 bs=1k status=none &&
             lk_tty_run_detail mkfs.msdos "$vfd" &&
-            lk_tty_run_detail mcopy -i "$vfd" -Qmv {viostor,qxl,NetKVM}/!(*.pdb) ::/ ||
-            return
-    fi
+            lk_tty_run_detail mcopy -i "$vfd" -Qmv "${target%/}"/{viostor,qxl,NetKVM}/!(*.pdb) "$stor"/!(*.txt|TXTSETUP.OEM) ::/ && {
+            sed -E '/^;/d' <<'EOF' &&
+[Disks]
+d1 = "OEM DISK (SCSI) WinXP/32-bit", viostor.sys, \
+
+;[Defaults]
+;scsi = WXP32
+;
+[scsi]
+WXP32 = "Red Hat VirtIO BLOCK Disk Device WinXP/32-bit"
+WXP32_legacy = "Red Hat VirtIO BLOCK Disk Device WinXP/32-bit (Legacy)"
+
+[Files.scsi.WXP32]
+driver = d1, viostor.sys, viostor
+inf = d1, viostor.inf
+catalog = d1, viostor.cat
+
+[Files.scsi.WXP32_legacy]
+driver = d1, viostor.sys, viostor
+inf = d1, viostor.inf
+catalog = d1, viostor.cat
+
+[HardwareIds.scsi.WXP32]
+id = "PCI\VEN_1AF4&DEV_1042&SUBSYS_11001AF4&REV_01","viostor"
+
+[HardwareIds.scsi.WXP32_legacy]
+id = "PCI\VEN_1AF4&DEV_1001&SUBSYS_00021AF4&REV_00","viostor"
+
+[Config.viostor]
+value = Parameters\PnpInterface, 5, REG_DWORD, 1
+
+EOF
+                dos2unix <"$stor/TXTSETUP.OEM" |
+                sed -E 's/^[sS][cC][sS][iI] ?= ?.*/scsi = iaAHCI_9RDODH/'
+        } | unix2dos | mcopy -i "$vfd" -Qv - ::/txtsetup.oem || exit
+    ) && mkisofs -o "${target%/}/virtio-$version-$arch.iso" -V "virtio-$version-$arch" -UDF -m '*.vfd' "${target%/}"; fi
     # SPICE isn't supported on ARM64
     [[ $arch != ARM64 ]] || return 0
     url=$vurl/virtio-win-pkg-scripts-input/latest-build
