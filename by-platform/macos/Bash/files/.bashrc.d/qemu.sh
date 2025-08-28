@@ -37,7 +37,7 @@ function start-win10-unattended() {
         lk_tty_run_detail virsh qemu-monitor-command "$vm" --hmp set_link "$vm_link" on
 }
 
-function reset-win11pro() { (
+function reset-win11() { (
     shopt -s nullglob
     if lk_is_apple_silicon; then
         #--driver ~/Downloads/Keep/Windows/Drivers/virtio-w11-ARM64/{vioscsi,viostor}!(?) \
@@ -45,6 +45,7 @@ function reset-win11pro() { (
         #~/Downloads/Keep/Windows/Drivers/brother-HL-* \
         _reset-win10-unattended ~/Downloads/Keep/libvirt/win11-install-with-virtio-arm64.qcow2 \
             --driver2 ~/Downloads/Keep/Windows/Drivers/virtio-w11-ARM64/!(spice-*).msi \
+            --update ~/Downloads/Keep/Windows/Updates/"Windows 11 24H2 ARM64" \
             "$@"
     else
         #--driver ~/Downloads/Keep/Windows/Drivers/virtio-w11-amd64/{vioscsi,viostor}!(?) \
@@ -52,20 +53,22 @@ function reset-win11pro() { (
         _reset-win10-unattended ~/Downloads/Keep/libvirt/win11-install-with-virtio-x64.qcow2 \
             --driver2 ~/Downloads/Keep/Windows/Drivers/virtio-w11-amd64/!(spice-*).msi \
             ~/Downloads/Keep/Windows/Drivers/brother-HL-* \
+            --update ~/Downloads/Keep/Windows/Updates/"Windows 11 24H2" \
             "$@"
     fi
 ); }
 
-function reset-win11pro-vmware() { (
+function reset-win11-vmware() { (
     shopt -s nullglob
-    declare arch=amd64 vmware_arch=x64
-    ! lk_is_apple_silicon || declare arch=ARM64 vmware_arch=arm
+    declare arch=amd64 vmware_arch=x64 update="Windows 11 24H2"
+    ! lk_is_apple_silicon || declare arch=ARM64 vmware_arch=arm update="Windows 11 24H2 ARM64"
     cd ~/Code/lk/win10-unattended && Scripts/CreateIso.sh \
-        --iso ~/"Virtual Machines.localized/Unattended-win11pro.iso" \
+        --iso ~/"Virtual Machines.localized/Unattended-win11.iso" \
         --no-wifi \
         --no-office \
         --driver ~/Downloads/Keep/Windows/Drivers/vmware-"$arch"/pvscsi!(?) \
         --driver2 ~/Downloads/Keep/Windows/Drivers/vmware-"$arch"/!(pvscsi) \
         "$(printf '%s\n' ~/Downloads/Keep/VMware/VMware-tools-*-"$vmware_arch".exe | sort -V | tail -n1)" \
+        --update ~/Downloads/Keep/Windows/Updates/"$update" \
         --reg Unattended/Extra/{AllowLogonWithoutPassword.reg,DoNotLock-HKLM.reg}
 ); }
