@@ -57,7 +57,8 @@ function _install-win10-unattended() {
 
 function start-win10-unattended() {
     local vm=${1-${FUNCNAME[2]#reset-}} vm_link
-    lk_tty_run_detail lk_elevate virsh start "$vm" &&
+    { lk_elevate virsh list --state-running --name | grep -Fx "$vm" >/dev/null ||
+        lk_tty_run_detail lk_elevate virsh start "$vm"; } &&
         vm_link=$(lk_elevate virsh qemu-monitor-command "$vm" --hmp info network | awk -F '[ \t:\\\\]+' 'NR == 2 { print $2 }' | grep .) &&
         lk_tty_run_detail lk_elevate virsh qemu-monitor-command "$vm" --hmp set_link "$vm_link" off &&
         {
@@ -86,12 +87,13 @@ function reset-win10x64() { (
         "$@"
 ); }
 
-function reset-win11home() { (
+function reset-win11() { (
     shopt -s nullglob
+    #--driver ~/Downloads/Keep/Windows/Drivers/virtio-w11-amd64/{vioscsi,viostor}!(?) \
+    #--driver2 ~/Downloads/Keep/Windows/Drivers/virtio-w11-amd64/!(vioscsi|viostor) \
     _reset-win10-unattended ~/Downloads/Keep/libvirt/win11-install-with-virtio-x64.qcow2 \
         --office \
-        --driver ~/Downloads/Keep/Windows/Drivers/virtio-w11-amd64/{vioscsi,viostor}!(?) \
-        --driver2 ~/Downloads/Keep/Windows/Drivers/virtio-w11-amd64/!(vioscsi|viostor) \
+        --driver2 ~/Downloads/Keep/Windows/Drivers/virtio-w11-amd64/*.msi \
         ~/Downloads/Keep/Windows/Drivers/brother-HL-* \
         "$@"
 ); }

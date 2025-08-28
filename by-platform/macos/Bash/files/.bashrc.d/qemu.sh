@@ -29,7 +29,8 @@ function _install-win10-unattended() {
 
 function start-win10-unattended() {
     local vm=${1-${FUNCNAME[2]#reset-}} vm_link
-    lk_tty_run_detail virsh start "$vm" &&
+    { virsh list --state-running --name | grep -Fx "$vm" >/dev/null ||
+        lk_tty_run_detail virsh start "$vm"; } &&
         vm_link=$(virsh qemu-monitor-command "$vm" --hmp info network | awk -F '[ \t:\\\\]+' 'NR == 2 { print $2 }' | grep .) &&
         lk_tty_run_detail virsh qemu-monitor-command "$vm" --hmp set_link "$vm_link" off &&
         lk_tty_run_detail virsh await "$vm" --condition guest-agent-available &&
