@@ -351,6 +351,10 @@
         "command": "sql-formatter-vscode.format-selection"
     },
     {
+        "key": "alt+meta+,",
+        "command": "surround.with.angleBrackets"
+    },
+    {
         "key": "alt+meta+/",
         "command": "surround.with.phpunitIgnore"
     },
