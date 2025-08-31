@@ -8,7 +8,7 @@ function _reset-win10-unattended() {
         --iso "$removable" \
         --no-wifi \
         --no-office \
-        --reg Unattended/Extra/{AllowLogonWithoutPassword.reg,DoNotLock-HKLM.reg} \
+        --reg Unattended/Extra/{AllowLogonWithoutPassword.reg,DoNotLock{-HKLM.reg,.cmd}} \
         "$@" &&
         lk_tty_yn "$removable prepared. Proceed?" Y &&
         _install-win10-unattended "$install" "$removable" &&
@@ -70,5 +70,5 @@ function reset-win11-vmware() { (
         --driver2 ~/Downloads/Keep/Windows/Drivers/vmware-"$arch"/!(pvscsi) \
         "$(printf '%s\n' ~/Downloads/Keep/VMware/VMware-tools-*-"$vmware_arch".exe | sort -V | tail -n1)" \
         --update ~/Downloads/Keep/Windows/Updates/"$update" \
-        --reg Unattended/Extra/{AllowLogonWithoutPassword.reg,DoNotLock-HKLM.reg}
+        --reg Unattended/Extra/{AllowLogonWithoutPassword.reg,DoNotLock{-HKLM.reg,.cmd}}
 ); }

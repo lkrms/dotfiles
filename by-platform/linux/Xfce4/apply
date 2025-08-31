@@ -37,9 +37,9 @@ channel=xfce4-power-manager
 ! reset-all || xfconf-reset /
 
 if is_portable; then
-    # Suspend at 4% battery
+    # Suspend at 6% battery
     xfconf-set /xfce4-power-manager/critical-power-action uint 1
-    xfconf-set /xfce4-power-manager/critical-power-level uint 4
+    xfconf-set /xfce4-power-manager/critical-power-level uint 6
 
     xfconf-set /xfce4-power-manager/dpms-on-ac-off uint 15
     xfconf-set /xfce4-power-manager/dpms-on-ac-sleep uint 10
