@@ -173,6 +173,40 @@ function qemu-img-create-backed-qcow2() {
         -b "$1" -F qcow2 "$2"
 }
 
+# qemu-img-fix-qcow2 <image> [<guest_cluster_size>]
+function qemu-img-fix-qcow2() {
+    (($# && $# < 3)) ||
+        lk_usage "Usage: $FUNCNAME <image> [<guest_cluster_size>]" ||
+        return
+    local cluster_size=${2-} dir
+    dir=$(dirname "$1") || return
+    lk_will_elevate || [[ -w $dir ]] || local LK_SUDO=1
+    cluster_size=${cluster_size%[Kk]}
+    cluster_size=${cluster_size:-4}
+    lk_tty_print "Checking" "$1"
+    local backed_by data json mode temp=$1.tmp-$FUNCNAME
+    lk_mktemp_with json lk_sudo qemu-img info --output=json "$1" &&
+        jq -r .format "$json" | grep -Fx qcow2 >/dev/null ||
+        lk_warn "invalid format: $1" || return
+    backed_by=$(jq -r '.["full-backing-filename"] // empty' "$json") &&
+        data=$(jq -r '[
+  .["format-specific"]["data"]["extended-l2"],
+  .["cluster-size"],
+  .["format-specific"]["data"]["lazy-refcounts"]
+] | @csv' "$json") || return
+    if [[ $data != "true,$((cluster_size * 32 * 1024)),true" ]]; then
+        if [[ -n $backed_by ]]; then
+            qemu-img-convert-backed-qcow2 "$backed_by" "$1" "$temp" "$cluster_size"
+        else
+            qemu-img-convert-qcow2 "$1" "$temp" "$cluster_size"
+        fi && lk_tty_run_detail lk_sudo mv "$temp" "$1" || return
+    fi
+    # Recurse into writable backing files
+    [[ -z $backed_by ]] ||
+        ! { mode=0$(lk_file_mode "$backed_by") && ((mode & 0222)); } ||
+        "$FUNCNAME" "$backed_by" "$cluster_size"
+}
+
 function virtio-win-update-iso() { (
     cd ~/Downloads/Keep/isos &&
         wget --trust-server-names --timestamping \
