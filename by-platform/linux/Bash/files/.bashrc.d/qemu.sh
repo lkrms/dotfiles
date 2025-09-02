@@ -14,7 +14,7 @@ function mount-qemu-img() {
         ((++i))
     done
     local dev=/dev/nbd$i p=0 part
-    lk_tty_run_detail lk_elevate qemu-nbd --connect "$dev" "$1" &&
+    lk_tty_run_detail lk_elevate qemu-nbd --discard=unmap --connect "$dev" "$1" &&
         lk_trap_add EXIT lk_tty_run_detail lk_elevate qemu-nbd --disconnect "$dev" || return
     shift
     QEMU_IMG_NBD=$dev

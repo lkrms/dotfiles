@@ -23,7 +23,7 @@ while [[ -e /sys/class/block/nbd$i/pid ]]; do
 done
 
 dev=/dev/nbd$i
-sudo qemu-nbd --connect "$dev" "$1" || die
+sudo qemu-nbd --discard=unmap --connect "$dev" "$1" || die
 
 while gio mount --monitor | grep -Eq '^(Mount|Volume) removed:'; do
     [[ -e /sys/class/block/nbd$i/pid ]] || exit 0

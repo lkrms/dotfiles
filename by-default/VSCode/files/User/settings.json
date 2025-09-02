@@ -630,10 +630,18 @@
     "SQL-Formatter-VSCode.keywordCase": "upper",
     "standard.engine": "ts-standard",
     "surround.custom": {
-        "angleBrackets": {
+        "angleBrackets.camel": {
             "label": "<varName>",
             "description": "Add angle brackets and apply camel case",
-            "snippet": "<${TM_SELECTED_TEXT/^[^a-zA-Z0-9]*([a-zA-Z0-9](?:(?<=[A-Z])(?:(?:[A-Z](?=[^a-z]|$))+|[a-z]+)|(?<=[0-9])[0-9]*[a-z]*|[a-z]*)).*/${1:/downcase}/}${TM_SELECTED_TEXT/(?:^[^a-zA-Z0-9]*[a-zA-Z0-9](?:(?<=[A-Z])(?:(?:[A-Z](?=[^a-z]|$))+|[a-z]+)|(?<=[0-9])[0-9]*[a-z]*|[a-z]*))?[^a-zA-Z0-9]*([a-zA-Z0-9])((?<=[A-Z])(?:(?:[A-Z](?=[^a-z]|$))+|[a-z]+)|(?<=[0-9])[0-9]*[a-z]*|[a-z]*)(?:[^a-zA-Z0-9]+$)?/${1:/upcase}${2:/downcase}/g}>",
+            "snippet": "<${TM_SELECTED_TEXT/^[^a-zA-Z0-9]*([a-zA-Z0-9](?:(?<=[A-Z])(?:(?:[A-Z](?=[^a-z]|$))+|[a-z]+)|(?<=[0-9])[0-9]*[a-z]*|[a-z]*)).*/${1:/downcase}/}${TM_SELECTED_TEXT/(?:^[^a-zA-Z0-9]*[a-zA-Z0-9](?:(?<=[A-Z])(?:(?:[A-Z](?=[^a-z]|$))+|[a-z]+)|(?<=[0-9])[0-9]*[a-z]*|[a-z]*))?[^a-zA-Z0-9]*(?:([a-zA-Z0-9])((?<=[A-Z])(?:(?:[A-Z](?=[^a-z]|$))+|[a-z]+)|(?<=[0-9])[0-9]*[a-z]*|[a-z]*))?(?:[^a-zA-Z0-9]+$)?/${1:/upcase}${2:/downcase}/g}>",
+            "languageIds": [
+                "*"
+            ]
+        },
+        "angleBrackets.snake": {
+            "label": "<var_name>",
+            "description": "Add angle brackets and apply snake case",
+            "snippet": "<${TM_SELECTED_TEXT/^[^a-zA-Z0-9]*([a-zA-Z0-9](?:(?<=[A-Z])(?:(?:[A-Z](?=[^a-z]|$))+|[a-z]+)|(?<=[0-9])[0-9]*[a-z]*|[a-z]*)).*/${1:/downcase}/}${TM_SELECTED_TEXT/(?:^[^a-zA-Z0-9]*[a-zA-Z0-9](?:(?<=[A-Z])(?:(?:[A-Z](?=[^a-z]|$))+|[a-z]+)|(?<=[0-9])[0-9]*[a-z]*|[a-z]*))?[^a-zA-Z0-9]*(?:([a-zA-Z0-9])((?<=[A-Z])(?:(?:[A-Z](?=[^a-z]|$))+|[a-z]+)|(?<=[0-9])[0-9]*[a-z]*|[a-z]*))?(?:[^a-zA-Z0-9]+$)?/${1:+_}${1:/downcase}${2:/downcase}/g}>",
             "languageIds": [
                 "*"
             ]

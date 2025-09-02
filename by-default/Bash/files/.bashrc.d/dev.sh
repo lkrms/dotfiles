@@ -173,6 +173,28 @@ function qemu-img-create-backed-qcow2() {
         -b "$1" -F qcow2 "$2"
 }
 
+# qemu-img-compact-qcow2 <image> [<guest_cluster_size>]
+function qemu-img-compact-qcow2() {
+    (($# && $# < 3)) ||
+        lk_usage "Usage: $FUNCNAME <image> [<guest_cluster_size>]" ||
+        return
+    local cluster_size=${2-} dir
+    dir=$(dirname "$1") || return
+    lk_will_elevate || [[ -w $dir ]] || local LK_SUDO=1
+    cluster_size=${cluster_size%[Kk]}
+    cluster_size=${cluster_size:-4}
+    lk_tty_print "Compacting" "$1"
+    local backed_by json temp=$1.tmp-$FUNCNAME
+    lk_mktemp_with json lk_sudo qemu-img info --output=json "$1" &&
+        backed_by=$(jq -r '.["full-backing-filename"] // empty' "$json") || return
+    if [[ -n $backed_by ]]; then
+        qemu-img-convert-backed-qcow2 "$backed_by" "$1" "$temp" "$cluster_size"
+    else
+        qemu-img-convert-qcow2 "$1" "$temp" "$cluster_size"
+    fi && lk_tty_run_detail lk_sudo touch -r "$1" "$temp" &&
+        lk_tty_run_detail lk_sudo mv "$temp" "$1"
+}
+
 # qemu-img-fix-qcow2 <image> [<guest_cluster_size>]
 function qemu-img-fix-qcow2() {
     (($# && $# < 3)) ||
