@@ -11,9 +11,10 @@ function arch-update-iso() { (
 function arch-iso-dd() {
     (($#)) || lk_usage "Usage: $FUNCNAME [<iso>] <disk>" || return
     (($# > 1)) || set -- ~/Downloads/Keep/isos/archlinux-x86_64.iso "$1"
-    local cmd=(dd bs=4M if="$1" of="$2" conv=fsync oflag=direct status=progress)
-    lk_tty_print "Running:" $'\n'"$(lk_quote_arr cmd)"
+    local cmd=(dd bs=4M of="$2" conv="fsync,sparse" oflag=direct status=none) size
+    lk_tty_print "Running:" $'\n'"$(lk_quote_arr cmd) <$(lk_quote_args "$1")"
     lk_tty_yn "Proceed?" N &&
-        sudo "${cmd[@]}" &&
+        size=$(du -B1 "$1" | awk '{print $1}') &&
+        pv --cursor --delay-start 2 --size $((size)) "$1" | sudo "${cmd[@]}" &&
         sudo sync
 }

@@ -18,7 +18,7 @@ function iso-rip() {
         count=$(awk -F': +' '$1 == "Volume size is" { print $2 }' "$temp") || return
     ((bs > 0 && count > 0)) || lk_warn 'invalid block or volume size' || return
     lk_tty_print "Ripping:" "$source ($((bs * count)) bytes)"
-    lk_maybe_sudo pv --cursor --size $((bs * count)) "$source" |
+    lk_maybe_sudo pv --cursor --delay-start 2 --size $((bs * count)) "$source" |
         lk_tty_run_detail dd of="$target" bs="$bs" count="$count" iflag=fullblock status=none || return
     lk_tty_success "Rip completed successfully"
     for dev in /dev/sr*; do
