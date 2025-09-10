@@ -1,0 +1,46 @@
+LittleEndian();
+
+// - CHS = Cylinder (0-1023), Head (0-255), Sector (0-63)
+// - if too large: (1023, 254, 63) and use LBA
+// - if protective: (1023, 255, 63)
+struct MBR_chs
+{
+    uint8_t Head70;
+    uint8_t Sector50Cylinder98;
+    uint8_t Cylinder70;
+    SetComment(OffsetOf(Sector50Cylinder98), 2, SPrintf("(%d,%d,%d)", Cylinder70 + ((Sector50Cylinder98 & 0xc0) << 2), Head70, Sector50Cylinder98 & 0x3f));
+};
+
+// Sector size = 512 bytes
+struct MBR_part
+{
+    uint8_t IsBootable; // 0=no, 0x80=yes, other=invalid
+    struct MBR_chs FirstSector;
+    uint8_t PartitionType;
+    struct MBR_chs LastSector;
+    uint32_t LbaFirstSector;
+    uint32_t SectorCount;
+};
+
+struct MBR
+{
+    if (ReadU16(FTell() + 0xDA) == 0 && ReadU16(FTell() + 0xDC) >= 0x80)
+    {
+        char BootstrapCode1[218];
+        uint16_t Padding;              // 0x0000
+        uint8_t OriginalPhysicalDrive; // 0x80-0xff
+        uint8_t DiskTimestampSeconds;  // 0-59
+        uint8_t DiskTimestampMinutes;  // 0-59
+        uint8_t DiskTimestampHours;    // 0-23
+        char BootstrapCode2[216];
+        uint32_t DiskSignature;
+        uint16_t IsCopyProtected; // 0=no, 0x5a5a=yes, other=invalid
+    }
+    else
+    {
+        char BootstrapCode1[446];
+    }
+    struct MBR_part PartitionTable[4];
+};
+
+struct MBR MasterBootRecord;
