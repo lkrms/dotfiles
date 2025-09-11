@@ -51,8 +51,29 @@ function aur-PKGBUILD-check-github() { (
         pkg=${pkg%/PKGBUILD}
         lk_tty_print "Processing:" "${pkg##*/}"
         cd "$pkg" || return
+        ! branch=$(git rev-parse --abbrev-ref HEAD) ||
+            [[ $branch != master ]] || {
+            lk_tty_detail "Renaming local branch 'master' to 'main':" "${pkg##*/}"
+            git branch -m main || true
+        }
         ! git remote | grep -Fx origin >/dev/null || {
-            git fetch --all --prune --tags &>/dev/null &
+            {
+                git fetch --all --prune --tags
+                lk_pass git branch --set-upstream-to=origin/main main
+            } &>/dev/null &
+            ((++i))
+            continue
+        }
+        ! lk_mktemp_with -r json \
+            gh repo view \
+            --json isPrivate,description,homepageUrl \
+            lkrms-pkgbuilds/pkgbuild-"${pkg##*/}" 2>/dev/null || {
+            lk_tty_detail "Adding GitHub remote:" "${pkg##*/}"
+            git remote add origin git@github.com:lkrms-pkgbuilds/pkgbuild-"${pkg##*/}".git || return
+            {
+                git fetch --all --prune --tags
+                lk_pass git branch --set-upstream-to=origin/main main
+            } &>/dev/null &
             ((++i))
             continue
         }
