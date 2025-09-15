@@ -7,7 +7,9 @@
 # Upstream responses are cached for an hour.
 function wayback-get-versions() {
     [[ ${1-} =~ ^https?:// ]] || lk_bad_args || return
-    lk_tty_run_detail -3 lk_cache -t 3600 curl -fsS "http://web.archive.org/cdx/search/cdx?url=$1" |
+    local url
+    url=$(jq -Rr '@uri' <<<"$1") &&
+        lk_tty_run_detail -3 lk_cache -t 3600 curl -fsS "http://web.archive.org/cdx/search/cdx?url=$url" |
         awk '$4 != "warc/revisit" && $5 < 300 { if (!seen[$6]++) print $6, $4, $2, $7, "http://web.archive.org/web/" $2 "/" $3 }'
 }
 
@@ -19,7 +21,8 @@ function wayback-get-versions() {
 function wayback-download-versions() {
     local digest download ext file modified timestamp url verb
     while read -r digest timestamp url; do
-        file=${url##*/}
+        file=$(jq -Rr '@urid' <<<"$url") || return
+        file=${file##*/}
         ext=.${file##*.}
         [[ $ext != ".$file" ]] || ext=
         file=${file%.*}-$timestamp$ext
