@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# Disable automatic redirection of USB devices
+exec /usr/bin/remote-viewer \
+    --spice-usbredir-auto-redirect-filter=-1,-1,-1,-1,0 \
+    "$@"

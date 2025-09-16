@@ -62,7 +62,7 @@ function start-win10-unattended() {
         vm_link=$(lk_elevate virsh qemu-monitor-command "$vm" --hmp info network | awk -F '[ \t:\\\\]+' 'NR == 2 { print $2 }' | grep .) &&
         lk_tty_run_detail lk_elevate virsh qemu-monitor-command "$vm" --hmp set_link "$vm_link" off &&
         {
-            lk_elevate nohup virt-viewer "$vm" &>/dev/null &
+            nohup virt-viewer "$vm" --connect qemu:///system &>/dev/null &
             disown
         } &&
         lk_tty_run_detail lk_elevate virsh await "$vm" --condition guest-agent-available &&
