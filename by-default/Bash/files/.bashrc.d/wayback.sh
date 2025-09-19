@@ -10,7 +10,26 @@ function wayback-get-versions() {
     local url
     url=$(jq -Rr '@uri' <<<"$1") &&
         lk_tty_run_detail -3 lk_cache -t 3600 curl -fsS "http://web.archive.org/cdx/search/cdx?url=$url" |
-        awk '$4 != "warc/revisit" && $5 < 300 { if (!seen[$6]++) print $6, $4, $2, $7, "http://web.archive.org/web/" $2 "/" $3 }'
+        awk '$4 != "warc/revisit" && $5 < 300 { if (!seen[$6]++) print $6, $4, $2, $7, "http://web.archive.org/web/" $2 "/" $3 }' |
+            sort -k3,3n
+}
+
+# wayback-search <url-glob> [<url-pattern> [<mimetype-pattern>]]
+#
+# <url-glob> must start or end with a wildcard ('*'). Patterns use Java regex
+# syntax and should match the entire field to which they apply.
+#
+# - See: https://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html
+function wayback-search() {
+    [[ ${1-} == \** ]] || [[ ${1-} == *\* ]] || lk_usage "\
+Usage: $FUNCNAME <url-glob> [<url-pattern> [<mimetype-pattern>]]" || return
+    local query
+    query=url=$(jq -Rr '@uri' <<<"$1") &&
+        query+=${2:+"&filter=original:$(jq -Rr '@uri' <<<"$2")"} &&
+        query+=${3:+"&filter=mimetype:$(jq -Rr '@uri' <<<"$3")"} &&
+        lk_tty_run_detail -3 lk_cache -t 3600 curl -fsS "http://web.archive.org/cdx/search/cdx?$query" |
+        awk '$4 != "warc/revisit" && $5 < 300 { if (!seen[$6]++) print $6, $4, $2, $7, "http://web.archive.org/web/" $2 "/" $3 }' |
+            sort -k3,3n
 }
 
 # wayback-download-versions <url>
