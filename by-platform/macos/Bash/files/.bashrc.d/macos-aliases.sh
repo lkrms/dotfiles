@@ -7,5 +7,4 @@ alias find="gfind"
 alias ls="ls -G"
 
 alias cdprefs="cd ~/Library/Preferences"
-alias listeners="lsof +c 0 -iTCP -stcp:LISTEN -nP"
 alias plistxml="plutil -convert xml1 -o -"
