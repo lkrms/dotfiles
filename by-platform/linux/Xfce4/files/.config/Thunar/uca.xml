@@ -1,13 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <actions>
 <action>
+	<icon>archive-extract</icon>
+	<name>Extract here</name>
+	<submenu></submenu>
+	<unique-id>1758332630136234-1</unique-id>
+	<command>for f in %F; do 7z x &quot;$f&quot; -o&quot;*&quot;; done</command>
+	<description>Extract the selected self-extracting executable in the current folder</description>
+	<range>*</range>
+	<patterns>*.exe</patterns>
+	<audio-files/>
+	<image-files/>
+	<other-files/>
+	<text-files/>
+	<video-files/>
+</action>
+<action>
+	<icon>archive-extract</icon>
+	<name>Extract here</name>
+	<submenu></submenu>
+	<unique-id>1758339516300237-2</unique-id>
+	<command>for f in %F; do cabextract -d &quot;${f%%.*}&quot; &quot;$f&quot; || unshield -d &quot;${f%%.*}&quot; x &quot;$f&quot;; done</command>
+	<description>Extract the selected cabinet archive in the current folder</description>
+	<range>*</range>
+	<patterns>*.cab</patterns>
+	<audio-files/>
+	<image-files/>
+	<other-files/>
+	<text-files/>
+	<video-files/>
+</action>
+<action>
 	<icon>insert-text-frame</icon>
 	<name>Edit in nomacs</name>
 	<submenu></submenu>
 	<unique-id>1586299476189427-1</unique-id>
 	<command>nomacs %f</command>
 	<description>Open this image in nomacs</description>
-	<range></range>
+	<range>*</range>
 	<patterns>*</patterns>
 	<image-files/>
 </action>
@@ -18,7 +48,7 @@
 	<unique-id>1576288731185254-6</unique-id>
 	<command>new-folder-with-selection %F</command>
 	<description>Send one or more items to a new folder</description>
-	<range></range>
+	<range>*</range>
 	<patterns>*</patterns>
 	<directories/>
 	<audio-files/>
@@ -34,7 +64,7 @@
 	<unique-id>1580612606085046-1</unique-id>
 	<command>combine-selected-pdf-files %F</command>
 	<description>Merge two or more PDFs into one</description>
-	<range></range>
+	<range>*</range>
 	<patterns>*.pdf</patterns>
 	<audio-files/>
 	<image-files/>
@@ -49,7 +79,7 @@
 	<unique-id>1574113675147262-1</unique-id>
 	<command>exo-open --working-directory %f --launch TerminalEmulator</command>
 	<description>Open a terminal in this directory</description>
-	<range></range>
+	<range>*</range>
 	<patterns>*</patterns>
 	<directories/>
 </action>
@@ -60,7 +90,7 @@
 	<unique-id>1574113675147285-2</unique-id>
 	<command>exo-open --working-directory %d --launch TerminalEmulator</command>
 	<description>Open a terminal in the containing directory</description>
-	<range></range>
+	<range>*</range>
 	<patterns>*</patterns>
 	<audio-files/>
 	<image-files/>
@@ -75,7 +105,7 @@
 	<unique-id>1622004381003641-1</unique-id>
 	<command>code %f</command>
 	<description>Open VS Code in this directory</description>
-	<range></range>
+	<range>*</range>
 	<patterns>*</patterns>
 	<directories/>
 </action>
@@ -86,7 +116,7 @@
 	<unique-id>1622042146177639-1</unique-id>
 	<command>code %d</command>
 	<description>Open VS Code in the containing directory</description>
-	<range></range>
+	<range>*</range>
 	<patterns>*</patterns>
 	<audio-files/>
 	<image-files/>
@@ -101,7 +131,7 @@
 	<unique-id>1584495832566667-1</unique-id>
 	<command>smerge %f</command>
 	<description>Open Sublime Merge in this directory</description>
-	<range></range>
+	<range>*</range>
 	<patterns>*</patterns>
 	<directories/>
 </action>
@@ -112,7 +142,7 @@
 	<unique-id>1584496009132002-2</unique-id>
 	<command>smerge %d</command>
 	<description>Open Sublime Merge in the containing directory</description>
-	<range></range>
+	<range>*</range>
 	<patterns>*</patterns>
 	<audio-files/>
 	<image-files/>
@@ -127,7 +157,7 @@
 	<unique-id>1750520691032129-1</unique-id>
 	<command>export-qemu-image-via-nbd %f</command>
 	<description>Connect the image to /dev/nbdX</description>
-	<range></range>
+	<range>*</range>
 	<patterns>*.qcow2;*.raw</patterns>
 	<audio-files/>
 	<image-files/>
@@ -142,7 +172,7 @@
 	<unique-id>1574113675147322-3</unique-id>
 	<command>catfish --path=%f</command>
 	<description>Search for files within this folder</description>
-	<range></range>
+	<range>*</range>
 	<patterns>*</patterns>
 	<directories/>
 </action>

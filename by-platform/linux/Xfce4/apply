@@ -344,7 +344,7 @@ xfconf-set /shortcuts-no-menukey bool true
 xfconf-set /shortcuts-no-mnemonics bool true
 
 channel=thunar
-xfconf-reset /
+! reset-all || xfconf-reset /
 xfconf-set /default-view string ThunarDetailsView
 xfconf-set /misc-change-window-icon bool false
 xfconf-set /misc-date-style string THUNAR_DATE_STYLE_SHORT
@@ -352,7 +352,7 @@ xfconf-set /misc-directory-specific-settings bool true
 xfconf-set /misc-show-delete-action bool true
 
 channel=thunar-volman
-xfconf-reset /
+! reset-all || xfconf-reset /
 
 maybe dconf load / <<"EOF"
 [org/gnome/desktop/interface]
