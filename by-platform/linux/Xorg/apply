@@ -6,6 +6,7 @@ shopt -s extglob nullglob
 
 mimeinfo=({~/.local,/usr/local,/usr}/share/applications/mimeinfo.cache!(?))
 
+# Format: <app>[+(<app_to_override>|<mime_type>)...]
 default_apps=(
     # Assign types opened by Geany and Vim to VS Code
     code+geany+vim
@@ -21,9 +22,29 @@ default_apps=(
     org.gnome.Evince
     vlc
     # Prefer Engrampa Archive Manager for `application/x-cd-image` and other
-    # types opened by Archive Mounter or VLC
-    engrampa
+    # types also opened by gnome-disk-image-mounter or VLC
+    engrampa+application/vnd.microsoft.portable-executable
 )
+
+# Split a <default_apps> entry into variables `first`, `types`, `apps`, adding
+# ".desktop" to `first` and entries in `apps`
+function split_default_app() {
+    local IFS=+ parts
+    read -ra parts <<<"$1"
+    set -- "${parts[@]}"
+    first=$1.desktop
+    shift
+    types=()
+    apps=()
+    while (($#)); do
+        if [[ $1 == */* ]]; then
+            types[${#types[@]}]=$1
+        else
+            apps[${#apps[@]}]=$1.desktop
+        fi
+        shift
+    done
+}
 
 function app_handles() {
     awk -F= -vapp=";$1;" 'index(";" $2 ";", app) { print $1 }' "${mimeinfo[@]}"
@@ -32,25 +53,22 @@ function app_handles() {
 maybe update-desktop-database ~/.local/share/applications
 
 replace_file ~/.config/mimeapps.list < <(
-    IFS=+
-    for app in "${default_apps[@]}"; do
-        apps=($app)
-        apps=("${apps[@]/%/.desktop}")
-        for app in "${apps[@]}"; do
-            app_handles "$app"
-        done | awk -vapp="${apps[0]}" '{ print $0 "=" app }'
+    for entry in "${default_apps[@]}"; do
+        split_default_app "$entry"
+        {
+            [[ -z ${types+1} ]] || printf '%s\n' "${types[@]}"
+            for app in "$first" ${apps+"${apps[@]}"}; do
+                app_handles "$app"
+            done
+        } | awk -vapp="$first" '{ print $0 "=" app }'
     done | awk -F= '
 BEGIN { print "[Default Applications]" }
       { m[$1] = $2 }
 END   { for (t in m) { print t "=" m[t] | "sort" } close("sort") }'
     printf '\n[%s]\n' "Added Associations"
-    for app in "${default_apps[@]}"; do
-        first=${app%%+*}
-        app=${app#*+}
-        [[ $app != "$first" ]] || continue
-        first=$first.desktop
-        apps=($app)
-        apps=("${apps[@]/%/.desktop}")
+    for entry in "${default_apps[@]}"; do
+        split_default_app "$entry"
+        [[ -n ${apps+1} ]] || continue
         for app in "${apps[@]}"; do
             app_handles "$app"
         done | grep -Fxvf <(app_handles "$first") |
