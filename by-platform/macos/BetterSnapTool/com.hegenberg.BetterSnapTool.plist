@@ -8,6 +8,8 @@
 	<true/>
 	<key>BSTDidAlreadyLaunchOnce</key>
 	<true/>
+	<key>BSTDidClickHighlightedMenuItem</key>
+	<true/>
 	<key>BSTSequoiaUseClassicSnapping</key>
 	<integer>1</integer>
 	<key>cycle_lrm</key>
@@ -194,9 +196,9 @@
 		<key>5461</key>
 		<dict>
 			<key>keyCode</key>
-			<integer>-1</integer>
+			<integer>17</integer>
 			<key>modifiers</key>
-			<integer>0</integer>
+			<integer>6144</integer>
 		</dict>
 		<key>8</key>
 		<dict>
@@ -214,6 +216,6 @@
 		</dict>
 	</dict>
 	<key>showMenubarIcon</key>
-	<false/>
+	<true/>
 </dict>
 </plist>

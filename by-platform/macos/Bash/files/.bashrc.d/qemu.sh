@@ -58,17 +58,58 @@ function reset-win11() { (
     fi
 ); }
 
-function reset-win11-vmware() { (
-    shopt -s nullglob
-    declare arch=amd64 vmware_arch=x64 update="Windows 11 24H2"
-    ! lk_is_apple_silicon || declare arch=ARM64 vmware_arch=arm update="Windows 11 24H2 ARM64"
+function _reset-win10-unattended-vmware() {
+    local vm=${FUNCNAME[1]#reset-} install=$1
+    shift
+    vm=${vm%-vmware}-$(hostname -s) || return
+    local dir=~/"Virtual Machines.localized"/$vm.vmwarevm
+    local vmx=$dir/$vm.vmx fixed=$dir/$vm.vmdk removable=$dir/Unattended-$vm.iso
     cd ~/Code/lk/win10-unattended && Scripts/CreateIso.sh \
-        --iso ~/"Virtual Machines.localized/Unattended-win11.iso" \
+        --iso "$removable" \
         --no-wifi \
         --no-office \
+        --reg Unattended/Extra/{AllowLogonWithoutPassword.reg,DoNotLock{-HKLM.reg,.cmd}} \
+        "$@" &&
+        lk_tty_yn "$removable prepared. Proceed?" Y || return
+    local json disks label file
+    lk_mktemp_with json vmcli disk query -f json "$vmx" &&
+        disks=$(jq -r '.disks[] | [.label, .backingPathName] | @tsv' "$json") || return
+    while IFS=$'\t' read -r label file && [[ -n $label ]]; do
+        lk_tty_run_detail vmcli disk purge "$label" "$vmx" || return
+        [[ ! -f $file ]] || [[ $file != $dir/* ]] ||
+            lk_tty_run_detail vmware-vdiskmanager -U "$file" || return
+    done <<<"$disks"
+    { [[ ! -f $fixed ]] || lk_tty_run_detail vmware-vdiskmanager -U "$fixed"; } &&
+        lk_tty_run_detail vmware-vdiskmanager -c -s 128GB -t 0 -a lsilogic "$fixed" &&
+        lk_tty_run_detail vmcli nvme setpresent nvme0 1 "$vmx" &&
+        lk_tty_run_detail vmcli disk setbackinginfo nvme0:0 disk "$fixed" 1 "$vmx" &&
+        lk_tty_run_detail vmcli disk setpresent nvme0:0 1 "$vmx" || return
+    if [[ $install == *.iso ]]; then
+        lk_tty_run_detail vmcli sata setpresent sata0 1 "$vmx" &&
+            lk_tty_run_detail vmcli disk setbackinginfo sata0:1 cdrom_image "$install" 1 "$vmx" &&
+            lk_tty_run_detail vmcli disk setpresent sata0:1 1 "$vmx" || return
+    else
+        lk_tty_run_detail vmcli configparams setentry usb_xhci.present "TRUE" "$vmx" &&
+            lk_tty_run_detail vmcli configparams setentry usb_xhci:1.present "TRUE" "$vmx" &&
+            lk_tty_run_detail vmcli configparams setentry usb_xhci:1.fileName "$install" "$vmx" &&
+            lk_tty_run_detail vmcli configparams setentry usb_xhci:1.deviceType "disk" "$vmx" &&
+            lk_tty_run_detail vmcli configparams setentry usb_xhci:1.readonly "TRUE" "$vmx" || return
+    fi
+    lk_tty_run_detail vmcli disk setbackinginfo sata0:2 cdrom_image "$removable" 1 "$vmx" &&
+        lk_tty_run_detail vmcli disk setpresent sata0:2 1 "$vmx" || return
+}
+
+function reset-win11-vmware() { (
+    shopt -s nullglob
+    declare arch=amd64 iso_arch=x64 vmware_arch=x64 update="Windows 11 24H2"
+    ! lk_is_apple_silicon ||
+        declare arch=ARM64 iso_arch=Arm64 vmware_arch=arm update="Windows 11 24H2 ARM64"
+    _reset-win10-unattended-vmware ~/"Downloads/Keep/isos/Win11/$arch/Win11_24H2_EnglishInternational_${iso_arch}.iso" \
         --driver ~/Downloads/Keep/Windows/Drivers/vmware-"$arch"/pvscsi!(?) \
         --driver2 ~/Downloads/Keep/Windows/Drivers/vmware-"$arch"/!(pvscsi) \
-        "$(printf '%s\n' ~/Downloads/Keep/VMware/VMware-tools-*-"$vmware_arch".exe | sort -V | tail -n1)" \
-        --update ~/Downloads/Keep/Windows/Updates/"$update" \
-        --reg Unattended/Extra/{AllowLogonWithoutPassword.reg,DoNotLock{-HKLM.reg,.cmd}}
+        --update ~/Downloads/Keep/Windows/Updates/"$update"
 ); }
+
+function vmware-vdiskmanager() {
+    "/Applications/VMware Fusion.app/Contents/Library/vmware-vdiskmanager" "$@"
+}
