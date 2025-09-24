@@ -93,7 +93,8 @@ Usage: $FUNCNAME [-x|-h|-d] [-l <n>|-p|-r|-k <key>] [-t] [-v] <url> [<url-patter
             ((i++)) || ((!downloaded)) ||
                 lk_tty_detail "Already downloaded:" "$downloaded"
             if [[ ! -s $args_file ]] ||
-                curl -f --rate 14/m --retry 9 --config "$args_file"; then
+                curl -f --rate 14/m --retry 9 --config "$args_file" \
+                    --write-out "%output{>>$dir/curl_output}%{exitcode} %{response_code} '%{url}' '%{filename_effective}' %{size_download}b %{speed_download}b/s %{num_retries} %time{%FT%TZ}\\n"; then
                 break
             fi
             downloaded=$(lk_args "$dir"/page* | wc -l) &&
