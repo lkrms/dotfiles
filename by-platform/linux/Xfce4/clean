@@ -32,7 +32,7 @@ with_each 'files/.local/share/xfce4-panel-profiles/*.tar.bz2' extract '{}'
 
 # normalise_gtk_accel_map <file>
 function normalise_gtk_accel_map() {
-    LC_ALL=C awk '
+    LC_ALL=C gawk '
 /^(; )?\(gtk_accel_path / {
   line = $0
   sub(/^(; )?\(gtk_accel_path /, "", $0)
