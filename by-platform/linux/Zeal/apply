@@ -66,6 +66,7 @@ register_docset HTML HTML '' 142
 register_docset HTTP HTTP '' 24
 register_docset JavaScript JavaScript '' 144
 register_docset jQuery jQuery 3.7.1
+register_docset Lua_5.1 'Lua 5.1' '' 4
 register_docset Markdown Markdown '' 2
 register_docset MongoDB MongoDB 8.0.13
 register_docset MySQL MySQL 8.4

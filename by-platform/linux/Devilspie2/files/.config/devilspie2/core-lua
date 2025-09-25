@@ -50,25 +50,29 @@ operator = {
     NOT = 3,
 }
 
+-- Copy a table and apply the keys and values of another to it.
 function extend(copy_table, update_table)
     return tablex.update(tablex.copy(copy_table), update_table)
 end
 
+-- Copy a table and add the values of another to it.
 function append(copy_table, insert_table)
     local copy = tablex.copy(copy_table)
     tablex.insertvalues(copy, insert_table)
     return copy
 end
 
+-- Convert a value to boolean, i.e. false if it is nil or false, otherwise true.
 function bool(v)
     return v ~= nil and v ~= false
 end
 
+-- Check if exactly one of two values is true after conversion to boolean.
 function xor(a, b)
     return bool(a) ~= bool(b)
 end
 
--- Return the geometry of all connected displays.
+-- Get display geometry from xrandr.
 --
 -- Display 1 is always the primary display. Secondary display numbering is left
 -- to right, top to bottom.
@@ -89,21 +93,35 @@ end
 --     {{0, 0, 3840, 2160, 0, 0, 37, 0}, {3840, 0, 3840, 2160, 0, 0, 37, 0}}
 function get_displays()
     if displays == nil then
-        log.debug("Getting screen geometry from xrandr")
+        log.debug("Getting display geometry from xrandr")
+        -- Use awk, sort and cut to parse xrandr output to a table of Lua tables
         local f = assert(io.popen(
             [[
-xrandr | awk 'function o(p, g, _) {
-  split(g, _, /[x+]/)
-  printf("%s   { %s, %s, %s, %s, 0, 0, 0, 0 },\n", (p ? 0 : 1), _[3], _[4], _[1], _[2] ) | s
-}
+xrandr | awk '
 BEGIN {
-  r = "^[0-9]+x[0-9]+(\\+[0-9]+){2}$"
-  s = "sort -n -k1 -k3 -k4 | cut -c3-"
+  regex = "^[0-9]+x[0-9]+(\\+[0-9]+){2}$"
+  sort = "sort -n -k1,1 -k3,3 -k4,4 | cut -c3-"
   print "return {"
 }
-$2 == "connected" && $3 ~ r { o(0, $3) }
-$2 == "connected" && $3 == "primary" && $4 ~ r { o(1, $4) }
-END { close(s); print "}" }'
+
+$2 == "connected" && $3 ~ regex {
+  print_display(0, $3)
+}
+
+$2 == "connected" && $3 == "primary" && $4 ~ regex {
+  print_display(1, $4)
+}
+
+END {
+  close(sort)
+  print "}"
+}
+
+function print_display(is_primary, geometry, _parts)
+{
+  split(geometry, _parts, /[x+]/)
+  printf("%d   { %d, %d, %d, %d, 0, 0, 0, 0 },\n", 1 - is_primary, _parts[3], _parts[4], _parts[1], _parts[2]) | sort
+}'
 ]]
         ))
         local output = f:read("*a")
@@ -130,19 +148,20 @@ end
 
 function get_struts()
     log.debug("Getting strut geometry from xprop")
+    -- Use awk, tr and xargs to process xprop output in a 3-stage pipeline:
+    -- 1. get window list (_NET_CLIENT_LIST) from root window
+    -- 2. get window type (_NET_WM_WINDOW_TYPE) from all windows
+    -- 3. get _NET_WM_STRUT_PARTIAL from _NET_WM_WINDOW_TYPE_DOCK windows as a
+    --    table of Lua tables
     local f = assert(io.popen(
         [[
-echo "return {"
 xprop -root 32x '\n$0+\n' _NET_CLIENT_LIST |
-    tail -n1 |
-    sed -E 's/[ \t,]+/\n/g' |
-    xargs -I '{}' xprop -id '{}' \
-        32a '\n{} $0\n' _NET_WM_WINDOW_TYPE |
-    sed -En 's/^(0x[0-9a-fA-F]+) _NET_WM_WINDOW_TYPE_DOCK$/\1/p' |
-    xargs -I '{}' xprop -id '{}' \
-        32c '\n\t{$0, $1, $2, $3, $8, $4},\n' _NET_WM_STRUT_PARTIAL |
-    sed -E '/^\t\{/!d'
-echo "}"
+    awk 'NR == 2' |
+    tr -s '[:blank:],' '\n' |
+    xargs -I '{}' xprop -id '{}' 32a '\n{} $0\n' _NET_WM_WINDOW_TYPE |
+    awk '$2 == "_NET_WM_WINDOW_TYPE_DOCK" { print $1 }' |
+    xargs -I '{}' xprop -id '{}' 32c '\n  { $0, $1, $2, $3, $8, $4 },\n' _NET_WM_STRUT_PARTIAL |
+    awk 'BEGIN { print "return {" } NR % 2 == 0 { print } END { print "}" }'
 ]]
     ))
     local output = f:read("*a")

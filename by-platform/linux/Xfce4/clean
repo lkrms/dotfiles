@@ -32,8 +32,25 @@ with_each 'files/.local/share/xfce4-panel-profiles/*.tar.bz2' extract '{}'
 
 # normalise_gtk_accel_map <file>
 function normalise_gtk_accel_map() {
-    sed -E '/^;/!d; /^; \(gtk_accel_path /d' "$1"
-    sed -E '/^;/d' "$1" | LC_ALL=C sort
+    LC_ALL=C awk '
+/^(; )?\(gtk_accel_path / {
+  line = $0
+  sub(/^(; )?\(gtk_accel_path /, "", $0)
+  sub(/" ".*/, "", $0)
+  lines[$0] = line
+  next
+}
+
+{
+  print
+}
+
+END {
+  n = asorti(lines, sorted)
+  for (i = 1; i <= n; i++) {
+    print lines[sorted[i]]
+  }
+}' "$1"
 }
 
 with_each 'files/.config/**/accels.scm' \
