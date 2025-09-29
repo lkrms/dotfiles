@@ -32,7 +32,7 @@ function _reset-win10-unattended() {
     local images=/var/lib/libvirt/images vm=${FUNCNAME[1]#reset-} install=$1
     local fixed=$images/$vm.qcow2 removable=$images/Unattended-$vm.iso
     shift
-    cd ~/Code/lk/win10-unattended && lk_elevate Scripts/CreateIso.sh \
+    cd ~/Code/lk/win10-unattended && lk_tty_run_detail lk_elevate Scripts/CreateIso.sh \
         --iso "$removable" \
         --no-wifi \
         --no-office \

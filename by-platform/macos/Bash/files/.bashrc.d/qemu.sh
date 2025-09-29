@@ -4,7 +4,7 @@ function _reset-win10-unattended() {
     local images=~/.local/share/libvirt/images vm=${FUNCNAME[1]#reset-} install=$1
     local fixed=$images/$vm.qcow2 removable=$images/Unattended-$vm.iso
     shift
-    cd ~/Code/lk/win10-unattended && Scripts/CreateIso.sh \
+    cd ~/Code/lk/win10-unattended && lk_tty_run_detail Scripts/CreateIso.sh \
         --iso "$removable" \
         --no-wifi \
         --no-office \
@@ -64,7 +64,7 @@ function _reset-win10-unattended-vmware() {
     vm=${vm%-vmware}-$(hostname -s) || return
     local dir=~/"Virtual Machines.localized"/$vm.vmwarevm
     local vmx=$dir/$vm.vmx fixed=$dir/$vm.vmdk removable=$dir/Unattended-$vm.iso
-    cd ~/Code/lk/win10-unattended && Scripts/CreateIso.sh \
+    cd ~/Code/lk/win10-unattended && lk_tty_run_detail Scripts/CreateIso.sh \
         --iso "$removable" \
         --no-wifi \
         --no-office \

@@ -66,7 +66,7 @@ register_docset HTML HTML '' 142
 register_docset HTTP HTTP '' 24
 register_docset JavaScript JavaScript '' 144
 register_docset jQuery jQuery 3.7.1
-register_docset Lua_5.1 'Lua 5.1' '' 4
+register_docset Lua_5.1 'Lua 5.1' '' 0
 register_docset Markdown Markdown '' 2
 register_docset MongoDB MongoDB 8.0.13
 register_docset MySQL MySQL 8.4
@@ -74,10 +74,10 @@ register_docset Nginx Nginx 1.29.0
 register_docset NodeJS NodeJS 24.6.0
 register_docset Perl Perl 5.26.1
 register_docset PHP PHP '' 145
-register_docset PHPUnit PHPUnit 12.3
+register_docset PHPUnit PHPUnit 12.2
 register_docset PostgreSQL PostgreSQL 17.6
 register_docset Python_3 'Python 3' 3.13.7
-register_docset SQLite SQLite 3.50.4
+register_docset SQLite SQLite 3.50.3
 register_docset TypeScript TypeScript 5.9
 register_docset Vim Vim 9.0
-register_docset WordPress WordPress '' 132
+register_docset WordPress WordPress '' 131

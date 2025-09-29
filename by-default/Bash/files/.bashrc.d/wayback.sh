@@ -1,5 +1,26 @@
 #!/usr/bin/env bash
 
+# wayback-curl <curl_arg>...
+#
+# Throttle requests to archive.org so they aren't blocked when 15 per minute is
+# exceeded.
+function wayback-curl() {
+    local file=${TMPDIR:-/tmp} last now gap status
+    # shellcheck disable=SC2128
+    file=${file%/}/${FUNCNAME}_last
+    [[ ! -s $file ]] || last=$(<"$file") || return
+    now=$(lk_timestamp) &&
+        printf '%d\n' "$now" >"$file" || return
+    [[ -z ${last-} ]] || (((gap = now - last) > 5)) ||
+        lk_tty_run_detail sleep $((6 - gap)) || return
+    while :; do
+        status=0
+        curl "$@" || status=$?
+        ((status == 7)) || return $status
+        lk_tty_run_detail sleep 60
+    done
+}
+
 # wayback-search [options] <url> [<url-pattern> [<mimetype-pattern> [<from> [<to>]]]]
 #
 # Options:
@@ -60,7 +81,7 @@ Usage: $FUNCNAME [-x|-h|-d] [-l <n>|-p|-r|-k <key>] [-t] [-v] <url> [<url-patter
         query+=${limit:+"&limit=$((limit))"} &&
         query+=${resume:+"&showResumeKey=true"} &&
         query+=${resume_key:+"&resumeKey=$resume_key"} || return
-    url="http://web.archive.org/cdx/search/cdx?$query"
+    url="https://web.archive.org/cdx/search/cdx?$query"
     if [[ -n ${paging-} ]]; then
         local dir=${TMPDIR:-/tmp} pages p f i=0 downloaded=0 files
         # shellcheck disable=SC2128
@@ -70,7 +91,7 @@ Usage: $FUNCNAME [-x|-h|-d] [-l <n>|-p|-r|-k <key>] [-t] [-v] <url> [<url-patter
         if [[ -f $pages_file ]]; then
             pages=$(<"$pages_file") || return
         else
-            pages=$(curl -fsS "$url&showNumPages=true") &&
+            pages=$(wayback-curl -fsS --retry 9 "$url&showNumPages=true") &&
                 printf '%d\n' "$pages" >"$pages_file" ||
                 lk_warn "error getting page count" || return
         fi
@@ -93,7 +114,7 @@ Usage: $FUNCNAME [-x|-h|-d] [-l <n>|-p|-r|-k <key>] [-t] [-v] <url> [<url-patter
             ((i++)) || ((!downloaded)) ||
                 lk_tty_detail "Already downloaded:" "$downloaded"
             if [[ ! -s $args_file ]] ||
-                curl -f --rate 14/m --retry 9 --config "$args_file" \
+                wayback-curl -f --rate 14/m --retry 9 --config "$args_file" \
                     --write-out "%output{>>$dir/curl_output}%{exitcode} %{response_code} '%{url}' '%{filename_effective}' %{size_download}b %{speed_download}b/s %{num_retries} %time{%FT%TZ}\\n"; then
                 break
             fi
@@ -109,12 +130,12 @@ Usage: $FUNCNAME [-x|-h|-d] [-l <n>|-p|-r|-k <key>] [-t] [-v] <url> [<url-patter
         cat "${files[@]}"
     else
         lk_tty_print "Requesting" "$url"
-        lk_cache -t 3600 curl -fsS "$url" | awk -v temp="${temp-}" '
+        lk_cache -t 0 wayback-curl -fsS --retry 9 "$url" | awk -v temp="${temp-}" '
 /^[ \t]*$/ { eof = 1; next }
 eof        { if (temp) { print > temp } next }
            { print }'
     fi | if [[ -z ${terse-} ]]; then
-        awk -F'[ ]' '{ print $6, $2, $5, $7, $4, "http://web.archive.org/web/" $2 "/" $3 }'
+        awk -F'[ ]' '{ print $6, $2, $5, $7, $4, "https://web.archive.org/web/" $2 "/" $3 }'
     else
         awk -F'[ ]' '{ print $1, $3, $2, $5, $4, $6, $7 }'
     fi || return
@@ -124,23 +145,28 @@ eof        { if (temp) { print > temp } next }
 
 # wayback-get-versions <url>
 #
-# Output: <digest> <mimetype> <timestamp> <length> <snapshot-url>
+# Output: <digest> <timestamp> <status> <length> <mimetype> <snapshot-url>
 #
-# Upstream responses are cached for an hour.
+# Upstream responses are cached until TMPDIR is emptied.
 function wayback-get-versions() {
     [[ ${1-} =~ ^https?:// ]] || lk_bad_args || return
     local url
     url=$(jq -Rr '@uri' <<<"$1") &&
-        lk_tty_run_detail -3 lk_cache -t 3600 curl -fsS "http://web.archive.org/cdx/search/cdx?url=$url" |
-        awk '$4 != "warc/revisit" && $5 < 300 { if (!seen[$6]++) print $6, $4, $2, $7, "http://web.archive.org/web/" $2 "/" $3 }' |
+        lk_tty_run_detail -3 lk_cache -t 0 wayback-curl -fsS --retry 9 "https://web.archive.org/cdx/search/cdx?url=$url" |
+        awk '$4 != "warc/revisit" && $5 < 300 { if (!seen[$6]++) print $6, $2, $5, $7, $4, "https://web.archive.org/web/" $2 "/" $3 }' |
             sort -k3,3n
 }
 
-# wayback-download-versions <url>
+# wayback-download-versions [<url>]
 #
 # Download every unique version of <url> available from `archive.org`. Files are
 # re-downloaded if they have an invalid digest, otherwise their last modified
 # timestamp is updated via a HEAD request.
+#
+# If no <url> is given, space-delimited `archive.org` data in the format
+# produced by `wayback-get-versions` is read from the standard input.
+#
+# Upstream HEAD responses are cached until TMPDIR is emptied.
 function wayback-download-versions() {
     local digest download ext file modified timestamp url verb
     while read -r digest timestamp url; do
@@ -162,16 +188,31 @@ function wayback-download-versions() {
         fi
         lk_tty_print "$verb:" "$url"
         modified=$(
-            if ((download)); then
-                curl -fsSL -D - -o "$file" "$url"
-                lk_tty_detail "Downloaded:" "$file"
-            else
-                curl -fsSL -I "$url"
-            fi | awk -F': ' '$1 == "x-archive-orig-last-modified" { sub(/\r$/, ""); print $2 }'
+            lk_cache -t 0 _wayback-download-versions "$url" |
+                awk -F': ' '$1 == "x-archive-orig-last-modified" { sub(/\r$/, ""); print $2 }'
         ) || return
         if [[ -n $modified ]]; then
             lk_tty_detail "Last modified upstream:" "$modified"
             touch -d "$modified" "$file" || return
         fi
-    done < <(wayback-get-versions "$@" | awk '{ print $1, $3, $5 }')
+    done < <(
+        if (($#)); then
+            wayback-get-versions "$@"
+        else
+            cat
+        fi | awk '{ print $1, $2, $6 }'
+    )
+}
+
+function _wayback-download-versions() {
+    # shellcheck disable=SC2128
+    local temp_file=.$FUNCNAME.$file
+    if ((download)); then
+        wayback-curl -fsSL --retry 9 -D - -o "$temp_file" "$url" &&
+            mv -f "$temp_file" "$file" &&
+            lk_tty_detail "Downloaded:" "$file" ||
+            lk_pass rm -f -- "$temp_file"
+    else
+        wayback-curl -fsSL --retry 9 -I "$url"
+    fi
 }
