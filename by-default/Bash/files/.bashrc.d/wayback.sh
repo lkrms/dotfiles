@@ -5,17 +5,28 @@
 # Throttle requests to archive.org so they aren't blocked when 15 per minute is
 # exceeded.
 function wayback-curl() {
-    local file=${TMPDIR:-/tmp} last now gap status
-    # shellcheck disable=SC2128
-    file=${file%/}/${FUNCNAME}_last
-    [[ ! -s $file ]] || last=$(<"$file") || return
-    now=$(lk_timestamp) &&
-        printf '%d\n' "$now" >"$file" || return
-    [[ -z ${last-} ]] || (((gap = now - last) > 5)) ||
-        lk_tty_run_detail sleep $((6 - gap)) || return
+    if [[ -z ${WAYBACK_COOKIES-} ]]; then
+        local file=${TMPDIR:-/tmp} last now gap
+        # shellcheck disable=SC2128
+        file=${file%/}/${FUNCNAME}_last
+        [[ ! -s $file ]] || last=$(<"$file") || return
+        now=$(lk_timestamp) &&
+            printf '%d\n' "$now" >"$file" || return
+        [[ -z ${last-} ]] || (((gap = now - last) > 5)) ||
+            lk_tty_run_detail sleep $((6 - gap)) || return
+    fi
+    local status
+    [[ -z ${WAYBACK_COOKIES-} ]] &&
+        set -- --rate 14/m "$@" ||
+        set -- -c "$WAYBACK_COOKIES" "$@"
     while :; do
         status=0
-        curl "$@" || status=$?
+        [[ ! -f ${WAYBACK_COOKIES-} ]] || {
+            set -- -b "$WAYBACK_COOKIES" "$@"
+            # Add `-b` once only
+            local WAYBACK_COOKIES=
+        }
+        lk_tty_run_detail curl "$@" || status=$?
         ((status == 7)) || return $status
         lk_tty_run_detail sleep 60
     done
@@ -114,7 +125,7 @@ Usage: $FUNCNAME [-x|-h|-d] [-l <n>|-p|-r|-k <key>] [-t] [-v] <url> [<url-patter
             ((i++)) || ((!downloaded)) ||
                 lk_tty_detail "Already downloaded:" "$downloaded"
             if [[ ! -s $args_file ]] ||
-                wayback-curl -f --rate 14/m --retry 9 --config "$args_file" \
+                wayback-curl -f --retry 9 --config "$args_file" \
                     --write-out "%output{>>$dir/curl_output}%{exitcode} %{response_code} '%{url}' '%{filename_effective}' %{size_download}b %{speed_download}b/s %{num_retries} %time{%FT%TZ}\\n"; then
                 break
             fi
