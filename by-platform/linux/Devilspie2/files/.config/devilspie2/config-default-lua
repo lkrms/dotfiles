@@ -376,13 +376,22 @@ _criteria.undecorated = {
     function(state)
         local undecorated = {
             "app.clockify.me__tracker",
-            "caprine",
             "linacreative.harvestapp.com__time",
             "spotify",
             "todoist",
         }
         return check_criteria({class_instance_name = undecorated}, state) or
             (tablex.find(undecorated, get_process_name()) ~= nil)
+    end,
+}
+
+_criteria.decorated = {
+    function(state)
+        local decorated = {
+            "caprine",
+        }
+        return check_criteria({class_instance_name = decorated}, state) or
+            (tablex.find(decorated, get_process_name()) ~= nil)
     end,
 }
 
@@ -418,6 +427,16 @@ rules = {
         },
         actions = {
             decorate_off,
+        },
+    },
+    {
+        criteria = {
+            operator.AND,
+            {event = "open"},
+            _criteria.decorated,
+        },
+        actions = {
+            decorate_on,
         },
     },
     {
