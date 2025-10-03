@@ -114,7 +114,7 @@ Usage: $FUNCNAME [-x|-h|-d] [-l <n>|-p|-r|-k <key>] [-t] [-v] <url> [<url-patter
             # each invocation
             for ((p = 0; p < pages; p++)); do
                 f=$dir/page$p
-                if [[ -f $f ]]; then
+                if [[ -f $f ]] || [[ -f $f.gz ]]; then
                     ((i)) || ((++downloaded))
                 else
                     printf '%s = "%s"\n' \
@@ -138,7 +138,13 @@ Usage: $FUNCNAME [-x|-h|-d] [-l <n>|-p|-r|-k <key>] [-t] [-v] <url> [<url-patter
             lk_tty_print "Retrying" "$url"
         done
         lk_mapfile files < <(lk_args "$dir"/page* | sort -V)
-        cat "${files[@]}"
+        for f in "${files[@]}"; do
+            if [[ $f == *.gz ]]; then
+                zcat "$f"
+            else
+                cat "$f"
+            fi
+        done
     else
         lk_tty_print "Requesting" "$url"
         lk_cache -t 0 wayback-curl -fsS --retry 9 "$url" | awk -v temp="${temp-}" '
