@@ -154,7 +154,13 @@ for app in ${apps+"${apps[@]}"}; do
         target=$df_target/$rel_path
         if [[ -n ${filter:+1} ]] &&
             ! df_filter=1 "$filter" "$path" "$target" "${local_app_dirs[@]}"; then
-            echo " -> Symbolic link skipped by filter: $target -> $path"
+            if [[ $path -ef $target ]] &&
+                { [[ -e $path.hardlink ]] || [[ -L $target ]]; }; then
+                echo " -> Removing link skipped by filter: $target -> $path"
+                maybe ${sudo+sudo} rm -- "$target"
+            else
+                echo " -> Symbolic link skipped by filter: $target -> $path"
+            fi
             continue
         fi
         link_file ${sudo+--sudo} "$path" "$target"
