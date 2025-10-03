@@ -1,0 +1,81 @@
+{
+    "autoReconnect": false,
+    "afterFillSorting": "sortByMatchingCredentials",
+    "afterFillSortingTotp": "sortByRelevantEntry",
+    "autoCompleteUsernames": true,
+    "autoFillAndSend": true,
+    "autoFillSingleEntry": false,
+    "autoFillSingleTotp": false,
+    "autoRetrieveCredentials": true,
+    "autoSubmit": false,
+    "bannerPosition": 1,
+    "checkUpdateKeePassXC": 0,
+    "clearCredentialsTimeout": 10,
+    "colorTheme": "system",
+    "credentialSorting": "sortByGroupAndTitle",
+    "debugLogging": false,
+    "defaultGroup": "",
+    "defaultPasskeyGroup": "",
+    "defaultGroupAlwaysAsk": false,
+    "downloadFaviconAfterSave": false,
+    "passkeys": false,
+    "passkeysFallback": true,
+    "redirectAllowance": 1,
+    "saveDomainOnly": true,
+    "showGettingStartedGuideAlert": true,
+    "showGroupNameInAutocomplete": true,
+    "showLoginFormIcon": true,
+    "showLoginNotifications": false,
+    "showNotifications": true,
+    "showOTPIcon": true,
+    "showTroubleshootingGuideAlert": true,
+    "useCompactMode": false,
+    "useMonochromeToolbarIcon": false,
+    "useObserver": true,
+    "usePredefinedSites": true,
+    "usePasswordGeneratorIcons": false,
+    "sitePreferences": [
+        {
+            "url": "https://www.icloud.com/",
+            "ignore": "ignoreNothing",
+            "allowIframes": true
+        }
+    ],
+    "defined-custom-fields": {
+        "https://ibanking.stgeorge.com.au": {
+            "username": [
+                "/html/body/form/div[2]/div/div/div/section/div[2]/fieldset/ol/li/input",
+                "INPUT text userId "
+            ],
+            "password": [
+                "/html/body/form/div[2]/div/div/div/section/div[2]/fieldset/ol/li[6]/input",
+                "INPUT password password "
+            ],
+            "fields": [
+                [
+                    "/html/body/form/div[2]/div/div/div/section/div[2]/fieldset/ol/li[3]/input",
+                    "INPUT password securityNumber "
+                ]
+            ]
+        },
+        "https://my.maxo.com.au": {
+            "username": [
+                "/html/body/div[14]/div/div/div/form/div/div[3]/input",
+                "INPUT text txtorganisationusername My Login"
+            ],
+            "password": [
+                "/html/body/div[14]/div/div/div/form/div[2]/div/input",
+                "INPUT password txtpassword Password"
+            ],
+            "fields": [
+                [
+                    "/html/body/div[14]/div/div/div/form/div/div/input",
+                    "INPUT text txtusername Organisation"
+                ]
+            ]
+        }
+    },
+    "autoFillRelevantCredential": false,
+    "defaultPasswordManager": true,
+    "saveDomainOnlyNewCreds": true
+}
