@@ -353,6 +353,8 @@ xfconf-set /misc-show-delete-action bool true
 
 channel=thunar-volman
 ! reset-all || xfconf-reset /
+xfconf-set /automouse/enabled bool true
+xfconf-set /automouse/command string "autorandr --change --force"
 
 maybe dconf load / <<"EOF"
 [org/gnome/desktop/interface]

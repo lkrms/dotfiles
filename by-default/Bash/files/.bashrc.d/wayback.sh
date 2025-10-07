@@ -1,23 +1,22 @@
 #!/usr/bin/env bash
 
-# wayback-curl <curl_arg>...
+# wayback-curl [--after <gap>] <curl_arg>...
 #
-# Throttle requests to archive.org so they aren't blocked when 15 per minute is
+# Throttle requests to archive.org so they aren't blocked when rate limits are
 # exceeded.
 function wayback-curl() {
-    if [[ -z ${WAYBACK_COOKIES-} ]]; then
-        local file=${TMPDIR:-/tmp} last now gap
-        # shellcheck disable=SC2128
-        file=${file%/}/${FUNCNAME}_last
-        [[ ! -s $file ]] || last=$(<"$file") || return
-        now=$(lk_timestamp) &&
-            printf '%d\n' "$now" >"$file" || return
-        [[ -z ${last-} ]] || (((gap = now - last) > 5)) ||
-            lk_tty_run_detail sleep $((6 - gap)) || return
-    fi
+    local min_gap=6
+    [[ ${1-} != --after ]] || { min_gap=${2-} && shift 2 || return; }
+    local file=${TMPDIR:-/tmp} last now gap
+    # shellcheck disable=SC2128
+    file=${file%/}/${FUNCNAME}_last
+    [[ ! -s $file ]] || last=$(<"$file") || return
+    now=$(lk_timestamp) &&
+        printf '%d\n' "$now" >"$file" || return
+    [[ -z ${last-} ]] || (((gap = now - last) > min_gap - 1)) ||
+        lk_tty_run_detail sleep $((min_gap - gap)) || return
     local status
-    [[ -z ${WAYBACK_COOKIES-} ]] &&
-        set -- --rate 14/m "$@" ||
+    [[ -z ${WAYBACK_COOKIES-} ]] ||
         set -- -c "$WAYBACK_COOKIES" "$@"
     while :; do
         status=0
@@ -98,7 +97,7 @@ Usage: $FUNCNAME [-x|-h|-d] [-l <n>|-p|-r|-k <key>] [-t] [-v] <url> [<url-patter
         # shellcheck disable=SC2128
         dir=${dir%/}/${FUNCNAME}_${EUID}_$(lk_hash "$url") &&
             install -d -m 0700 "$dir" || return
-        local pages_file=$dir/num_pages args_file=$dir/curl_config
+        local pages_file=$dir/num_pages args_file=$dir/curl_config audit_file
         if [[ -f $pages_file ]]; then
             pages=$(<"$pages_file") || return
         else
@@ -108,27 +107,36 @@ Usage: $FUNCNAME [-x|-h|-d] [-l <n>|-p|-r|-k <key>] [-t] [-v] <url> [<url-patter
         fi
         lk_tty_print "Requesting" "$url"
         lk_tty_detail "Pages:" "$pages"
+        lk_mktemp_with audit_file wayback-audit-output "$dir/curl_output" "$pages" || return
+        local status=0
         while :; do
-            # curl's --skip-existing option applies --rate limits to skipped and
-            # unskipped downloads alike, so a list of missing URLs is needed for
-            # each invocation
-            for ((p = 0; p < pages; p++)); do
+            # curl's --rate and --parallel options can't be used together, and
+            # the CDX API is too slow not to use --parallel, so limit requests
+            # to 60/min by sending them in batches of 60 and sleeping between
+            # batches as needed
+            for ((p = 0, q = 0; p < pages && q < 60; p++)); do
                 f=$dir/page$p
-                if [[ -f $f ]] || [[ -f $f.gz ]]; then
+                if awk -v p="$p" '$1 == p { exit ($2 == "-" ? 1 : 0) }' "$audit_file" &&
+                    { [[ -f $f ]] || [[ -f $f.gz ]]; }; then
                     ((i)) || ((++downloaded))
                 else
                     printf '%s = "%s"\n' \
                         url "$url&page=$p" \
                         output "$f"
+                    ((++q))
                 fi
             done >"$args_file" || return
-            ((i++)) || ((!downloaded)) ||
-                lk_tty_detail "Already downloaded:" "$downloaded"
-            if [[ ! -s $args_file ]] ||
-                wayback-curl -f --retry 9 --config "$args_file" \
-                    --write-out "%output{>>$dir/curl_output}%{exitcode} %{response_code} '%{url}' '%{filename_effective}' %{size_download}b %{speed_download}b/s %{num_retries} %time{%FT%TZ}\\n"; then
-                break
-            fi
+            ((i)) || ((!downloaded)) ||
+                lk_tty_detail "Already downloaded:" "$downloaded/$p"
+            # Break out of the loop if there is nothing to download
+            [[ -s $args_file ]] || break
+            wayback-curl --after $((i ? 60 : 0)) -f --parallel --retry 1 --retry-connrefused --retry-delay 60 --config "$args_file" \
+                --write-out "%output{>>$dir/curl_output}%{exitcode} %{response_code} '%{url}' '%{filename_effective}' %{size_download}b %{speed_download}b/s %{num_retries} %time{%FT%TZ}\\n" || status=$?
+            ((i++))
+            # Go to the next batch unless this was the last one
+            ((p == pages)) || continue
+            # Break out of the loop if there were no errors
+            ((status)) || break
             downloaded=$(lk_args "$dir"/page* | wc -l) &&
                 ((downloaded < pages)) ||
                 lk_warn "curl failed but no pages are missing" || return
@@ -136,6 +144,7 @@ Usage: $FUNCNAME [-x|-h|-d] [-l <n>|-p|-r|-k <key>] [-t] [-v] <url> [<url-patter
             lk_tty_detail "Trying again in" "60 seconds"
             lk_tty_pause "Press return to retry immediately . . . " -t 60
             lk_tty_print "Retrying" "$url"
+            wayback-audit-output "$dir/curl_output" "$pages" >"$audit_file" || return
         done
         lk_mapfile files < <(lk_args "$dir"/page* | sort -V)
         for f in "${files[@]}"; do
@@ -158,6 +167,36 @@ eof        { if (temp) { print > temp } next }
     fi || return
     [[ ! -s ${temp-} ]] ||
         lk_tty_detail "Resume key:" "$(<"$temp")"
+}
+
+# wayback-audit-output <output_file> <pages>
+function wayback-audit-output() {
+    [[ ! -f $1 ]] || awk -v pages="$2" '{
+  if (match($4, /\/page[0-9]+'\''$/)) {
+    page = substr($4, RSTART + 5, RLENGTH - 6)
+  } else {
+    next
+  }
+}
+
+$1 == 0 && $2 == 200 {
+  size[page] = $5
+  next
+}
+
+{
+  delete size[page]
+}
+
+END {
+  for (p = 0; p < pages; p++) {
+    if (size[p]) {
+      print p, size[p]
+    } else {
+      print p, "-"
+    }
+  }
+}' "$1"
 }
 
 # wayback-get-versions <url>

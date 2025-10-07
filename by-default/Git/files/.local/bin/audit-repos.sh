@@ -37,7 +37,7 @@ function uhoh() {
 # ohno <message> [<value>]
 function ohno() {
     ((++notices))
-    printf "%s✘ %s%s%s${2+" %s"}\\n" \
+    printf "%s✗ %s%s%s${2+" %s"}\\n" \
         "$red" "$bold" "$1" "$unbold$default" \
         ${2+"$(val "$2")"}
 }
@@ -61,7 +61,7 @@ function val() {
 function okay() {
     ((!notices)) || echo
     notices=0
-    printf '%s✔ %s%s%s\n\n' \
+    printf '%s✓ %s%s%s\n\n' \
         "$green" "$bold" "$1" "$unbold$default"
 }
 
@@ -232,8 +232,8 @@ trap 'rm -f ${files+"${files[@]}"}' EXIT
     done
     okay 'repository checks complete'
 
-    good=("$green" "✔" "$default")
-    bad=("$red" "✘" "$default")
+    good=("$green" "✓" "$default")
+    bad=("$red" "✗" "$default")
     actionable=("$yellow" "✱" "$default")
 
     function headings() {
