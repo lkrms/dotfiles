@@ -184,7 +184,11 @@ function replace_file() {
         echo " -> Replacing: $file"
     else
         echo " -> Creating: $file"
-        maybe ${sudo+sudo}${sudo-command -p} install -Dm 0644 -- /dev/null "$file" || die "error creating file: $dir"
+        local dir
+        dir=$(dirname "$file") &&
+            [[ -d $dir ]] ||
+            maybe ${sudo+sudo}${sudo-command -p} install -d -- "$dir" || die "error creating parent directory: $file"
+        maybe ${sudo+sudo}${sudo-command -p} install -m 0644 -- /dev/null "$file" || die "error creating file: $file"
     fi
 
     maybe ${sudo+sudo} cp -- "$df_temp" "$file" || die "error replacing file: $file"
