@@ -42,6 +42,7 @@ function set_local_app_roots() {
                 hostname -s; } | uniq
         fi
     )) || die "error getting hostname"
+    IFS=$' \t\n'
     local_app_roots=(
         "${host[@]/#/$df_root/private/by-host/}"
         "${host[@]/#/$df_root/by-host/}"
@@ -70,7 +71,7 @@ function set_local_argv() {
     [[ -n ${local_app_roots+1} ]] || set_local_app_roots
     local IFS=$'\n' app=${df_argv##*/}
     df_local_argv=($(printf '%s\n' "${df_argv[@]}" |
-        grep -Ff <(printf '%s\n' "${local_app_roots[@]/%//$app}")))
+        grep -Ff <(IFS=$' \t\n' && printf '%s\n' "${local_app_roots[@]/%//$app}")))
 }
 
 # find_first_by_app <appname> <path>
@@ -183,7 +184,11 @@ function replace_file() {
         echo " -> Replacing: $file"
     else
         echo " -> Creating: $file"
-        maybe ${sudo+sudo}${sudo-command -p} install -Dm 0644 -- /dev/null "$file" || die "error creating file: $dir"
+        local dir
+        dir=$(dirname "$file") &&
+            [[ -d $dir ]] ||
+            maybe ${sudo+sudo}${sudo-command -p} install -d -- "$dir" || die "error creating parent directory: $file"
+        maybe ${sudo+sudo}${sudo-command -p} install -m 0644 -- /dev/null "$file" || die "error creating file: $file"
     fi
 
     maybe ${sudo+sudo} cp -- "$df_temp" "$file" || die "error replacing file: $file"
