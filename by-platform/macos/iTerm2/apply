@@ -46,7 +46,7 @@ while PlistBuddy "Print \":New Bookmarks:$((++i))\"" &>/dev/null; do
         "$entry:Custom Directory" string Advanced \
         "$entry:Flashing Bell" bool true \
         "$entry:Left Option Key Changeable" bool false \
-        "$entry:Mouse Reporting allow clicks and drags" bool true \
+        "$entry:Mouse Reporting allow clicks and drags" bool false \
         "$entry:Normal Font" string "Menlo-Regular 12" \
         "$entry:Option Key Sends" integer 2 \
         "$entry:Place Prompt at First Column" bool false \
@@ -56,5 +56,6 @@ while PlistBuddy "Print \":New Bookmarks:$((++i))\"" &>/dev/null; do
         "$entry:Scrollback Lines" integer 0 \
         "$entry:Show Mark Indicators" bool false \
         "$entry:Silence Bell" bool true \
-        "$entry:Unlimited Scrollback" bool true
+        "$entry:Unlimited Scrollback" bool true \
+        "$entry:Use Separate Colors for Light and Dark Mode" bool false
 done

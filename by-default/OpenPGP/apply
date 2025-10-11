@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+maybe chmod -vv 0700 ~/.gnupg

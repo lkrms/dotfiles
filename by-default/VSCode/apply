@@ -68,7 +68,12 @@ while true; do
     code --list-extensions | to_lower | sort -u >"$installed"
     extension=$(comm -23 "$install" "$installed" | head -n1)
     [[ -n ${extension:+1} ]] || break
+    # Mitigate "FATAL ERROR: v8::ToLocalChecked Empty MaybeLocal"
+    [[ -n ${df_dryrun:+1} ]] ||
+        sleep 2
     maybe code --install-extension "$extension"
+    [[ -n ${df_dryrun:+1} ]] ||
+        sleep 2
     grep -Fxv "$extension" "$install" >"$installed" || true
     cp "$installed" "$install"
 done

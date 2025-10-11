@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+shopt -s extglob
+
 function _reset-win10-unattended() {
     local images=~/.local/share/libvirt/images vm=${FUNCNAME[1]#reset-} install=$1
     local fixed=$images/$vm.qcow2 removable=$images/Unattended-$vm.iso
