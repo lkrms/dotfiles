@@ -42,6 +42,7 @@ function set_local_app_roots() {
                 hostname -s; } | uniq
         fi
     )) || die "error getting hostname"
+    IFS=$' \t\n'
     local_app_roots=(
         "${host[@]/#/$df_root/private/by-host/}"
         "${host[@]/#/$df_root/by-host/}"
@@ -70,7 +71,7 @@ function set_local_argv() {
     [[ -n ${local_app_roots+1} ]] || set_local_app_roots
     local IFS=$'\n' app=${df_argv##*/}
     df_local_argv=($(printf '%s\n' "${df_argv[@]}" |
-        grep -Ff <(printf '%s\n' "${local_app_roots[@]/%//$app}")))
+        grep -Ff <(IFS=$' \t\n' && printf '%s\n' "${local_app_roots[@]/%//$app}")))
 }
 
 # find_first_by_app <appname> <path>
