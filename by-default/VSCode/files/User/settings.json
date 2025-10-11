@@ -115,7 +115,7 @@
         "space_before_conditional": true,
         "wrap_line_length": 80
     },
-    "chat.commandCenter.enabled": false,
+    "chat.disableAIFeatures": true,
     "continue.enableTabAutocomplete": false,
     "continue.showInlineTip": false,
     "css.format.newlineBetweenRules": false,
