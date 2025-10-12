@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+workgroup=LINAC
+
+plist=/Library/Preferences/SystemConfiguration/com.apple.smb.server
+
+if ! scutil --get HostName &>/dev/null &&
+    h=$(hostname -s | grep .); then
+    echo " -> Setting host name: $h"
+    for pref in ComputerName LocalHostName HostName; do
+        maybe sudo scutil --set "$pref" "$h"
+    done
+    maybe sudo defaults write "$plist" NetBIOSName "$h"
+fi
+
+if ! wg=$(defaults read "$plist" Workgroup 2>/dev/null) ||
+    [[ $wg != "$workgroup" ]]; then
+    echo " -> Setting workgroup: $workgroup"
+    maybe sudo defaults write "$plist" Workgroup "$workgroup"
+fi
