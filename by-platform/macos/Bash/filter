@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+[[ $1 != */macos-aliases.sh ]] || type -P gdate gfind >/dev/null

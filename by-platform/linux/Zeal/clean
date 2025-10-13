@@ -2,6 +2,8 @@
 
 . "$df_root/bin/lib/bash-helpers.sh" || exit
 
+[[ -d ~/.local/share/Zeal/Zeal/docsets ]] || exit 0
+
 eval "docsets=($(jq -r --slurp '.[] | [.name, .title, .version // "", .revision // ""] | @sh' \
     ~/.local/share/Zeal/Zeal/docsets/*.docset/*.json))"
 

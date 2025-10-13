@@ -4,19 +4,37 @@
 
 workgroup=LINAC
 
-plist=/Library/Preferences/SystemConfiguration/com.apple.smb.server
-
+# Set host name and workgroup if not already set
 if ! scutil --get HostName &>/dev/null &&
     h=$(hostname -s | grep .); then
     echo " -> Setting host name: $h"
     for pref in ComputerName LocalHostName HostName; do
         maybe sudo scutil --set "$pref" "$h"
     done
+    plist=/Library/Preferences/SystemConfiguration/com.apple.smb.server
     maybe sudo defaults write "$plist" NetBIOSName "$h"
+    if ! wg=$(defaults read "$plist" Workgroup 2>/dev/null) ||
+        [[ $wg != "$workgroup" ]]; then
+        echo " -> Setting workgroup: $workgroup"
+        maybe sudo defaults write "$plist" Workgroup "$workgroup"
+    fi
 fi
 
-if ! wg=$(defaults read "$plist" Workgroup 2>/dev/null) ||
-    [[ $wg != "$workgroup" ]]; then
-    echo " -> Setting workgroup: $workgroup"
-    maybe sudo defaults write "$plist" Workgroup "$workgroup"
-fi
+# Improve behaviour
+maybe defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
+maybe defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
+
+# Improve performance
+maybe defaults write com.apple.finder DisableAllAnimations -bool true
+
+# Configure Finder
+maybe defaults write com.apple.finder FXDefaultSearchScope -string SCcf
+maybe defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
+maybe defaults write com.apple.finder FXPreferredViewStyle -string clmv
+maybe defaults write com.apple.finder _FXSortFoldersFirst -bool true
+maybe defaults write com.apple.finder _FXSortFoldersFirstOnDesktop -bool true
+maybe defaults write com.apple.finder NewWindowTarget -string PfHm
+maybe defaults delete com.apple.finder NewWindowTargetPath 2>/dev/null || true
+maybe defaults write com.apple.finder ShowPathbar -bool true
+maybe defaults write com.apple.finder ShowRecentTags -bool false
+maybe defaults write com.apple.finder ShowStatusBar -bool true
