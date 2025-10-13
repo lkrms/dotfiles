@@ -2,4 +2,4 @@
 
 . "$df_root/bin/lib/bash-helpers.sh" || exit
 
-[[ $1 != *-only-twemoji-* ]]
+[[ $1 != *-only-noto-* ]]
