@@ -99,9 +99,16 @@ undim=$'\E[22m'
 clear=$'\E[2J\E[H'
 private_branch_regex='(^|[^[:alnum:]_])private([^[:alnum:]_]|$)'
 
+find_in=(-L ~/.dotfiles!(?) ~/Code/!(3rdparty|vendor))
 offline=0
 ignore_fetch_errors=1
-[[ ${1-} != --offline ]] || offline=1
+
+[[ ${1-} != --offline ]] || {
+    offline=1
+    shift
+}
+
+((!$#)) || find_in=("$@")
 
 repos=()
 files=()
@@ -134,7 +141,7 @@ trap 'rm -f ${files+"${files[@]}"}' EXIT
             { ((!offline)) || exit 0; } &&
             { git fetch --all --prune --tags || exit $((1 + $?)); }) >"${files[i]}" 2>&1 &
         pids[i]=$!
-    done < <(find -L ~/.dotfiles!(?) ~/Code/!(3rdparty|vendor) \
+    done < <(find "${find_in[@]}" \
         -type d -exec test -d '{}/.git' \; -prune \
         ! -exec test -f '{}/.git/skip-audit' \; \
         -print0 | sort -z)
