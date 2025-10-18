@@ -78,10 +78,6 @@ function git-changelog-next() {
         git-changelog "${latest}..HEAD"
 }
 
-function http-toolkit-enable() {
-    eval "$(curl -sS localhost:8001/setup)"
-}
-
 function php-tokenize() {
     ~/Code/lk/pretty-php/scripts/parse.php --tokenize-for-comparison --dump "$@"
 }
