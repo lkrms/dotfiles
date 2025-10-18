@@ -35,7 +35,7 @@ function git() {
 }
 
 by_app=0
-offline=0
+fetch=0
 all_apps=1
 while [[ ${1-} == --* ]]; do
     case "$1" in
@@ -45,8 +45,8 @@ while [[ ${1-} == --* ]]; do
     --reset)
         export df_reset=1
         ;;
-    --offline)
-        offline=1
+    --fetch)
+        fetch=1
         ;;
     --by-app)
         by_app=1
@@ -55,7 +55,8 @@ while [[ ${1-} == --* ]]; do
     shift
 done
 
-if ((!offline)); then
+if ((fetch)); then
+    echo "==> Starting 'git fetch' in the background"
     git fetch --prune --tags --no-auto-maintenance &>/dev/null </dev/null &
     git_pid=$!
 fi
@@ -172,7 +173,7 @@ done
     echo
 }
 
-if ((!offline)); then
+if ((fetch)); then
     echo "==> Waiting for 'git fetch' to finish"
     if wait "$git_pid"; then
         if git merge-base --is-ancestor HEAD @{upstream}; then
