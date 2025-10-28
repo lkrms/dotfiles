@@ -78,7 +78,6 @@ standard.vscode-standard
 
 ## Shell/Bash
 
-foxundermoon.shell-format
 mads-hartmann.bash-ide-vscode
 
 ## SQL

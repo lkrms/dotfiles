@@ -3,7 +3,7 @@
 . "$df_root/bin/lib/bash-helpers.sh" || exit
 
 with_each files/User/keybindings.json \
-    replace_file '{}' jq_safe --indent 4 'sort_by((.command | sub("^-"; "")), .key)'
+    replace_file '{}' jq_safe --indent 4 '[.[] | {"key": null, "command": null, "when": null, "args": null} + . | [to_entries[] | select(.value != null)] | from_entries] | sort_by((.command | sub("^-"; "")), .key)'
 with_each files/User/settings.json \
     replace_file '{}' jq_safe --indent 4 'to_entries | sort_by(.key | ascii_downcase) | from_entries'
 with_each files/User/tasks.json \

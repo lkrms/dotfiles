@@ -42,8 +42,8 @@
         "command": "bracketeer.swapQuotes"
     },
     {
-        "command": "breadcrumbs.toggle",
-        "key": "ctrl+alt+b"
+        "key": "ctrl+alt+b",
+        "command": "breadcrumbs.toggle"
     },
     {
         "key": "ctrl+i",
@@ -60,8 +60,8 @@
         "when": "!terminalFocus"
     },
     {
-        "command": "-editor.action.addCommentLine",
         "key": "ctrl+k ctrl+c",
+        "command": "-editor.action.addCommentLine",
         "when": "editorTextFocus && !editorReadonly"
     },
     {
@@ -75,23 +75,23 @@
         "when": "editorTextFocus && !editorReadonly"
     },
     {
-        "command": "-editor.action.copyLinesDownAction",
         "key": "ctrl+shift+alt+down",
+        "command": "-editor.action.copyLinesDownAction",
         "when": "editorTextFocus && !editorReadonly"
     },
     {
-        "command": "editor.action.copyLinesDownAction",
         "key": "shift+alt+down",
+        "command": "editor.action.copyLinesDownAction",
         "when": "editorTextFocus && !editorReadonly"
     },
     {
-        "command": "-editor.action.copyLinesUpAction",
         "key": "ctrl+shift+alt+up",
+        "command": "-editor.action.copyLinesUpAction",
         "when": "editorTextFocus && !editorReadonly"
     },
     {
-        "command": "editor.action.copyLinesUpAction",
         "key": "shift+alt+up",
+        "command": "editor.action.copyLinesUpAction",
         "when": "editorTextFocus && !editorReadonly"
     },
     {
@@ -125,23 +125,23 @@
         "when": "editorTextFocus && !textCompareEditorActive"
     },
     {
+        "key": "ctrl+shift+i",
         "command": "-editor.action.formatDocument",
-        "key": "ctrl+shift+i",
         "when": "editorHasDocumentFormattingProvider && editorTextFocus && !editorReadonly && !inCompositeEditor"
     },
     {
-        "command": "editor.action.formatDocument",
         "key": "shift+alt+f",
+        "command": "editor.action.formatDocument",
         "when": "editorHasDocumentFormattingProvider && editorTextFocus && !editorReadonly && !inCompositeEditor"
     },
     {
-        "command": "-editor.action.formatDocument.none",
         "key": "ctrl+shift+i",
+        "command": "-editor.action.formatDocument.none",
         "when": "editorTextFocus && !editorHasDocumentFormattingProvider && !editorReadonly"
     },
     {
-        "command": "editor.action.formatDocument.none",
         "key": "shift+alt+f",
+        "command": "editor.action.formatDocument.none",
         "when": "editorTextFocus && !editorHasDocumentFormattingProvider && !editorReadonly"
     },
     {
@@ -150,13 +150,13 @@
         "when": "editorTextFocus && !editorReadonly"
     },
     {
-        "command": "editor.action.insertCursorAtEndOfEachLineSelected",
         "key": "ctrl+shift+l",
+        "command": "editor.action.insertCursorAtEndOfEachLineSelected",
         "when": "editorTextFocus"
     },
     {
-        "command": "-editor.action.insertCursorAtEndOfEachLineSelected",
         "key": "shift+alt+i",
+        "command": "-editor.action.insertCursorAtEndOfEachLineSelected",
         "when": "editorTextFocus"
     },
     {
@@ -205,18 +205,18 @@
         "when": "editorFocus"
     },
     {
-        "command": "-editor.action.removeCommentLine",
         "key": "ctrl+k ctrl+u",
+        "command": "-editor.action.removeCommentLine",
         "when": "editorTextFocus && !editorReadonly"
     },
     {
-        "command": "editor.action.selectHighlights",
         "key": "ctrl+shift+a",
+        "command": "editor.action.selectHighlights",
         "when": "editorFocus"
     },
     {
-        "command": "-editor.action.selectHighlights",
         "key": "ctrl+shift+l",
+        "command": "-editor.action.selectHighlights",
         "when": "editorFocus"
     },
     {
@@ -225,8 +225,8 @@
         "when": "editorTextFocus"
     },
     {
-        "command": "editor.action.sortLinesAscending",
         "key": "f9",
+        "command": "editor.action.sortLinesAscending",
         "when": "editorTextFocus && editorHasSelection && !inDebugMode"
     },
     {
@@ -234,16 +234,16 @@
         "command": "editor.action.transformToCamelcase"
     },
     {
-        "command": "editor.action.transformToLowercase",
-        "key": "ctrl+k ctrl+l"
+        "key": "ctrl+k ctrl+l",
+        "command": "editor.action.transformToLowercase"
     },
     {
-        "command": "editor.action.transformToTitlecase",
-        "key": "ctrl+k ctrl+t"
+        "key": "ctrl+k ctrl+t",
+        "command": "editor.action.transformToTitlecase"
     },
     {
-        "command": "editor.action.transformToUppercase",
-        "key": "ctrl+k ctrl+u"
+        "key": "ctrl+k ctrl+u",
+        "command": "editor.action.transformToUppercase"
     },
     {
         "key": "ctrl+shift+f9",
@@ -279,8 +279,8 @@
         "command": "gitlens.copyShaToClipboard"
     },
     {
-        "command": "gitlens.externalDiff",
-        "key": "ctrl+k ctrl+g"
+        "key": "ctrl+k ctrl+g",
+        "command": "gitlens.externalDiff"
     },
     {
         "key": "ctrl+m",
@@ -288,8 +288,8 @@
         "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^markdown$|^rmd$|^quarto$/"
     },
     {
-        "command": "-markdown.extension.onShiftTabKey",
         "key": "shift+tab",
+        "command": "-markdown.extension.onShiftTabKey",
         "when": "editorTextFocus && markdown.extension.editor.cursor.inList && !editorHasMultipleSelections && !editorReadonly && !editorTabMovesFocus && !hasOtherSuggestions && !hasSnippetCompletions && !inSnippetMode && !markdown.extension.editor.cursor.inFencedCodeBlock && !markdown.extension.editor.cursor.inMathEnv && !suggestWidgetVisible && editorLangId =~ /^markdown$|^rmd$|^quarto$/"
     },
     {
@@ -328,8 +328,8 @@
         "when": "refactorPreview.enabled && refactorPreview.hasCheckedChanges && focusedView == 'refactorPreview'"
     },
     {
-        "command": "refactorPreview.discard",
         "key": "escape",
+        "command": "refactorPreview.discard",
         "when": "refactorPreview.enabled && focusedView == 'refactorPreview'"
     },
     {
@@ -337,13 +337,13 @@
         "command": "-rest-client.history"
     },
     {
-        "command": "-sortLines.sortLines",
         "key": "f9",
+        "command": "-sortLines.sortLines",
         "when": "editorTextFocus"
     },
     {
-        "command": "sortLines.sortLinesNatural",
         "key": "ctrl+k f5",
+        "command": "sortLines.sortLinesNatural",
         "when": "editorTextFocus"
     },
     {
@@ -504,33 +504,33 @@
         "when": "editorTextFocus && isInDiffEditor"
     },
     {
-        "command": "-toggleFindCaseSensitive",
         "key": "alt+c",
+        "command": "-toggleFindCaseSensitive",
         "when": "editorFocus"
     },
     {
-        "command": "toggleFindCaseSensitive",
         "key": "ctrl+alt+c",
+        "command": "toggleFindCaseSensitive",
         "when": "editorFocus"
     },
     {
-        "command": "-toggleFindRegex",
         "key": "alt+r",
+        "command": "-toggleFindRegex",
         "when": "editorFocus"
     },
     {
-        "command": "toggleFindRegex",
         "key": "ctrl+alt+r",
+        "command": "toggleFindRegex",
         "when": "editorFocus"
     },
     {
-        "command": "-toggleFindWholeWord",
         "key": "alt+w",
+        "command": "-toggleFindWholeWord",
         "when": "editorFocus"
     },
     {
-        "command": "toggleFindWholeWord",
         "key": "ctrl+alt+w",
+        "command": "toggleFindWholeWord",
         "when": "editorFocus"
     },
     {
@@ -611,28 +611,28 @@
         "when": "!editorIsOpen && !multipleEditorGroups"
     },
     {
-        "command": "workbench.action.compareEditor.nextChange",
         "key": "alt+down",
+        "command": "workbench.action.compareEditor.nextChange",
         "when": "textCompareEditorVisible"
     },
     {
-        "command": "-workbench.action.compareEditor.nextChange",
         "key": "alt+f5",
+        "command": "-workbench.action.compareEditor.nextChange",
         "when": "textCompareEditorVisible"
     },
     {
-        "command": "workbench.action.compareEditor.previousChange",
         "key": "alt+up",
+        "command": "workbench.action.compareEditor.previousChange",
         "when": "textCompareEditorVisible"
     },
     {
-        "command": "-workbench.action.compareEditor.previousChange",
         "key": "shift+alt+f5",
+        "command": "-workbench.action.compareEditor.previousChange",
         "when": "textCompareEditorVisible"
     },
     {
-        "command": "workbench.action.editor.changeLanguageMode",
-        "key": "ctrl+k ctrl+m"
+        "key": "ctrl+k ctrl+m",
+        "command": "workbench.action.editor.changeLanguageMode"
     },
     {
         "key": "alt+f5",
@@ -655,20 +655,20 @@
         "when": "editorTextFocus && !textCompareEditorActive"
     },
     {
-        "command": "workbench.action.editorLayoutSingle",
-        "key": "shift+alt+1"
+        "key": "shift+alt+1",
+        "command": "workbench.action.editorLayoutSingle"
     },
     {
-        "command": "workbench.action.editorLayoutThreeColumns",
-        "key": "shift+alt+3"
+        "key": "shift+alt+3",
+        "command": "workbench.action.editorLayoutThreeColumns"
     },
     {
-        "command": "workbench.action.editorLayoutTwoByTwoGrid",
-        "key": "shift+alt+4"
+        "key": "shift+alt+4",
+        "command": "workbench.action.editorLayoutTwoByTwoGrid"
     },
     {
-        "command": "workbench.action.editorLayoutTwoColumns",
-        "key": "shift+alt+2"
+        "key": "shift+alt+2",
+        "command": "workbench.action.editorLayoutTwoColumns"
     },
     {
         "key": "shift+alt+meta+p",
@@ -691,13 +691,13 @@
         "command": "-workbench.action.focusRightGroup"
     },
     {
-        "command": "workbench.action.gotoSymbol",
         "key": "ctrl+r",
+        "command": "workbench.action.gotoSymbol",
         "when": "!accessibilityHelpIsShown && !accessibleViewIsShown"
     },
     {
-        "command": "-workbench.action.gotoSymbol",
         "key": "ctrl+shift+o",
+        "command": "-workbench.action.gotoSymbol",
         "when": "!accessibilityHelpIsShown && !accessibleViewIsShown"
     },
     {
@@ -705,36 +705,36 @@
         "command": "workbench.action.inspectContextKeys"
     },
     {
-        "command": "workbench.action.moveActiveEditorGroupLeft",
-        "key": "shift+alt+meta+left"
+        "key": "shift+alt+meta+left",
+        "command": "workbench.action.moveActiveEditorGroupLeft"
     },
     {
-        "command": "workbench.action.moveActiveEditorGroupRight",
-        "key": "shift+alt+meta+right"
+        "key": "shift+alt+meta+right",
+        "command": "workbench.action.moveActiveEditorGroupRight"
     },
     {
-        "command": "-workbench.action.moveEditorToFirstGroup",
-        "key": "shift+alt+1"
+        "key": "shift+alt+1",
+        "command": "-workbench.action.moveEditorToFirstGroup"
     },
     {
-        "command": "-workbench.action.moveEditorToLastGroup",
-        "key": "shift+alt+9"
+        "key": "shift+alt+9",
+        "command": "-workbench.action.moveEditorToLastGroup"
     },
     {
-        "command": "workbench.action.moveEditorToNextGroup",
-        "key": "alt+meta+]"
+        "key": "alt+meta+]",
+        "command": "workbench.action.moveEditorToNextGroup"
     },
     {
-        "command": "-workbench.action.moveEditorToNextGroup",
-        "key": "ctrl+alt+right"
+        "key": "ctrl+alt+right",
+        "command": "-workbench.action.moveEditorToNextGroup"
     },
     {
-        "command": "workbench.action.moveEditorToPreviousGroup",
-        "key": "alt+meta+["
+        "key": "alt+meta+[",
+        "command": "workbench.action.moveEditorToPreviousGroup"
     },
     {
-        "command": "-workbench.action.moveEditorToPreviousGroup",
-        "key": "ctrl+alt+left"
+        "key": "ctrl+alt+left",
+        "command": "-workbench.action.moveEditorToPreviousGroup"
     },
     {
         "key": "ctrl+-",
@@ -747,34 +747,34 @@
         "when": "canNavigateBack"
     },
     {
-        "command": "-workbench.action.openRecent",
-        "key": "ctrl+r"
+        "key": "ctrl+r",
+        "command": "-workbench.action.openRecent"
     },
     {
         "key": "ctrl+shift+,",
         "command": "workbench.action.openSettings2"
     },
     {
-        "command": "workbench.action.reloadWindow",
         "key": "ctrl+meta+f5",
+        "command": "workbench.action.reloadWindow",
         "when": "!isAuxiliaryWindowFocusedContext"
     },
     {
-        "command": "-workbench.action.reloadWindow",
         "key": "ctrl+r",
+        "command": "-workbench.action.reloadWindow",
         "when": "isDevelopment && !isAuxiliaryWindowFocusedContext"
     },
     {
-        "command": "workbench.action.selectTheme",
-        "key": "ctrl+k ctrl+c"
+        "key": "ctrl+k ctrl+c",
+        "command": "workbench.action.selectTheme"
     },
     {
-        "command": "-workbench.action.selectTheme",
-        "key": "ctrl+k ctrl+t"
+        "key": "ctrl+k ctrl+t",
+        "command": "-workbench.action.selectTheme"
     },
     {
-        "command": "-workbench.action.tasks.build",
         "key": "ctrl+shift+b",
+        "command": "-workbench.action.tasks.build",
         "when": "taskCommandsRegistered"
     },
     {
@@ -832,24 +832,24 @@
         "when": "editorPartMaximizedEditorGroup || editorPartMultipleEditorGroups"
     },
     {
-        "command": "-workbench.action.toggleSidebarVisibility",
-        "key": "ctrl+b"
+        "key": "ctrl+b",
+        "command": "-workbench.action.toggleSidebarVisibility"
     },
     {
-        "command": "workbench.action.toggleSidebarVisibility",
-        "key": "ctrl+shift+b"
+        "key": "ctrl+shift+b",
+        "command": "workbench.action.toggleSidebarVisibility"
     },
     {
-        "command": "-workbench.action.zoomIn",
-        "key": "ctrl+="
+        "key": "ctrl+=",
+        "command": "-workbench.action.zoomIn"
     },
     {
-        "command": "-workbench.action.zoomIn",
-        "key": "ctrl+shift+="
+        "key": "ctrl+shift+=",
+        "command": "-workbench.action.zoomIn"
     },
     {
-        "command": "-workbench.action.zoomOut",
-        "key": "ctrl+-"
+        "key": "ctrl+-",
+        "command": "-workbench.action.zoomOut"
     },
     {
         "key": "ctrl+alt+i",

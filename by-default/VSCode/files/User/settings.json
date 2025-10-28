@@ -8,7 +8,7 @@
         "editor.defaultFormatter": "HookyQR.beautify"
     },
     "[dockerfile]": {
-        "editor.defaultFormatter": "foxundermoon.shell-format"
+        "editor.defaultFormatter": "mads-hartmann.bash-ide-vscode"
     },
     "[handlebars]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -76,7 +76,7 @@
         "editor.defaultFormatter": "LoranKloeze.ruby-rubocop-revived"
     },
     "[shellscript]": {
-        "editor.defaultFormatter": "foxundermoon.shell-format"
+        "editor.defaultFormatter": "mads-hartmann.bash-ide-vscode"
     },
     "[snippets]": {
         "editor.defaultFormatter": "vscode.json-language-features"
