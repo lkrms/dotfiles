@@ -36,6 +36,7 @@
         {
             "adjustIndistinguishableColors": "always",
             "bellStyle": "none",
+            "closeOnExit": "graceful",
             "colorScheme": "Elio",
             "font": 
             {

@@ -1,0 +1,43 @@
+{
+  "name": "Measure Tool",
+  "properties": {
+    "DefaultActivationShortcut": {
+      "win": true,
+      "ctrl": true,
+      "alt": false,
+      "shift": true,
+      "code": 77,
+      "key": ""
+    },
+    "ActivationShortcut": {
+      "win": true,
+      "ctrl": true,
+      "alt": false,
+      "shift": true,
+      "code": 77,
+      "key": ""
+    },
+    "ContinuousCapture": {
+      "value": false
+    },
+    "DrawFeetOnCross": {
+      "value": true
+    },
+    "PerColorChannelEdgeDetection": {
+      "value": false
+    },
+    "UnitsOfMeasure": {
+      "value": 0
+    },
+    "PixelTolerance": {
+      "value": 30
+    },
+    "MeasureCrossColor": {
+      "value": "#FF4500"
+    },
+    "DefaultMeasureStyle": {
+      "value": 0
+    }
+  },
+  "version": "1"
+}

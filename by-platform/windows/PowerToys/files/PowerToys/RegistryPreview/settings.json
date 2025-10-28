@@ -1,0 +1,7 @@
+{
+  "name": "RegistryPreview",
+  "properties": {
+    "default_reg_app": false
+  },
+  "version": "1"
+}

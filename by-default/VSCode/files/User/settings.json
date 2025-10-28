@@ -659,12 +659,16 @@
     "terminal.integrated.confirmOnExit": "hasChildProcesses",
     "terminal.integrated.copyOnSelection": true,
     "terminal.integrated.cwd": "${fileDirname}",
+    "terminal.integrated.defaultProfile.windows": "Git Bash",
     "terminal.integrated.detectLocale": "off",
     "terminal.integrated.enablePersistentSessions": false,
     "terminal.integrated.env.linux": {
         "LC_BYOBU": "0"
     },
     "terminal.integrated.env.osx": {
+        "LC_BYOBU": "0"
+    },
+    "terminal.integrated.env.windows": {
         "LC_BYOBU": "0"
     },
     "terminal.integrated.fontSize": 12,
@@ -699,6 +703,23 @@
             ],
             "icon": "terminal-bash",
             "path": "/opt/homebrew/bin/bash"
+        }
+    },
+    "terminal.integrated.profiles.windows": {
+        "Git Bash": {
+            "source": "Git Bash"
+        },
+        "Command Prompt": {
+            "path": [
+                "${env:windir}\\Sysnative\\cmd.exe",
+                "${env:windir}\\System32\\cmd.exe"
+            ],
+            "args": [],
+            "icon": "terminal-cmd"
+        },
+        "PowerShell": {
+            "source": "PowerShell",
+            "icon": "terminal-powershell"
         }
     },
     "terminal.integrated.rightClickBehavior": "nothing",

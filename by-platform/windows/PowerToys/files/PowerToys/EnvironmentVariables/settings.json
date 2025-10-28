@@ -1,0 +1,9 @@
+{
+  "name": "EnvironmentVariables",
+  "properties": {
+    "LaunchAdministrator": {
+      "value": true
+    }
+  },
+  "version": "1.0"
+}

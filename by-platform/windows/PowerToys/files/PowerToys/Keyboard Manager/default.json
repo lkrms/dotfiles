@@ -1,0 +1,223 @@
+{
+  "remapKeys": {
+    "inProcess": []
+  },
+  "remapKeysToText": {
+    "inProcess": []
+  },
+  "remapShortcuts": {
+    "global": [
+      {
+        "originalKeys": "162;164;32",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "91;190"
+      },
+      {
+        "originalKeys": "162;164;160;86",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "91;86"
+      },
+      {
+        "originalKeys": "91;87",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "164;87"
+      },
+      {
+        "originalKeys": "91;162;13",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "91;38"
+      },
+      {
+        "originalKeys": "91;162;37",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "91;37"
+      },
+      {
+        "originalKeys": "91;162;38",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "91;164;38"
+      },
+      {
+        "originalKeys": "91;162;39",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "91;39"
+      },
+      {
+        "originalKeys": "91;162;40",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "91;164;40"
+      },
+      {
+        "originalKeys": "91;162;68",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "162;164;68"
+      },
+      {
+        "originalKeys": "91;162;86",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "162;164;86"
+      },
+      {
+        "originalKeys": "91;162;219",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "91;160;37"
+      },
+      {
+        "originalKeys": "91;162;221",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "91;160;39"
+      }
+    ],
+    "appSpecific": [
+      {
+        "originalKeys": "91;38",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "164;38",
+        "targetApp": "code"
+      },
+      {
+        "originalKeys": "91;40",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "164;40",
+        "targetApp": "code"
+      },
+      {
+        "originalKeys": "91;65",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "164;65",
+        "targetApp": "code"
+      },
+      {
+        "originalKeys": "91;73",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "164;73",
+        "targetApp": "code"
+      },
+      {
+        "originalKeys": "91;80",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "164;80",
+        "targetApp": "code"
+      },
+      {
+        "originalKeys": "91;88",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "164;88",
+        "targetApp": "code"
+      },
+      {
+        "originalKeys": "91;160;38",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "164;160;38",
+        "targetApp": "code"
+      },
+      {
+        "originalKeys": "91;160;40",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "164;160;40",
+        "targetApp": "code"
+      },
+      {
+        "originalKeys": "91;160;49",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "164;160;49",
+        "targetApp": "code"
+      },
+      {
+        "originalKeys": "91;160;50",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "164;160;50",
+        "targetApp": "code"
+      },
+      {
+        "originalKeys": "91;160;51",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "164;160;51",
+        "targetApp": "code"
+      },
+      {
+        "originalKeys": "91;160;52",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "164;160;52",
+        "targetApp": "code"
+      },
+      {
+        "originalKeys": "91;164;37",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "91;164;160;37",
+        "targetApp": "code"
+      },
+      {
+        "originalKeys": "91;164;39",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "91;164;160;39",
+        "targetApp": "code"
+      },
+      {
+        "originalKeys": "91;164;160;37",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "91;162;164;160;37",
+        "targetApp": "code"
+      },
+      {
+        "originalKeys": "91;164;160;39",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "91;162;164;160;39",
+        "targetApp": "code"
+      },
+      {
+        "originalKeys": "91;162;67",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "162;164;67",
+        "targetApp": "code"
+      },
+      {
+        "originalKeys": "91;162;82",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "162;164;82",
+        "targetApp": "code"
+      },
+      {
+        "originalKeys": "91;162;87",
+        "exactMatch": false,
+        "operationType": 0,
+        "newRemapKeys": "162;164;87",
+        "targetApp": "code"
+      }
+    ]
+  },
+  "remapShortcutsToText": {
+    "global": [],
+    "appSpecific": []
+  }
+}

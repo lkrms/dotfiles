@@ -1,0 +1,7 @@
+# Include files backed up by PowerToys, exclude everything else
+/files/PowerToys/*/*
+/files/PowerToys/*.*
+!/files/PowerToys/*/settings.json
+!/files/PowerToys/*/*-settings.json
+!/files/PowerToys/*/default.json
+!/files/PowerToys/settings.json

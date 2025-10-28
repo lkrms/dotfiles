@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+with_each 'files/PowerToys/*/settings.json' replace_file '{}' jq_safe '{"name": null} + .'
+with_each 'files/PowerToys/*/*-settings.json' replace_file '{}' jq_safe
+with_each 'files/PowerToys/*/default.json' replace_file '{}' jq_safe
+with_each files/PowerToys/settings.json replace_file '{}' jq_safe

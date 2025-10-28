@@ -272,7 +272,7 @@
     {
         "key": "ctrl+shift+enter",
         "command": "git.stageSelectedRanges",
-        "when": "editorHasSelection && editorTextFocus"
+        "when": "editorHasSelection && editorTextFocus && !operationInProgress && resourceScheme == 'file'"
     },
     {
         "key": "ctrl+alt+v",
@@ -425,7 +425,7 @@
         }
     },
     {
-        "key": "alt+l",
+        "key": "alt+i",
         "command": "toggle",
         "args": {
             "id": "intelephense.codeLens",
@@ -632,7 +632,8 @@
     },
     {
         "key": "ctrl+k ctrl+m",
-        "command": "workbench.action.editor.changeLanguageMode"
+        "command": "workbench.action.editor.changeLanguageMode",
+        "when": "!notebookEditorFocused"
     },
     {
         "key": "alt+f5",

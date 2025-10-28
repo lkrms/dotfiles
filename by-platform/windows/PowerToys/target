@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+case "$df_platform" in
+linux)
+    exit 1
+    ;;
+macos)
+    exit 1
+    ;;
+windows)
+    dir=$(path_get LocalAppData)/Microsoft
+    printf '%s\n' "$dir"
+    ;;
+*)
+    exit 3
+    ;;
+esac

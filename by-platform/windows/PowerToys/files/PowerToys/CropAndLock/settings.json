@@ -1,0 +1,26 @@
+{
+  "name": "CropAndLock",
+  "properties": {
+    "reparent-hotkey": {
+      "value": {
+        "win": true,
+        "ctrl": true,
+        "alt": false,
+        "shift": true,
+        "code": 82,
+        "key": ""
+      }
+    },
+    "thumbnail-hotkey": {
+      "value": {
+        "win": true,
+        "ctrl": true,
+        "alt": false,
+        "shift": true,
+        "code": 84,
+        "key": ""
+      }
+    }
+  },
+  "version": "0.0.1"
+}
