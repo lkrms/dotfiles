@@ -1,0 +1,103 @@
+{
+  "$schema": "https://aka.ms/winget-packages.schema.2.0.json",
+  "Sources": [
+    {
+      "Packages": [
+        {
+          "PackageIdentifier": "7zip.7zip",
+          "Scope": "machine"
+        },
+        {
+          "PackageIdentifier": "Google.Chrome",
+          "Scope": "machine"
+        },
+        {
+          "PackageIdentifier": "gurnec.HashCheckShellExtension",
+          "Scope": "machine"
+        },
+        {
+          "PackageIdentifier": "Mozilla.Firefox",
+          "Scope": "machine"
+        },
+        {
+          "PackageIdentifier": "Notepad++.Notepad++",
+          "Scope": "machine"
+        },
+        {
+          "PackageIdentifier": "SumatraPDF.SumatraPDF",
+          "Scope": "machine"
+        },
+        {
+          "PackageIdentifier": "VideoLAN.VLC",
+          "Scope": "machine"
+        },
+        {
+          "PackageIdentifier": "dandavison.delta",
+          "Scope": "machine"
+        },
+        {
+          "PackageIdentifier": "Flameshot.Flameshot",
+          "Scope": "machine"
+        },
+        {
+          "PackageIdentifier": "Git.Git",
+          "Scope": "machine"
+        },
+        {
+          "PackageIdentifier": "GnuPG.Gpg4win",
+          "Scope": "machine"
+        },
+        {
+          "PackageIdentifier": "Inkscape.Inkscape",
+          "Scope": "machine"
+        },
+        {
+          "PackageIdentifier": "jqlang.jq",
+          "Scope": "machine"
+        },
+        {
+          "PackageIdentifier": "KeePassXCTeam.KeePassXC",
+          "Scope": "machine"
+        },
+        {
+          "PackageIdentifier": "Microsoft.PowerToys",
+          "Scope": "machine"
+        },
+        {
+          "PackageIdentifier": "Nextcloud.NextcloudDesktop",
+          "Scope": "machine"
+        },
+        {
+          "PackageIdentifier": "OO-Software.ShutUp10",
+          "Scope": "machine"
+        },
+        {
+          "PackageIdentifier": "Espanso.Espanso",
+          "Scope": "user"
+        },
+        {
+          "PackageIdentifier": "Microsoft.VisualStudioCode",
+          "Scope": "machine"
+        },
+        {
+          "PackageIdentifier": "mvdan.shfmt",
+          "Scope": "machine"
+        },
+        {
+          "PackageIdentifier": "SublimeHQ.SublimeMerge",
+          "Scope": "machine"
+        },
+        {
+          "PackageIdentifier": "TheDocumentFoundation.LibreOffice",
+          "Scope": "machine"
+        }
+      ],
+      "SourceDetails": {
+        "Argument": "https://cdn.winget.microsoft.com/cache",
+        "Identifier": "Microsoft.Winget.Source_8wekyb3d8bbwe",
+        "Name": "winget",
+        "Type": "Microsoft.PreIndexed.Package"
+      }
+    }
+  ]
+}

@@ -91,11 +91,10 @@ function reset-win11() { (
     shopt -s nullglob
     #--driver ~/Downloads/Keep/Windows/Drivers/virtio-w11-amd64/{vioscsi,viostor}!(?) \
     #--driver2 ~/Downloads/Keep/Windows/Drivers/virtio-w11-amd64/!(vioscsi|viostor) \
-    _reset-win10-unattended ~/Downloads/Keep/libvirt/win11-install-with-virtio-x64.qcow2 \
+    _reset-win10-unattended ~/Downloads/Keep/libvirt/win11-install-with-updates-virtio-x64.qcow2 \
         --office \
         --driver2 ~/Downloads/Keep/Windows/Drivers/virtio-w11-amd64/*.msi \
         ~/Downloads/Keep/Windows/Drivers/brother-HL-* \
-        --update ~/Downloads/Keep/Windows/Updates/"Windows 11 24H2" \
         "$@"
 ); }
 

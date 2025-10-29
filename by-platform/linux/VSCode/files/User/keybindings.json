@@ -823,7 +823,7 @@
         "command": "workbench.action.toggleLightDarkThemes"
     },
     {
-        "key": "alt+meta+up",
+        "key": "shift+alt+meta+m",
         "command": "workbench.action.toggleMaximizeEditorGroup",
         "when": "editorPartMaximizedEditorGroup || editorPartMultipleEditorGroups"
     },

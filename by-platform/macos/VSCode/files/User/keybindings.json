@@ -885,7 +885,7 @@
         "command": "workbench.action.toggleLightDarkThemes"
     },
     {
-        "key": "alt+cmd+up",
+        "key": "shift+alt+cmd+m",
         "command": "workbench.action.toggleMaximizeEditorGroup",
         "when": "editorPartMaximizedEditorGroup || editorPartMultipleEditorGroups"
     },
