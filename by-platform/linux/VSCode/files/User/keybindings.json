@@ -823,13 +823,13 @@
         "command": "workbench.action.toggleLightDarkThemes"
     },
     {
-        "key": "shift+alt+meta+m",
-        "command": "workbench.action.toggleMaximizeEditorGroup",
+        "key": "ctrl+k ctrl+m",
+        "command": "-workbench.action.toggleMaximizeEditorGroup",
         "when": "editorPartMaximizedEditorGroup || editorPartMultipleEditorGroups"
     },
     {
-        "key": "ctrl+k ctrl+m",
-        "command": "-workbench.action.toggleMaximizeEditorGroup",
+        "key": "shift+alt+meta+m",
+        "command": "workbench.action.toggleMaximizeEditorGroup",
         "when": "editorPartMaximizedEditorGroup || editorPartMultipleEditorGroups"
     },
     {
