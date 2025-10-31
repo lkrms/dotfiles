@@ -1,1 +1,2 @@
 .inputrc text eol=lf
+*.json text=auto

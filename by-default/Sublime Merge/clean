@@ -2,5 +2,5 @@
 
 . "$df_root/bin/lib/bash-helpers.sh" || exit
 
-with_each files/User/Preferences.sublime-settings \
-    replace_file '{}' jq_safe -S
+with_each 'files/*/Preferences*.sublime-settings' \
+    replace_file '{}' jq_safe
