@@ -42,7 +42,7 @@ fi
 (($#)) || set -- smerge '{}'
 
 IFS=$'\n'
-OPEN=($(
+PATHS=($(
     { IFS= && lk_arr LIST &&
         { [[ ! -e $HIST_FILE ]] ||
             grep -Fxf <(lk_arr LIST) "$HIST_FILE" | tail -n24 ||
@@ -50,31 +50,45 @@ OPEN=($(
         { [[ ! -e $HIST_FILE2 ]] ||
             grep -Fof <(lk_arr LIST) "$HIST_FILE2" | tail -n24 ||
             test "${PIPESTATUS[*]}" = 10; }; } |
-        tac | lk_uniq |
-        awk '{ print; sub(/^Code\//, ""); print }' |
-        tr '\n' '\0' |
-        xargs -0r zenity \
-            --list \
-            --separator='\n' \
-            --multiple \
-            --column=FILE \
-            --column=Repository \
-            --print-column=1 \
-            --hide-column=1 \
-            --title "Open repo" \
-            --text "Select one or more repositories:" \
-            --width=450 \
-            --height=550 |
-        tr -s '\n' |
-        tee -a "$HIST_FILE"
+        tac | lk_uniq
+))
+NAMES=()
+for i in ${PATHS+"${!PATHS[@]}"}; do
+    NAMES[i]=${PATHS[i]#Code/}
+done
+OPEN=($(
+    zenity \
+        --list \
+        --separator='\n' \
+        --multiple \
+        --column=Repository \
+        --title "Open repo" \
+        --text "Select one or more repositories:" \
+        --width=450 \
+        --height=550 \
+        ${NAMES+"${NAMES[@]}"} | tr -s '\n'
 )) || OPEN=()
 
 wait
 
 [[ -n ${OPEN+1} ]] || exit 0
 
+OPEN=($(
+    {
+        lk_arr NAMES
+        printf '\n'
+        lk_arr OPEN
+    } | awk '
+/^$/        { have_names = 1; next }
+!have_names { names[$0] = NR }
+have_names  { if (names[$0]) { print names[$0] - 1; } }'
+))
+
 FILES=()
-for FILE in "${OPEN[@]}"; do
+for i in "${OPEN[@]}"; do
+    FILE=${PATHS[i]-}
+    [[ $FILE ]] || continue
+    printf '%s\n' "$FILE" >>"$HIST_FILE"
     FILES[${#FILES[@]}]=$(lk_realpath "$FILE")
 done
 

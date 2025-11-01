@@ -101,6 +101,7 @@
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "azureFunctions.showCoreToolsWarning": false,
+    "bashIde.shfmt.simplifyCode": true,
     "beautify.config": {
         "break_chained_methods": true,
         "end_with_newline": true,
@@ -624,7 +625,6 @@
     "search.followSymlinks": false,
     "security.promptForLocalFileProtocolHandling": false,
     "security.workspace.trust.enabled": false,
-    "shellformat.flag": "-s",
     "SQL-Formatter-VSCode.dialect": "sqlite",
     "SQL-Formatter-VSCode.ignoreTabSettings": true,
     "SQL-Formatter-VSCode.keywordCase": "upper",

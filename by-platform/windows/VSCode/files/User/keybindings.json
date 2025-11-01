@@ -343,7 +343,7 @@
         "command": "surround.with.phpunitIgnore"
     },
     {
-        "key": "alt+a",
+        "key": "shift+alt+win+a",
         "command": "toggle",
         "when": "editorTextFocus && editorLangId == 'markdown'",
         "args": {
@@ -379,7 +379,7 @@
         }
     },
     {
-        "key": "alt+a",
+        "key": "shift+alt+win+a",
         "command": "toggle",
         "when": "editorTextFocus && editorLangId != 'markdown'",
         "args": {
@@ -405,7 +405,7 @@
         }
     },
     {
-        "key": "alt+i",
+        "key": "shift+alt+win+i",
         "command": "toggle",
         "args": {
             "id": "intelephense.codeLens",
@@ -428,7 +428,7 @@
         }
     },
     {
-        "key": "alt+p",
+        "key": "shift+alt+win+p",
         "command": "toggle",
         "when": "editorTextFocus",
         "args": {
@@ -444,22 +444,7 @@
         }
     },
     {
-        "key": "alt+x",
-        "command": "toggle",
-        "args": {
-            "id": "phpunit",
-            "value": [
-                {
-                    "phpunit.php": "php"
-                },
-                {
-                    "phpunit.php": "php-xdebug"
-                }
-            ]
-        }
-    },
-    {
-        "key": "ctrl+shift+win+w",
+        "key": "shift+alt+win+w",
         "command": "toggle",
         "args": {
             "id": "wordSeparators",
@@ -469,6 +454,21 @@
                 },
                 {
                     "editor.wordSeparators": ""
+                }
+            ]
+        }
+    },
+    {
+        "key": "shift+alt+win+x",
+        "command": "toggle",
+        "args": {
+            "id": "phpunit",
+            "value": [
+                {
+                    "phpunit.php": "php"
+                },
+                {
+                    "phpunit.php": "php-xdebug"
                 }
             ]
         }
@@ -652,7 +652,7 @@
         "command": "workbench.action.editorLayoutTwoColumns"
     },
     {
-        "key": "shift+alt+win+p",
+        "key": "ctrl+shift+win+p",
         "command": "workbench.action.evenEditorWidths"
     },
     {
@@ -682,7 +682,7 @@
         "when": "!accessibilityHelpIsShown && !accessibleViewIsShown"
     },
     {
-        "key": "shift+alt+win+i",
+        "key": "ctrl+shift+win+i",
         "command": "workbench.action.inspectContextKeys"
     },
     {
