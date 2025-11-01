@@ -32,6 +32,18 @@
         "newRemapKeys": "91;69"
       },
       {
+        "originalKeys": "162;164;83",
+        "exactMatch": true,
+        "runProgramElevationLevel": 0,
+        "operationType": 1,
+        "runProgramAlreadyRunningAction": 1,
+        "runProgramStartWindowType": 0,
+        "runProgramFilePath": "C:\\Program Files\\Git\\bin\\bash.exe",
+        "runProgramArgs": "C:\\Users\\lina\\.dotfiles\\by-platform\\macos\\Hammerspoon\\files\\.hammerspoon\\bin\\audit-repos-offline",
+        "runProgramStartInDir": "",
+        "unicodeText": "*Unsupported*"
+      },
+      {
         "originalKeys": "162;164;84",
         "exactMatch": true,
         "runProgramElevationLevel": 0,
@@ -88,6 +100,18 @@
         "runProgramStartWindowType": 0,
         "runProgramFilePath": "C:\\Program Files\\Microsoft VS Code\\Code.exe",
         "runProgramArgs": "C:\\Users\\lina\\Nextcloud\\Notes",
+        "runProgramStartInDir": "",
+        "unicodeText": "*Unsupported*"
+      },
+      {
+        "originalKeys": "162;164;160;83",
+        "exactMatch": true,
+        "runProgramElevationLevel": 0,
+        "operationType": 1,
+        "runProgramAlreadyRunningAction": 1,
+        "runProgramStartWindowType": 0,
+        "runProgramFilePath": "C:\\Program Files\\Git\\bin\\bash.exe",
+        "runProgramArgs": "C:\\Users\\lina\\.dotfiles\\by-platform\\macos\\Hammerspoon\\files\\.hammerspoon\\bin\\audit-repos",
         "runProgramStartInDir": "",
         "unicodeText": "*Unsupported*"
       },
@@ -180,6 +204,13 @@
         "targetApp": "code"
       },
       {
+        "originalKeys": "91;81",
+        "exactMatch": true,
+        "operationType": 0,
+        "newRemapKeys": "164;81",
+        "targetApp": "code"
+      },
+      {
         "originalKeys": "91;87",
         "exactMatch": true,
         "operationType": 0,
@@ -226,6 +257,13 @@
         "exactMatch": true,
         "operationType": 0,
         "newRemapKeys": "164;160;52",
+        "targetApp": "code"
+      },
+      {
+        "originalKeys": "91;160;83",
+        "exactMatch": true,
+        "operationType": 0,
+        "newRemapKeys": "164;160;83",
         "targetApp": "code"
       },
       {

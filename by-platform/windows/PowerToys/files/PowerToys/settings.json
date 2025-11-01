@@ -12,7 +12,7 @@
     "FancyZones": false,
     "File Explorer": true,
     "File Locksmith": true,
-    "FindMyMouse": true,
+    "FindMyMouse": false,
     "Hosts": false,
     "Image Resizer": false,
     "Keyboard Manager": true,
