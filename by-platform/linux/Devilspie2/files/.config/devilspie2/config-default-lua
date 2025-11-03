@@ -18,6 +18,7 @@ log_level = log.INFO
 --log.enable_trace()
 
 default_grid = {6, 2}
+default_margin = {0, 0}
 
 _criteria = {}
 
@@ -97,14 +98,25 @@ _groups = {
             },
         },
     },
+    docs = {
+        ["zeal"] = {
+            add_to_state = {
+                set_position = set_window_position,
+            },
+        },
+    },
     irc = {
-        ["hexchat"] = {}
+        ["hexchat"] = {},
     },
     teams = {
         ["microsoft teams"] = {},
         ["microsoft teams - preview"] = {},
         ["microsoft teams - insiders"] = {},
-        ["teams-for-linux"] = {},
+        ["teams-for-linux"] = {
+            add_to_state = {
+                set_position = set_window_position,
+            },
+        },
         ["crx__cifhbcnohmdccbgoicgdjpfamggdegmo"] = {}, -- Teams
     },
     messenger = {
@@ -118,6 +130,9 @@ _groups = {
         ["clockify"] = {
             criteria = {
                 window_name = "Clockify",
+            },
+            add_to_state = {
+                set_position = set_window_position,
             },
         },
         ["app.clockify.me__tracker"] = {},
@@ -210,6 +225,36 @@ _layouts = {
             messenger = {xy = {3, 1}},
             skype = {xy = {5, 1}},
             time = {xy = {1, 2}},
+            todo = {xy = {3, 2}},
+            util = {xy = {5, 2}},
+        },
+    },
+    -- Ultrawide + 4K
+    ["6000.0x1440.0"] = {
+        -- <-- 33.33% --> <-- ** 33.33% ** --> <-- ** 33.33% ** -->
+        grid = {3, 2},
+        targets = {
+            criteria = _criteria.can_fill_target,
+            {display = 1, xy = {1, 1}, wh = {1, 2}},
+            {display = 1, xy = {2, 1}, wh = {1, 2}},
+            {display = 1, xy = {3, 1}, wh = {1, 2}},
+        },
+        group_places = {
+            dev = {display = 1},
+            mail = {workspace = 1, display = 1, grid = {2, 2}, xy = {1, 1}, wh = {1, 2}},
+        },
+    },
+    -- Apps pinned to secondary display
+    ["*@6000.0x1440.0"] = {
+        criteria = _criteria.pinnable,
+        place = {workspace = 0, display = 2, wh = {2, 1}, margin = {5, 5}},
+        group_places = {
+            docs = {xy = {1, 1}, wh = {2, 2}},
+            teams = {xy = {3, 1}},
+            irc = {xy = {3, 1}},
+            messenger = {xy = {5, 1}},
+            skype = {xy = {5, 1}},
+            time = {xy = {3, 2}},
             todo = {xy = {3, 2}},
             util = {xy = {5, 2}},
         },
@@ -327,6 +372,7 @@ function get_place(state)
         layout = _layouts[layout_id]
         if layout and check_criteria(layout.criteria, state) then
             log.trace("Layout matched: " .. layout_id)
+            state.layout_id = layout_id
             -- Use the first `targets` list found
             if not targets and layout.targets then
                 targets = layout.targets
@@ -363,6 +409,7 @@ function get_place(state)
     end
     if place then
         place.grid = place.grid or layout.grid
+        place.margin = place.margin or layout.margin
         if app and app.add_to_state then
             for setting, value in pairs(app.add_to_state) do
                 state[setting] = value
@@ -497,18 +544,32 @@ rules = {
             end,
         },
     },
+    --{
+    --    criteria = {
+    --        operator.AND,
+    --        {event = "open"},
+    --        {window_type = "WINDOW_TYPE_NORMAL"},
+    --        function(state)
+    --            return table.concat(state.screen_geometry, "x") == "3440.0x1440.0"
+    --        end,
+    --    },
+    --    actions = {
+    --        function(state)
+    --            to_workspace(0, state)
+    --        end,
+    --    },
+    --},
     {
         criteria = {
             operator.AND,
+            _criteria.has_multiple_displays,
             {event = "open"},
-            {window_type = "WINDOW_TYPE_NORMAL"},
-            function(state)
-                return table.concat(state.screen_geometry, "x") == "3440.0x1440.0"
-            end,
+            -- Apps pinned to secondary display
+            {layout_id = {"*@7680.0x2160.0", "*@6000.0x1440.0"}},
         },
         actions = {
             function(state)
-                to_workspace(0, state)
+                to_opacity(0.9, state)
             end,
         },
     },

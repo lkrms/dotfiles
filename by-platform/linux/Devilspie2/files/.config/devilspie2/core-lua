@@ -420,7 +420,7 @@ function minimize_off(state)
     unminimize()
 end
 
-function _get_xywh(display, grid_columns, grid_rows, column1, row1, columns, rows)
+function _get_xywh(display, grid_columns, grid_rows, column1, row1, columns, rows, margin_width, margin_height)
     local x, y, w, h, d_x, d_y, d_w, d_h, col_w, row_h = -1, -1, 0, 0
     local display_geometry = get_display_geometry(display)
     if display_geometry == nil then
@@ -428,6 +428,8 @@ function _get_xywh(display, grid_columns, grid_rows, column1, row1, columns, row
         return
     end
     d_x, d_y, d_w, d_h = table.unpack(display_geometry)
+    d_w = d_w - margin_width * 2
+    d_h = d_h - margin_height * 2
     col_w = math.floor(d_w / grid_columns)
     row_h = math.floor(d_h / grid_rows)
     if column1 > 0 and row1 > 0 then
@@ -441,8 +443,8 @@ function _get_xywh(display, grid_columns, grid_rows, column1, row1, columns, row
     return {x, y, w, h}
 end
 
-function _to_place(display, grid_columns, grid_rows, column1, row1, columns, rows, state)
-    local xywh = _get_xywh(display, grid_columns, grid_rows, column1, row1, columns, rows)
+function _to_place(display, grid_columns, grid_rows, column1, row1, columns, rows, margin_width, margin_height, state)
+    local xywh = _get_xywh(display, grid_columns, grid_rows, column1, row1, columns, rows, margin_width, margin_height)
     if xywh == nil then
         return
     end
@@ -455,6 +457,10 @@ function _to_place(display, grid_columns, grid_rows, column1, row1, columns, row
         w = w + f_w
         h = h + f_h
     end
+    x = x + margin_width * 2
+    y = y + margin_height * 2
+    w = w - 2 * margin_width
+    h = h - 2 * margin_height
     local set_size, set_position = state.set_size or state.rule.set_size or set_window_size,
         state.set_position or state.rule.set_position or set_window_position2
     if w > 0 and h > 0 then
@@ -476,6 +482,7 @@ function normalise_place(place, state)
         grid = place.grid or default_grid or {3, 1},
         xy = place.xy or {place.column1 or 0, place.row1 or 0},
         wh = place.wh or {place.columns or 0, place.rows or 0},
+        margin = place.margin or default_margin or {0, 0},
     }
     p.grid[1] = math.max(p.grid[1], p.xy[1] + p.wh[1] - 1)
     p.grid[2] = math.max(p.grid[2], p.xy[2] + p.wh[2] - 1)
@@ -484,7 +491,7 @@ end
 
 function to_place(place, state)
     local p = normalise_place(place, state)
-    _to_place(p.display, p.grid[1], p.grid[2], p.xy[1], p.xy[2], p.wh[1], p.wh[2], state)
+    _to_place(p.display, p.grid[1], p.grid[2], p.xy[1], p.xy[2], p.wh[1], p.wh[2], p.margin[1], p.margin[2], state)
     if place.workspace ~= nil then
         to_workspace(place.workspace, state)
     end
