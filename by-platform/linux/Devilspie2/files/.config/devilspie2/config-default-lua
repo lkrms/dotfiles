@@ -559,18 +559,18 @@ rules = {
     --        end,
     --    },
     --},
-    {
-        criteria = {
-            operator.AND,
-            _criteria.has_multiple_displays,
-            {event = "open"},
-            -- Apps pinned to secondary display
-            {layout_id = {"*@7680.0x2160.0", "*@6000.0x1440.0"}},
-        },
-        actions = {
-            function(state)
-                to_opacity(0.9, state)
-            end,
-        },
-    },
+    --{
+    --    criteria = {
+    --        operator.AND,
+    --        _criteria.has_multiple_displays,
+    --        {event = "open"},
+    --        -- Apps pinned to secondary display
+    --        {layout_id = {"*@7680.0x2160.0", "*@6000.0x1440.0"}},
+    --    },
+    --    actions = {
+    --        function(state)
+    --            to_opacity(1.0, state)
+    --        end,
+    --    },
+    --},
 }
