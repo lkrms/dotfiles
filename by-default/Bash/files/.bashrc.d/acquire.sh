@@ -1,7 +1,21 @@
 #!/usr/bin/env bash
 
-# spotlight_acquire <hover_text_regex> [<match_count>]
-function spotlight_acquire() {
+# acquire-page <uri>
+function acquire-page() {
+    (($# == 1)) || lk_bad_args || return
+    lk_file_is_empty_dir . ||
+        lk_tty_yn 'Working directory not empty. Proceed?' || return
+    wget \
+        --no-directories \
+        --adjust-extension \
+        --convert-links \
+        --page-requisites \
+        --span-hosts \
+        "$@" 2> >(tee -a .wget.log >/dev/stderr)
+}
+
+# acquire-spotlight <hover_text_regex> [<match_count>]
+function acquire-spotlight() {
     (($#)) || lk_bad_args || return
     local regex="iconHoverText\":\"$1" expected=${2-1} count prev=0 req=0 \
         raw_file=~/Downloads/Spotlight/.spotlight.json \
