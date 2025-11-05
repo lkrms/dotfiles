@@ -368,7 +368,7 @@
         "command": "-thunder-client.import-curl"
     },
     {
-        "key": "alt+a",
+        "key": "shift+alt+cmd+a",
         "command": "toggle",
         "when": "editorTextFocus && editorLangId == 'markdown'",
         "args": {
@@ -404,7 +404,7 @@
         }
     },
     {
-        "key": "alt+a",
+        "key": "shift+alt+cmd+a",
         "command": "toggle",
         "when": "editorTextFocus && editorLangId != 'markdown'",
         "args": {
@@ -430,7 +430,7 @@
         }
     },
     {
-        "key": "alt+i",
+        "key": "shift+alt+cmd+i",
         "command": "toggle",
         "args": {
             "id": "intelephense.codeLens",
@@ -453,7 +453,7 @@
         }
     },
     {
-        "key": "alt+p",
+        "key": "shift+alt+cmd+p",
         "command": "toggle",
         "when": "editorTextFocus",
         "args": {
@@ -469,7 +469,22 @@
         }
     },
     {
-        "key": "alt+x",
+        "key": "shift+alt+cmd+w",
+        "command": "toggle",
+        "args": {
+            "id": "wordSeparators",
+            "value": [
+                {
+                    "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\|;:'\",.<>/?"
+                },
+                {
+                    "editor.wordSeparators": ""
+                }
+            ]
+        }
+    },
+    {
+        "key": "shift+alt+cmd+x",
         "command": "toggle",
         "args": {
             "id": "phpunit",
@@ -666,7 +681,7 @@
         "command": "workbench.action.editorLayoutTwoColumns"
     },
     {
-        "key": "shift+alt+cmd+p",
+        "key": "ctrl+shift+alt+p",
         "command": "workbench.action.evenEditorWidths"
     },
     {
@@ -696,7 +711,7 @@
         "when": "!accessibilityHelpIsShown && !accessibleViewIsShown"
     },
     {
-        "key": "shift+alt+cmd+i",
+        "key": "ctrl+shift+alt+i",
         "command": "workbench.action.inspectContextKeys"
     },
     {

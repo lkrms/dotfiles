@@ -13,6 +13,26 @@ _op = {
 
 _grid = {6, 2}
 
+_criteria = {}
+_criteria.has_multiple_displays = {
+    function()
+        return #_screen > 1
+    end,
+}
+_criteria.pinnable = {
+    _op.AND,
+    _criteria.has_multiple_displays,
+    {
+        _op.OR,
+        {event = wf.windowCreated},
+        {
+            _op.AND,
+            {event = {wf.windowFocused, wf.windowUnfocused}},
+            {display = 2},
+        },
+    },
+}
+
 -- Configure preferred apps with:
 --
 -- - `bundleID` (required): passed to `open()`
@@ -60,6 +80,9 @@ _group = {
                 end
             },
         },
+    },
+    docs = {
+        ["Dash"] = {},
     },
     teams = {
         ["Microsoft Teams"] = {},
@@ -199,6 +222,29 @@ _layouts = {
             [_zone.bottomRight23] = {xy = {11, 2}, wh = {33, 1}},
         },
     },
+    -- Ultrawide + 4K
+    ["6000.0x1440.0"] = {
+        -- <-- 33.33% --> <-- ** 33.33% ** --> <-- ** 33.33% ** -->
+        grid = {3, 2},
+        group_places = {
+            dev = {display = 1},
+            mail = {display = 1, grid = {2, 2}, xy = {1, 1}, wh = {1, 2}},
+        },
+    },
+    -- Apps pinned to secondary display
+    ["*:6000.0x1440.0"] = {
+        criteria = _criteria.pinnable,
+        place = {display = 2, wh = {2, 1}},
+        group_places = {
+            docs = {xy = {1, 1}, wh = {2, 2}},
+            teams = {xy = {3, 1}},
+            messenger = {xy = {5, 1}},
+            skype = {xy = {5, 1}},
+            time = {xy = {3, 2}},
+            todo = {xy = {3, 2}},
+            util = {xy = {5, 2}},
+        },
+    },
     ["*"] = {
         grid = {4, 2},
         place = {display = 1, wh = {2, 2}},
@@ -235,6 +281,9 @@ function toPlace(place, ev, force)
     end
     local x, y = table.unpack(p.xy)
     local w, h = table.unpack(p.wh)
+    if not ((x > 0 and y > 0) or (w > 0 and h > 0)) then
+        do return end
+    end
     local rect = hs.geometry(
         x > 0 and ((x - 1) / p.grid[1]) or nil,
         y > 0 and ((y - 1) / p.grid[2]) or nil,
@@ -288,7 +337,7 @@ function getPlace(ev)
     if app ~= nil then
         logger.v("app = " .. hs.inspect.inspect(app))
     end
-    local geometry, layout, place = table.concat({ev.screenGeometry.w, ev.screenGeometry.h}, "x")
+    local geometry, layout, place = table.concat({_screenGeometry.w, _screenGeometry.h}, "x")
     for i, layout_id in ipairs({
         #_screen .. "," .. ev.display .. ":" .. geometry,
         "*," .. ev.display .. ":" .. geometry,
@@ -327,7 +376,7 @@ function getPlace(ev)
 end
 
 function getZone(zone, ev)
-    local geometry, layout, place = table.concat({ev.screenGeometry.w, ev.screenGeometry.h}, "x")
+    local geometry, layout, place = table.concat({_screenGeometry.w, _screenGeometry.h}, "x")
     for i, layout_id in ipairs({
         #_screen .. "," .. ev.display .. ":" .. geometry,
         "*," .. ev.display .. ":" .. geometry,
@@ -399,12 +448,19 @@ _rule = {
 function initScreens()
     _screen1, _screen2 = hs.screen.primaryScreen(), nil
     _screen = {_screen1}
+    local minX, minY, maxX, maxY = 0, 0, 0, 0
     for i, screen in pairs(hs.screen.allScreens()) do
+        local frame = screen:fullFrame()
+        minX = math.min(minX, frame["x"])
+        minY = math.min(minY, frame["y"])
+        maxX = math.max(maxX, frame["x"] + frame["w"] - 1)
+        maxY = math.max(maxY, frame["y"] + frame["h"] - 1)
         if screen:getUUID() ~= _screen1:getUUID() then
             _screen2 = _screen2 or screen
             _screen[#_screen + 1] = screen
         end
     end
+    _screenGeometry = hs.geometry(minX, minY, maxX - minX + 1, maxY - minY + 1)
 end
 
 function checkCriteria(criteria, ev)

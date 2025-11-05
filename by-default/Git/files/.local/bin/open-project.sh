@@ -25,7 +25,7 @@ LIST_FILE=$DIR/code-workspace.list
 HIST_FILE=$DIR/code-workspace.history
 
 function generate_list() {
-    printf '%s\0' Code/{,*/,*/*/,*/*/*/,*/*/*/*/}{*.code-workspace,.vscode!(?)} |
+    printf '%s\0' {Code,.dotfiles/*}/{,*/,*/*/,*/*/*/,*/*/*/*/}{*.code-workspace,.vscode!(?)} |
         xargs -0r dirname |
         sort -u >"$LIST_FILE"
 }
@@ -86,6 +86,9 @@ for i in "${OPEN[@]}"; do
     [[ $FILE ]] || continue
     printf '%s\n' "$FILE" >>"$HIST_FILE"
     WORKSPACE=$FILE/${FILE##*/}.code-workspace
+    [[ -f $WORKSPACE ]] ||
+        WORKSPACE=$(printf '%s\n' "$FILE"/*.code-workspace |
+            awk 'END { if (NR == 1) { print } }')
     [[ ! -f $WORKSPACE ]] || FILE=$WORKSPACE
     FILES[${#FILES[@]}]=$(lk_realpath "$FILE")
 done
