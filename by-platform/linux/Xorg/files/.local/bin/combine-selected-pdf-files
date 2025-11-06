@@ -12,7 +12,7 @@ zenity --question \
     --skip-taskbar || exit
 
 output=$(
-    LK_TTY_NO_COLOUR=1 lk-pdf-combine.sh "$@" 2>&1
+    LK_NO_COLOUR=1 lk-pdf-combine.sh "$@" 2>&1
 ) ||
     zenity --error \
         --width=400 \
