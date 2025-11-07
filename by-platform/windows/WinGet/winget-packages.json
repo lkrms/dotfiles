@@ -32,6 +32,10 @@
           "Scope": "machine"
         },
         {
+          "PackageIdentifier": "voidtools.Everything",
+          "Scope": "machine"
+        },
+        {
           "PackageIdentifier": "dandavison.delta",
           "Scope": "machine"
         },
@@ -60,6 +64,10 @@
           "Scope": "machine"
         },
         {
+          "PackageIdentifier": "lucasg.Dependencies",
+          "Scope": "machine"
+        },
+        {
           "PackageIdentifier": "Microsoft.PowerToys",
           "Scope": "machine"
         },
@@ -72,8 +80,16 @@
           "Scope": "machine"
         },
         {
+          "PackageIdentifier": "sigoden.WindowSwitcher",
+          "Scope": "machine"
+        },
+        {
           "PackageIdentifier": "Espanso.Espanso",
           "Scope": "user"
+        },
+        {
+          "PackageIdentifier": "Microsoft.Sysinternals.Suite",
+          "Scope": "machine"
         },
         {
           "PackageIdentifier": "Microsoft.VisualStudioCode",
@@ -81,6 +97,30 @@
         },
         {
           "PackageIdentifier": "mvdan.shfmt",
+          "Scope": "machine"
+        },
+        {
+          "PackageIdentifier": "Ollama.Ollama",
+          "Scope": "user"
+        },
+        {
+          "PackageIdentifier": "PHP.PHP.8.1",
+          "Scope": "machine"
+        },
+        {
+          "PackageIdentifier": "PHP.PHP.8.2",
+          "Scope": "machine"
+        },
+        {
+          "PackageIdentifier": "PHP.PHP.8.3",
+          "Scope": "machine"
+        },
+        {
+          "PackageIdentifier": "PHP.PHP.8.4",
+          "Scope": "machine"
+        },
+        {
+          "PackageIdentifier": "StrawberryPerl.StrawberryPerl",
           "Scope": "machine"
         },
         {
