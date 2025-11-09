@@ -49,6 +49,12 @@ EOF
     ) || return; done
 }
 
+function geekbench-csv() {
+    (($#)) || set -- *.gb5
+    printf '%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' File Processor Cores Threads Platform Version Date "Run time" "Single-core score" "Multi-core score"
+    jq -r '[input_filename, (.metrics[] | select(.name == "Processor")).value, (.metrics[] | select(.name == "Cores")).value, (.metrics[] | select(.name == "Threads")).value, (.platform | "\(.os) \(.architecture) \(.bits)"), .version, .date, .runtime, .score, .multicore_score] | @csv' "$@"
+}
+
 function git-changelog() {
     if ((!$#)); then
         local latest previous
