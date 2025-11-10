@@ -222,6 +222,36 @@ _layouts = {
             [_zone.bottomRight23] = {xy = {11, 2}, wh = {33, 1}},
         },
     },
+    -- 1680x1050 + Ultrawide
+    ["5120.0x1440.0"] = {
+        grid = {43, 2},
+        place = {display = 1, wh = {10, 1}},
+        group_places = {
+            docs = {display = 2, grid = {2, 1}, xy = {2, 1}, wh = {1, 1}},
+            mail = {xy = {11, 1}, wh = {23, 2}},
+            teams = {xy = {1, 1}},
+            messenger = {xy = {1, 2}},
+            skype = {xy = {1, 2}},
+            time = {xy = {34, 1}},
+            todo = {xy = {34, 2}},
+            util = {xy = {34, 2}},
+            dev = {xy = {11, 1}, wh = {23, 2}},
+        },
+        zone_places = {
+            [_zone.left] = {xy = {1, 1}, wh = {10, 2}},
+            [_zone.centre] = {xy = {11, 1}, wh = {23, 2}},
+            [_zone.right] = {xy = {34, 1}, wh = {10, 2}},
+            [_zone.right23] = {xy = {11, 1}, wh = {33, 2}},
+            [_zone.topLeft] = {xy = {1, 1}, wh = {10, 1}},
+            [_zone.topCentre] = {xy = {11, 1}, wh = {23, 1}},
+            [_zone.topRight] = {xy = {34, 1}, wh = {10, 1}},
+            [_zone.topRight23] = {xy = {11, 1}, wh = {33, 1}},
+            [_zone.bottomLeft] = {xy = {1, 2}, wh = {10, 1}},
+            [_zone.bottomCentre] = {xy = {11, 2}, wh = {23, 1}},
+            [_zone.bottomRight] = {xy = {34, 2}, wh = {10, 1}},
+            [_zone.bottomRight23] = {xy = {11, 2}, wh = {33, 1}},
+        },
+    },
     -- Ultrawide + 4K
     ["6000.0x1440.0"] = {
         -- <-- 33.33% --> <-- ** 33.33% ** --> <-- ** 33.33% ** -->
