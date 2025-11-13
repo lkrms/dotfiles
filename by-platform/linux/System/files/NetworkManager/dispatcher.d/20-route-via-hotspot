@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+exec >>"/tmp/${0##*/}.out" 2>>"/tmp/${0##*/}.err"
+
+hotspot_address=B0:8C:75:E6:17:EE
+ip4_via_hotspot=(
+    220.233.122.8
+)
+ip6_via_hotspot=(
+    2406:3400:217:e030::/60
+)
+
+[[ ${DEVICE_IFACE-} == "$hotspot_address" ]] || exit 0
+
+ip4_gw=${IP4_GATEWAY-}
+ip6_gw=${IP6_GATEWAY-}
+[[ $ip6_gw != 0.0.0.0 ]] || ip6_gw=
+[[ ${ip4_gw:-$ip6_gw} ]] || exit 0
+
+[[ -z $ip4_gw ]] ||
+    for prefix in ${ip4_via_hotspot+"${ip4_via_hotspot[@]}"}; do
+        ip route replace "$prefix" via "$ip4_gw" dev "$1" || exit
+    done
+
+[[ -z $ip6_gw ]] ||
+    for prefix in ${ip6_via_hotspot+"${ip6_via_hotspot[@]}"}; do
+        ip route replace "$prefix" via "$ip6_gw" dev "$1" || exit
+    done

@@ -2,4 +2,8 @@
 
 . "$df_root/bin/lib/bash-helpers.sh" || exit
 
+if [[ $1 == */NetworkManager/dispatcher.d/20-route-via-hotspot ]] && ! is_portable; then
+    exit 1
+fi
+
 [[ $1 != *-only-noto-* ]]
