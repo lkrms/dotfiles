@@ -144,6 +144,10 @@ The installer processes files in `<appname>` directories in the following order.
                      └── git.symlink        ; Because this file exists
    ```
 
+   If a file has a `<filename>.hardlink` sidecar, a hard link to it is created
+   instead of a symbolic link, and files with `<filename>.replace` sidecars are
+   copied into place, not linked.
+
    > The content of a sidecar file is not specified.
 
 5. **`apply`** _(must be an executable file if present)_

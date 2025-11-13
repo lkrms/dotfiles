@@ -26,7 +26,7 @@ function find_installable() {
 function find_all() {
     find "$@" \
         \( \( -type d -execdir test -e '{}.symlink' \; -prune \) -o -type f -o -type l \) \
-        ! -name .DS_Store ! -name '*.symlink' ! -name '*.hardlink' ! -name '*.bak-[0-9][0-9][0-9]' -print
+        ! -name .DS_Store ! -name '*.symlink' ! -name '*.hardlink' ! -name '*.replace' ! -name '*.bak-[0-9][0-9][0-9]' -print
 }
 
 # git <arg>...
@@ -160,11 +160,15 @@ for app in ${apps+"${apps[@]}"}; do
                 echo " -> Removing link skipped by filter: $target -> $path"
                 maybe ${sudo+sudo} rm -- "$target"
             else
-                echo " -> Symbolic link skipped by filter: $target -> $path"
+                echo " -> Skipped by filter: $target -> $path"
             fi
             continue
         fi
-        link_file ${sudo+--sudo} "$path" "$target"
+        if [[ -f $path ]] && [[ -e $path.replace ]]; then
+            replace_file ${sudo+--sudo} "$target" <"$path"
+        else
+            link_file ${sudo+--sudo} "$path" "$target"
+        fi
     done < <(find_installable "$app" "${local_app_dirs[@]}")
 done
 
