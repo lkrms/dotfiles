@@ -102,7 +102,7 @@ function link_file() {
 
     local source=$1 target=$2 hardlink=0 ln_s=-s link
 
-    [[ ! -e $source.hardlink ]] ||
+    [[ ! -e $source.hardlink ]] || [[ ! -f $source ]] ||
         local hardlink=1 ln_s=
 
     [[ ! $target -ef $source ]] ||
