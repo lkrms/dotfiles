@@ -335,6 +335,9 @@
         "**/vendor/**/vendor/**",
         "**/vendor/**/{Tests,tests}/**"
     ],
+    "intelephense.inlayHint.parameterNames": false,
+    "intelephense.inlayHint.parameterTypes": false,
+    "intelephense.inlayHint.returnTypes": false,
     "intelephense.phpdoc.classTemplate": {
         "summary": "$1",
         "tags": [

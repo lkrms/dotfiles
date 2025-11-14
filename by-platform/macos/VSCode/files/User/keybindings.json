@@ -440,14 +440,20 @@
                     "intelephense.codeLens.overrides.enable": true,
                     "intelephense.codeLens.parent.enable": true,
                     "intelephense.codeLens.references.enable": true,
-                    "intelephense.codeLens.usages.enable": true
+                    "intelephense.codeLens.usages.enable": true,
+                    "intelephense.inlayHint.parameterNames": true,
+                    "intelephense.inlayHint.parameterTypes": true,
+                    "intelephense.inlayHint.returnTypes": true
                 },
                 {
                     "intelephense.codeLens.implementations.enable": false,
                     "intelephense.codeLens.overrides.enable": false,
                     "intelephense.codeLens.parent.enable": false,
                     "intelephense.codeLens.references.enable": false,
-                    "intelephense.codeLens.usages.enable": false
+                    "intelephense.codeLens.usages.enable": false,
+                    "intelephense.inlayHint.parameterNames": false,
+                    "intelephense.inlayHint.parameterTypes": false,
+                    "intelephense.inlayHint.returnTypes": false
                 }
             ]
         }
