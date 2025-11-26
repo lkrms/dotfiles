@@ -107,10 +107,18 @@ EOF
 }
 
 function phpstan-update-baseline() {
+    [[ ! -f phpstan-baseline-8.5.neon ]] ||
+        php85 vendor/bin/phpstan -bphpstan-baseline-8.5.neon --allow-empty-baseline || return
     [[ ! -f phpstan-baseline-8.4.neon ]] ||
         php84 vendor/bin/phpstan -bphpstan-baseline-8.4.neon --allow-empty-baseline || return
     [[ ! -f phpstan-baseline-8.3.neon ]] ||
         php83 vendor/bin/phpstan -bphpstan-baseline-8.3.neon --allow-empty-baseline || return
+    [[ ! -f phpstan-baseline-8.2.neon ]] ||
+        php82 vendor/bin/phpstan -bphpstan-baseline-8.2.neon --allow-empty-baseline || return
+    [[ ! -f phpstan-baseline-8.1.neon ]] ||
+        php81 vendor/bin/phpstan -bphpstan-baseline-8.1.neon --allow-empty-baseline || return
+    [[ ! -f phpstan-baseline-8.0.neon ]] ||
+        php80 vendor/bin/phpstan -bphpstan-baseline-8.0.neon --allow-empty-baseline || return
     [[ ! -f phpstan-baseline-7.4.neon ]] ||
         php74 vendor/bin/phpstan -bphpstan-baseline-7.4.neon --allow-empty-baseline || return
     [[ ! -f phpstan-baseline.neon ]] ||

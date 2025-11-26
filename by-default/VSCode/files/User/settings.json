@@ -578,7 +578,6 @@
         "--indent-columns=2"
     ],
     "phpstan.showProgress": true,
-    "phpstan.showTypeOnHover": true,
     "phpstan.suppressTimeoutMessage": true,
     "phpunit.php": "php-xdebug",
     "poor-mans-t-sql-formatter.std.indent": "  ",
