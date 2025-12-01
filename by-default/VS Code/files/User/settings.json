@@ -123,6 +123,9 @@
     "css.format.newlineBetweenRules": false,
     "css.format.newlineBetweenSelectors": false,
     "dash.languageIdToDocsetMap": {
+        "apacheconf": [
+            "apache"
+        ],
         "php": [
             "php"
         ],
