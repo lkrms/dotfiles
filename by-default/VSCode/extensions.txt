@@ -78,6 +78,7 @@ standard.vscode-standard
 
 ## Shell/Bash
 
+lumirelle.shell-format-rev
 mads-hartmann.bash-ide-vscode
 
 ## SQL

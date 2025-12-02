@@ -8,7 +8,7 @@
         "editor.defaultFormatter": "HookyQR.beautify"
     },
     "[dockerfile]": {
-        "editor.defaultFormatter": "mads-hartmann.bash-ide-vscode"
+        "editor.defaultFormatter": "lumirelle.shell-format-rev"
     },
     "[handlebars]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -76,7 +76,8 @@
         "editor.defaultFormatter": "LoranKloeze.ruby-rubocop-revived"
     },
     "[shellscript]": {
-        "editor.defaultFormatter": "mads-hartmann.bash-ide-vscode"
+        "editor.defaultFormatter": "lumirelle.shell-format-rev",
+        "editor.tabSize": 4
     },
     "[snippets]": {
         "editor.defaultFormatter": "vscode.json-language-features"
@@ -627,6 +628,7 @@
     "search.followSymlinks": false,
     "security.promptForLocalFileProtocolHandling": false,
     "security.workspace.trust.enabled": false,
+    "shellformat.flag": "-s",
     "SQL-Formatter-VSCode.dialect": "sqlite",
     "SQL-Formatter-VSCode.ignoreTabSettings": true,
     "SQL-Formatter-VSCode.keywordCase": "upper",
