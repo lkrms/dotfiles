@@ -65,10 +65,12 @@ set_local_app_roots
 set_app_roots
 
 IFS=$'\n'
-apps=($(printf '%s\0' $(printf '%q/*\n' "${local_app_roots[@]}") | xargs -0r basename -a -- | sort -u))
+apps=($(printf '%s\0' $(realpath $(printf '%q/*\n' "${local_app_roots[@]}")) | xargs -0r basename -a -- | sort -u))
 
 if (($#)); then
-    apps=($(comm -12 <(printf '%s\n' "$@" | sort -u) <(printf '%s\n' ${apps+"${apps[@]}"})))
+    apps=($(awk -f "$df_root/bin/lib/awk/match-apps.awk" \
+        <(printf '%s\n' ${apps+"${apps[@]}"}) \
+        <(printf '%s\n' "$@") | sort -u))
     all_apps=0
 fi
 

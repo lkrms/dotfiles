@@ -16,18 +16,22 @@ function die() {
 }
 
 type -P realpath >/dev/null ||
-    # realpath [--] <filename>
+    # realpath [--] <filename>...
     function realpath() {
         [[ $1 != -- ]] || shift
-        local file=$1 dir
-        while [[ -L $file ]]; do
+        local file dir
+        while (($#)); do
+            file=$1
+            shift
+            while [[ -L $file ]]; do
+                dir=$(dirname -- "$file") &&
+                    file=$(readlink -- "$file") || continue 2
+                [[ $file == /* ]] || file=$dir/$file
+            done
             dir=$(dirname -- "$file") &&
-                file=$(readlink -- "$file") || return
-            [[ $file == /* ]] || file=$dir/$file
+                dir=$(cd -P -- "$dir" &>/dev/null && pwd) &&
+                printf '%s/%s\n' "$dir" "${file##*/}" || continue
         done
-        dir=$(dirname -- "$file") &&
-            dir=$(cd -P -- "$dir" &>/dev/null && pwd) &&
-            printf '%s/%s\n' "$dir" "${file##*/}"
     }
 
 df_root=$(realpath -- "${BASH_SOURCE[0]}") &&
