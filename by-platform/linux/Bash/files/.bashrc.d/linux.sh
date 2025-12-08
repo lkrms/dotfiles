@@ -45,3 +45,49 @@ function iso-touch() {
         shift
     done
 }
+
+function update-win11-installer() {
+    lk_test_all_d "$@" ||
+        lk_usage "Usage: $FUNCNAME <driver_dir> [<critical_driver_dir>...]" || return
+    [[ -d /run/media/lina/CCCOMA_X64FRE_EN-GB_DV9 ]] ||
+        lk_err 'installer not mounted' || return
+    local driver2=$1
+    shift
+    if (($#)); then
+        local _driver2 dir _dir rel_dir remove=()
+        _driver2=$(realpath "$driver2") || return
+        for dir in "$@"; do
+            [[ ! $dir -ef $driver2 ]] ||
+                lk_err "critical drivers cannot be in same directory as non-critical drivers: $dir" || return
+            _dir=$(realpath "$dir") || return
+            rel_dir=${_dir#"$_driver2/"}
+            if [[ $rel_dir != "$_dir" ]]; then
+                [[ $rel_dir != */* ]] ||
+                    lk_err "directory nested too deep in $driver2: $dir" || return
+                remove[${#remove[@]}]=$rel_dir
+            fi
+        done
+        if [[ ${remove+1} ]]; then
+            local temp
+            lk_mktemp_dir_with temp mkdir "${_driver2##*/}" || return
+            temp=$temp/${_driver2##*/}
+            ln -s "$_driver2/"* "$temp/" &&
+                rm "${remove[@]/#/$temp/}" || return
+            driver2=$temp
+        fi
+        set -- --driver "$@"
+    fi
+    cd ~/Code/lk/win10-unattended && lk_tty_run_detail Scripts/CreateIso.sh \
+        --dir /run/media/lina/CCCOMA_X64FRE_EN-GB_DV9 \
+        --wifi \
+        --office \
+        "$@" \
+        --driver2 "$driver2" \
+        ~/Downloads/Keep/Windows/Drivers/brother-HL-*
+}
+
+function update-win11-installer-for-hp-x360-14() {
+    update-win11-installer \
+        ~/Downloads/Keep/Windows/Drivers/hp-x360-14 \
+        ~/Downloads/Keep/Windows/Drivers/hp-x360-14/iastorvd*
+}
