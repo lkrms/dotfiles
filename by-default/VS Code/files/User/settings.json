@@ -738,6 +738,7 @@
     "typescript.format.insertSpaceBeforeFunctionParenthesis": true,
     "typescript.format.semicolons": "remove",
     "update.showReleaseNotes": false,
+    "window.confirmSaveUntitledWorkspace": false,
     "window.newWindowDimensions": "inherit",
     "window.title": "${dirty}${rootName}${separator}${activeEditorShort}${separator}${appName}",
     "window.titleBarStyle": "custom",
