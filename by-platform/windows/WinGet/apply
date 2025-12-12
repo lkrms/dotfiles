@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+function winget_install() {
+    ((++count))
+    ! winget_is_installed "$@" || return 0
+    echo " -> Installing package: $1"
+    local log_file=/tmp/dotfiles-WinGet-$1.log
+    maybe winget install --id "$@" --exact \
+        --no-upgrade \
+        --silent \
+        --log "$log_file" \
+        --accept-source-agreements \
+        --disable-interactivity || ((++errors))
+}
+
+function winget_is_installed() {
+    winget list --id "$@" --exact \
+        --accept-source-agreements \
+        --disable-interactivity >/dev/null || return 1
+}
+
+count=0
+errors=0
+
+# Deployed via `Unattended.cmd`:
+# - Google.Chrome
+# - Notepad++.Notepad++
+# - SumatraPDF.SumatraPDF
+# - VideoLAN.VLC
+# - 7zip.7zip
+# - voidtools.Everything
+# - Mozilla.Firefox
+# - gurnec.HashCheckShellExtension
+
+# Deployed via `InstallCustomApps.cmd`:
+# - Flameshot.Flameshot
+# - Git.Git
+# - dandavison.delta
+# - GnuPG.Gpg4win
+# - jqlang.jq
+# - lucasg.Dependencies
+# - Inkscape.Inkscape
+# - Nextcloud.NextcloudDesktop
+# - Microsoft.PowerToys
+# - sigoden.WindowSwitcher
+# - OO-Software.ShutUp10
+# - KeePassXCTeam.KeePassXC
+
+winget_install Espanso.Espanso --scope user
+winget_install Microsoft.Sysinternals.Suite --scope machine
+winget_install Microsoft.VisualStudioCode --scope machine
+winget_install mvdan.shfmt --scope machine
+winget_install Ollama.Ollama --scope user
+winget_install PHP.PHP.8.1 --scope machine
+winget_install PHP.PHP.8.2 --scope machine
+winget_install PHP.PHP.8.3 --scope machine
+winget_install PHP.PHP.8.4 --scope machine
+winget_install StrawberryPerl.StrawberryPerl --scope machine
+winget_install SublimeHQ.SublimeMerge --scope machine
+winget_install TheDocumentFoundation.LibreOffice --scope machine
+
+echo " -> Packages: $count"
+echo " -> Errors: $errors"
+
+((!errors)) || exit 3
