@@ -101,7 +101,14 @@ function reset-win11() { (
 
 function revert-and-run() {
     (($#)) || lk_bad_args || return
-    lk_tty_run_detail lk_elevate virsh shutdown "$1" &&
-        lk_tty_run_detail lk_elevate virsh await "$1" --condition domain-inactive &&
+    lk_tty_run_detail lk_elevate virsh shutdown "$1" || true
+    lk_tty_run_detail lk_elevate virsh await "$1" --condition domain-inactive &&
         lk_tty_run_detail lk_elevate virsh snapshot-revert "$1" --current --running
+}
+
+function revert-and-pause() {
+    (($#)) || lk_bad_args || return
+    lk_tty_run_detail lk_elevate virsh shutdown "$1" || true
+    lk_tty_run_detail lk_elevate virsh await "$1" --condition domain-inactive &&
+        lk_tty_run_detail lk_elevate virsh snapshot-revert "$1" --current
 }
