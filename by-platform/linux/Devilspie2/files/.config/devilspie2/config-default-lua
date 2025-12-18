@@ -179,7 +179,7 @@ log.debug("_apps = " .. pretty.write(_apps))
 -- See README.md for an explanation
 _layouts = {
     -- 1x4K
-    ["3840.0x2160.0"] = {
+    ["3840x2160"] = {
         -- <-- 31% --> <-- ** 50% ** --> <-- 19% -->
         grid = {16, 2},
         targets = {
@@ -201,7 +201,7 @@ _layouts = {
         },
     },
     -- 2x4K
-    ["7680.0x2160.0"] = {
+    ["7680x2160"] = {
         -- <-- 25% --> <-- ** 50% ** --> <-- 25% -->
         targets = {
             grid = {4, 2},
@@ -216,7 +216,7 @@ _layouts = {
         },
     },
     -- Apps pinned to secondary display
-    ["*@7680.0x2160.0"] = {
+    ["*@7680x2160"] = {
         criteria = _criteria.pinnable,
         place = {workspace = 0, display = 2, wh = {2, 1}},
         group_places = {
@@ -230,7 +230,7 @@ _layouts = {
         },
     },
     -- Ultrawide + 4K
-    ["6000.0x1440.0"] = {
+    ["6000x1440"] = {
         -- <-- 33.33% --> <-- ** 33.33% ** --> <-- ** 33.33% ** -->
         grid = {3, 2},
         targets = {
@@ -245,7 +245,7 @@ _layouts = {
         },
     },
     -- Apps pinned to secondary display
-    ["*@6000.0x1440.0"] = {
+    ["*@6000x1440"] = {
         criteria = _criteria.pinnable,
         place = {workspace = 0, display = 2, wh = {2, 1}, margin = {5, 5}},
         group_places = {
@@ -261,7 +261,7 @@ _layouts = {
     },
     -- Ultrawide
     -- 1. <-- 25% --> <-- ** 50% ** --> <-- 25% -->
-    ["3440.0x1440.0"] = {
+    ["3440x1440"] = {
         grid = {4, 2},
         targets = {
             criteria = _criteria.can_fill_target,
@@ -283,7 +283,7 @@ _layouts = {
         },
     },
     -- 2. <-- 25% --> <-- ** 37.5% ** --> <-- ** 37.5% ** -->
-    ["2@3440.0x1440.0"] = {
+    ["2@3440x1440"] = {
         grid = {8, 2, 3},
         targets = {
             criteria = _criteria.can_fill_target,
@@ -304,7 +304,7 @@ _layouts = {
         },
     },
     -- 3. <-- 33.33% --> <-- ** 33.33% ** --> <-- ** 33.33% ** -->
-    ["3@3440.0x1440.0"] = {
+    ["3@3440x1440"] = {
         grid = {3, 2},
         targets = {
             criteria = _criteria.can_fill_target,
@@ -326,7 +326,7 @@ _layouts = {
         },
     },
     -- 4. <-- 25% --> <-- ** 75% ** -->
-    ["4@3440.0x1440.0"] = {
+    ["4@3440x1440"] = {
         grid = {4, 2, 3},
         targets = {
             criteria = _criteria.can_fill_target,
@@ -550,7 +550,7 @@ rules = {
     --        {event = "open"},
     --        {window_type = "WINDOW_TYPE_NORMAL"},
     --        function(state)
-    --            return table.concat(state.screen_geometry, "x") == "3440.0x1440.0"
+    --            return table.concat(state.screen_geometry, "x") == "3440x1440"
     --        end,
     --    },
     --    actions = {
@@ -565,7 +565,7 @@ rules = {
     --        _criteria.has_multiple_displays,
     --        {event = "open"},
     --        -- Apps pinned to secondary display
-    --        {layout_id = {"*@7680.0x2160.0", "*@6000.0x1440.0"}},
+    --        {layout_id = {"*@7680x2160", "*@6000x1440"}},
     --    },
     --    actions = {
     --        function(state)
