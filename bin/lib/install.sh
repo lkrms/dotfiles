@@ -34,8 +34,9 @@ function git() {
     command git -C "$df_root" "$@"
 }
 
-by_app=0
+invert=0
 fetch=0
+by_app=0
 all_apps=1
 while [[ ${1-} == --* ]]; do
     case "$1" in
@@ -44,6 +45,9 @@ while [[ ${1-} == --* ]]; do
         ;;
     --reset)
         export df_reset=1
+        ;;
+    --not)
+        invert=1
         ;;
     --fetch)
         fetch=1
@@ -68,9 +72,16 @@ IFS=$'\n'
 apps=($(printf '%s\0' $(realpath $(printf '%q/*\n' "${local_app_roots[@]}")) | xargs -0r basename -a -- | sort -u))
 
 if (($#)); then
-    apps=($(awk -f "$df_root/bin/lib/awk/match-apps.awk" \
+    normalised=($(awk -f "$df_root/bin/lib/awk/match-apps.awk" \
         <(printf '%s\n' ${apps+"${apps[@]}"}) \
         <(printf '%s\n' "$@") | sort -u))
+    if ((invert)); then
+        apps=($(comm -23 \
+            <(printf '%s\n' ${apps+"${apps[@]}"}) \
+            <(printf '%s\n' ${normalised+"${normalised[@]}"})))
+    else
+        apps=(${normalised+"${normalised[@]}"})
+    fi
     all_apps=0
 fi
 
@@ -169,7 +180,18 @@ for app in ${apps+"${apps[@]}"}; do
         if [[ -f $path ]] && [[ -e $path.replace ]]; then
             replace_file ${sudo+--sudo} "$target" <"$path"
         else
-            link_file ${sudo+--sudo} "$path" "$target"
+            (link_file ${sudo+--sudo} "$path" "$target") || {
+                status=$?
+                if [[ -z ${sudo+1} ]] &&
+                    [[ $df_platform == macos ]] &&
+                    [[ $target == ~/Library/* ]] &&
+                    [[ -d $path ]]; then
+                    echo "Trying again with sudo"
+                    link_file --sudo "$path" "$target"
+                else
+                    exit $status
+                fi
+            }
         fi
     done < <(find_installable "$app" "${local_app_dirs[@]}")
 done
