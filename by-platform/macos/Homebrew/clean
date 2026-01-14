@@ -8,8 +8,7 @@ export HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_ENV_HINTS=1
 
 if brewfile=$(find_first Brewfile) ||
     brewfile=$(find_first Brewfile-arm64); then
-    brew bundle dump --no-upgrade --file - |
-        sed -E '/^vscode /d' >"$brewfile"
+    brew bundle dump --no-upgrade --no-vscode --no-restart --file - >"$brewfile"
 fi
 
 if ! brewfile=$(find_first Brewfile-x86_64) ||

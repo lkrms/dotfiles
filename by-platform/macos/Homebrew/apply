@@ -15,7 +15,7 @@ if brewfile=$(find_first Brewfile) ||
     brewfile=$(find_first Brewfile-arm64); then
     # Don't install the Microsoft Defender shim
     maybe defaults write com.microsoft.office InstallDefender -bool false
-    maybe brew bundle install --file "$brewfile" --no-upgrade
+    maybe brew bundle install --file "$brewfile" --verbose --no-upgrade
 fi
 
 if ! brewfile=$(find_first Brewfile-x86_64) ||
