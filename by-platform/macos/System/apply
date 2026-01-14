@@ -38,3 +38,9 @@ maybe defaults delete com.apple.finder NewWindowTargetPath 2>/dev/null || true
 maybe defaults write com.apple.finder ShowPathbar -bool true
 maybe defaults write com.apple.finder ShowRecentTags -bool false
 maybe defaults write com.apple.finder ShowStatusBar -bool true
+
+# Configure input sources
+maybe defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
+maybe defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
+maybe defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+maybe defaults write NSGlobalDomain WebAutomaticSpellingCorrectionEnabled -bool false

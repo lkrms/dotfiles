@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Disabled</key>
+	<false/>
+	<key>ExitTimeOut</key>
+	<integer>300</integer>
+	<key>KeepAlive</key>
+	<true/>
+	<key>Label</key>
+	<string>com.linacreative.vmware.susan-imac</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Users/lina/.local/bin/vmrun-start.sh</string>
+		<string>/Users/lina/Virtual Machines.localized/Susan iMac.vmwarevm/Susan iMac.vmx</string>
+	</array>
+	<key>StandardErrorPath</key>
+	<string>/Users/lina/.cache/lk-vmware-susan-imac.err</string>
+	<key>StandardOutPath</key>
+	<string>/Users/lina/.cache/lk-vmware-susan-imac.out</string>
+</dict>
+</plist>
