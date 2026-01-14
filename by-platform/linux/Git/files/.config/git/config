@@ -1,5 +1,6 @@
 [include]
 	path = config-default
+	path = config-personal
 
 [credential "https://github.com"]
 	helper =

@@ -1,4 +1,6 @@
 [include]
 	path = config-default
+	path = config-personal
+
 [gpg]
 	program = C:/Program Files (x86)/GnuPG/bin/gpg.exe

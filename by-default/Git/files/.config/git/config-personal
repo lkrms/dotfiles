@@ -1,0 +1,6 @@
+#[url "github.com:"]
+#	insteadOf = https://github.com/
+
+[url "https://github.com/"]
+	insteadOf = github.com:
+	insteadOf = git@github.com:

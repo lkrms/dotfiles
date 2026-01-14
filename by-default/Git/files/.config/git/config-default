@@ -1,6 +1,3 @@
-[commit]
-	gpgSign = true
-
 [cola]
 	expandtab = true
 	safemode = true
@@ -44,40 +41,7 @@
 [rebase]
 	autoSquash = true
 
-[tag]
-	gpgSign = true
-
-[url "github.com:"]
-	insteadOf = https://github.com/
-
-#[url "https://github.com/"]
-#	insteadOf = github.com:
-#	insteadOf = git@github.com:
-
-[url "gitlab.com:"]
-	insteadOf = https://gitlab.com/
-
-#[url "https://gitlab.com/"]
-#	insteadOf = gitlab.com:
-#	insteadOf = git@gitlab.com:
-
-[url "bitbucket.org:"]
-	insteadOf = https://bitbucket.org/
-
-#[url "https://bitbucket.org/"]
-#	insteadOf = bitbucket.org:
-#	insteadOf = git@bitbucket.org:
-
-[url "https://aur.archlinux.org/"]
-	insteadOf = aur:
-
-[url "aur:"]
-	pushInsteadOf = https://aur.archlinux.org/
-	pushInsteadOf = aur:
-
 [user]
-	name = Luke Arms
-	email = luke@linacreative.com
 	useConfigOnly = true
 
 [alias]
