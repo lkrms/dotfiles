@@ -44,3 +44,6 @@ maybe defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
 maybe defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
 maybe defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
 maybe defaults write NSGlobalDomain WebAutomaticSpellingCorrectionEnabled -bool false
+
+maybe defaults write com.apple.HIToolbox AppleDictationAutoEnable -int 0 # Disable "Do you want to enable Dictation?" when Control is pressed twice
+maybe defaults write com.apple.HIToolbox AppleFnUsageType -int 0         # Press the Fn or Globe key to "Do Nothing"
