@@ -27,6 +27,26 @@ maybe defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
 # Improve performance
 maybe defaults write com.apple.finder DisableAllAnimations -bool true
 
+# Configure Dock
+maybe defaults write com.apple.dock autohide -bool true
+maybe defaults write com.apple.dock autohide-delay -float 0
+maybe defaults write com.apple.dock launchanim -bool false
+maybe defaults write com.apple.dock mineffect -string scale
+maybe defaults write com.apple.dock minimize-to-application -bool true
+maybe defaults write com.apple.dock show-recents -bool false
+maybe defaults write com.apple.dock tilesize -int 60
+maybe defaults write com.apple.dock size-immutable -bool true
+
+# Top-right Hot Corner = Start Screen Saver
+maybe defaults write com.apple.dock wvous-tr-corner -int 5
+maybe defaults write com.apple.dock wvous-tr-modifier -int 0
+
+maybe defaults write NSGlobalDomain AppleSpacesSwitchOnActivate -bool false
+maybe defaults write com.apple.chronod remoteWidgetsEnabled -bool false # Disable iPhone Widgets
+maybe defaults write com.apple.dock expose-group-apps -bool true
+maybe defaults write com.apple.menuextra.clock ShowSeconds -bool true
+maybe defaults write com.apple.WindowManager EnableStandardClickToShowDesktop -bool false
+
 # Configure Finder
 maybe defaults write com.apple.finder FXDefaultSearchScope -string SCcf
 maybe defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
@@ -47,3 +67,43 @@ maybe defaults write NSGlobalDomain WebAutomaticSpellingCorrectionEnabled -bool 
 
 maybe defaults write com.apple.HIToolbox AppleDictationAutoEnable -int 0 # Disable "Do you want to enable Dictation?" when Control is pressed twice
 maybe defaults write com.apple.HIToolbox AppleFnUsageType -int 0         # Press the Fn or Globe key to "Do Nothing"
+
+# Configure keyboard (and Touch Bar)
+maybe defaults write NSGlobalDomain AppleKeyboardUIMode -int 2            # Enable keyboard navigation (default: 0)
+maybe defaults write NSGlobalDomain com.apple.keyboard.fnState -bool true # Enable "Use F1, F2, etc. keys as standard function keys"
+maybe defaults write com.apple.touchbar.agent PresentationModeGlobal -string functionKeys
+
+# Configure trackpad
+tap_to_click=1
+secondary_click_in_bottom_right_corner=1
+disable_force_click=1
+for key in com.apple.AppleMultitouchTrackpad com.apple.driver.AppleBluetoothMultitouch.trackpad; do
+    if ((tap_to_click)); then
+        maybe defaults write $key Clicking -bool true
+    fi
+    if ((secondary_click_in_bottom_right_corner)); then
+        maybe defaults write $key TrackpadCornerSecondaryClick -int 2
+        maybe defaults write $key TrackpadRightClick -bool false
+    fi
+done
+if ((tap_to_click)); then
+    maybe defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
+fi
+if ((secondary_click_in_bottom_right_corner)); then
+    maybe defaults -currentHost write NSGlobalDomain com.apple.trackpad.trackpadCornerClickBehavior -int 1
+    maybe defaults -currentHost write NSGlobalDomain com.apple.trackpad.enableSecondaryClick -bool false
+fi
+if ((disable_force_click)); then
+    maybe defaults write NSGlobalDomain com.apple.trackpad.forceClick -bool false
+    maybe defaults write com.apple.AppleMultitouchTrackpad ActuateDetents -int 0 # Default: 1
+    maybe defaults write com.apple.AppleMultitouchTrackpad ForceSuppressed -bool true
+    maybe defaults -currentHost write com.apple.trackpad.threeFingerTapGesture -int 2 # Default: 0
+    for key in com.apple.AppleMultitouchTrackpad com.apple.driver.AppleBluetoothMultitouch.trackpad; do
+        maybe defaults write $key TrackpadThreeFingerTapGesture -int 2 # Default: 0
+    done
+fi
+
+# Uncomment to enable or disable activateSettings output as needed:
+#maybe defaults write com.apple.activatesettings log -bool true
+#maybe defaults delete com.apple.activatesettings log
+maybe /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u

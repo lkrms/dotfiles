@@ -49,7 +49,6 @@ ms-azuretools.vscode-azurefunctions
 ms-azuretools.vscode-azureresourcegroups
 ms-azuretools.vscode-containers
 ms-vscode-remote.remote-containers
-ms-vscode.azure-account
 
 # Language support
 
@@ -97,6 +96,7 @@ esbenp.prettier-vscode
 HookyQR.beautify
 humao.rest-client
 idleberg.applescript
+idleberg.jxa
 jq-syntax-highlighting.jq-syntax-highlighting
 Kasik96.latte
 LoranKloeze.ruby-rubocop-revived
