@@ -24,6 +24,17 @@ fi
 maybe defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
 maybe defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
 
+maybe defaults write NSGlobalDomain com.apple.sound.beep.feedback -bool true
+maybe defaults write com.apple.mail NewMessagesSoundName -string ""
+maybe defaults write com.apple.mail PlayMailSounds -bool false
+maybe defaults write com.apple.MobileSMS PlaySoundsKey -bool false
+
+maybe defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
+maybe defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
+maybe defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true
+maybe defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true
+maybe defaults write NSGlobalDomain PMPrintingExpandedStateForPrint2 -bool true
+
 # Improve performance
 maybe defaults write com.apple.finder DisableAllAnimations -bool true
 
@@ -42,7 +53,8 @@ maybe defaults write com.apple.dock wvous-tr-corner -int 5
 maybe defaults write com.apple.dock wvous-tr-modifier -int 0
 
 maybe defaults write NSGlobalDomain AppleSpacesSwitchOnActivate -bool false
-maybe defaults write com.apple.chronod remoteWidgetsEnabled -bool false # Disable iPhone Widgets
+#maybe defaults write com.apple.chronod remoteWidgetsEnabled -bool false # Disable iPhone Widgets
+#maybe defaults write com.apple.chronod effectiveRemoteWidgetsEnabled -bool false
 maybe defaults write com.apple.dock expose-group-apps -bool true
 maybe defaults write com.apple.menuextra.clock ShowSeconds -bool true
 maybe defaults write com.apple.WindowManager EnableStandardClickToShowDesktop -bool false
@@ -58,6 +70,7 @@ maybe defaults delete com.apple.finder NewWindowTargetPath 2>/dev/null || true
 maybe defaults write com.apple.finder ShowPathbar -bool true
 maybe defaults write com.apple.finder ShowRecentTags -bool false
 maybe defaults write com.apple.finder ShowStatusBar -bool true
+maybe defaults write NSGlobalDomain NSTableViewDefaultSizeMode -int 1 # Sidebar icon size (1 = small, 2 = medium, 3 = large; default: 2)
 
 # Configure input sources
 maybe defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
@@ -107,3 +120,6 @@ fi
 #maybe defaults write com.apple.activatesettings log -bool true
 #maybe defaults delete com.apple.activatesettings log
 maybe /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
+
+maybe killall Dock
+maybe killall Finder
