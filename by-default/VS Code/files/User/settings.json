@@ -606,6 +606,7 @@
     "print.folder.includeFileList": false,
     "print.folder.maxFiles": 30,
     "print.folder.maxLines": 1200,
+    "print.general.filepathHeadingForIndividuallyPrintedDocuments": false,
     "python.experiments.enabled": false,
     "redhat.telemetry.enabled": false,
     "regex-previewer.enableCodeLens": false,

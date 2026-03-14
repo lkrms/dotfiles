@@ -73,6 +73,21 @@
 	<video-files/>
 </action>
 <action>
+	<icon>application-pdf</icon>
+	<name>Flatten selected PDF files</name>
+	<submenu></submenu>
+	<unique-id>1773367831009773-1</unique-id>
+	<command>flatten-selected-pdf-files %F</command>
+	<description>Push PDF annotations into content</description>
+	<range>*</range>
+	<patterns>*.pdf</patterns>
+	<audio-files/>
+	<image-files/>
+	<other-files/>
+	<text-files/>
+	<video-files/>
+</action>
+<action>
 	<icon>utilities-terminal</icon>
 	<name>Open in terminal</name>
 	<submenu></submenu>

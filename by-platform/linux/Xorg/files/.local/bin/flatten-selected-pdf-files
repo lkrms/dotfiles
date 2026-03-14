@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+(($#)) || exit
+
+zenity --question \
+    --width=400 \
+    --title="Flatten annotations in PDF files" \
+    --text="Push PDF annotations into content?\n\nIf there are no errors, <b>the original files will be overwritten</b>." \
+    --skip-taskbar || exit
+
+output=$({
+    dir=$(mktemp -d) &&
+        trap 'rm -rf "$dir"' EXIT &&
+        for file in "$@"; do
+            rm -f "$dir/out.pdf" &&
+                qpdf "$file" --flatten-annotations=all "$dir/out.pdf" &&
+                cp "$dir/out.pdf" "$file" ||
+                exit
+        done
+} 2>&1) ||
+    zenity --error \
+        --width=400 \
+        --title="Flatten annotations in PDF files" \
+        --text="Error pushing PDF annotations into content:\n\n$output" \
+        --skip-taskbar
