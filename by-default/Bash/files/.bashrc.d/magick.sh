@@ -8,12 +8,15 @@ function _magick-get-edge-radius() {
         printf '%d\n' $((width * 625 / 100000))
 }
 
-# magick-prepare-trace [-e] <file> [<output_file> [<edge_radius> [<blend_percent> [<pre_sharpen_radius> [<post_sharpen_radius> [<debug>]]]]]]
+# magick-prepare-trace [-e|-m] <file> [<output_file> [<edge_radius> [<blend_percent> [<pre_sharpen_radius> [<post_sharpen_radius> [<debug>]]]]]]
 #
-# If -e is given, the standard `-edge` method is used, otherwise the compose
-# divide method is used. <file> must exist and have an extension. If
-# <output_file> is not given, "_trace" is inserted before the extension of
-# <file>.
+# Create a version of <file> where edges are enhanced for hand-tracing.
+#
+# `-compose DivideSrc` is used for edge detection unless -e or -m are given for
+# `-edge` or `-morphology EdgeIn` respectively.
+#
+# <file> must exist and have an extension. If <output_file> is not given,
+# "_trace" is inserted before the extension of <file>.
 #
 # Other defaults:
 # - edge_radius: 0.625% of the shortest edge of <file>
@@ -22,9 +25,14 @@ function _magick-get-edge-radius() {
 # - post_sharpen_radius: 0
 # - debug: 0
 function magick-prepare-trace() {
-    local edge=0
+    local edge=0 morphology=0
     [[ ${1-} != -e ]] || {
         edge=1
+        shift
+    }
+    [[ ${1-} != -m ]] || {
+        morphology=1
+        edge=0
         shift
     }
 
@@ -39,7 +47,7 @@ function magick-prepare-trace() {
     local edge_radius blend_percent pre_sharpen_radius post_sharpen_radius debug
     edge_radius=${1:-$(_magick-get-edge-radius)} || return
     blend_percent=${2:-30}
-    if ((edge)); then
+    if ((edge || morphology)); then
         pre_sharpen_radius=${3:-$((edge_radius * 5 / 2))}
     else
         pre_sharpen_radius=${3:-0}
@@ -68,16 +76,17 @@ function magick-prepare-trace() {
             -negate -edge "$edge_radius" -negate
             ${debug+-write "${out%.*}_01_edge.${out##*.}"}
         )
+    elif ((morphology)); then
+        args+=(
+            -morphology EdgeIn Diamond:$((edge_radius / 2)) -negate -linear-stretch 10%x0%
+            ${debug+-write "${out%.*}_01_edge.${out##*.}"}
+        )
     else
         args+=(
-            \( +clone -blur "0x$edge_radius" \) +swap -compose divide -composite -linear-stretch 10%x0%
+            \( +clone -blur "0x$edge_radius" \) +swap -compose DivideSrc -composite -linear-stretch 10%x0%
             ${debug+-write "${out%.*}_01_edge.${out##*.}"}
         )
     fi
-    #args+=(
-    #    -morphology EdgeIn Diamond:$((edge_radius / 2)) -negate -linear-stretch 2%x0%
-    #    ${debug+-write "${out%.*}_01_edge.${out##*.}"}
-    #)
 
     ((!post_sharpen_radius)) || args+=(
         -unsharp "0x${post_sharpen_radius}+1+0" -clamp
@@ -88,5 +97,3 @@ function magick-prepare-trace() {
     magick composite -blend "$blend_percent" "$out" "$in" "$out"
     magick "$out" -level "12.5,85%" "$out"
 }
-
-# magick mash-hawkeye.png -colorspace gray \( +clone -blur 0x2 \) +swap -compose divide -composite -linear-stretch 10%x0% mash-hawkeye_out.png
