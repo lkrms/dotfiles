@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-# acquire-page <uri>
+# acquire-page <uri> [<wget_option>...]
 function acquire-page() {
-    (($# == 1)) || lk_bad_args || return
+    (($#)) || lk_bad_args || return
     lk_file_is_empty_dir . ||
         lk_tty_yn 'Working directory not empty. Proceed?' || return
     wget \
