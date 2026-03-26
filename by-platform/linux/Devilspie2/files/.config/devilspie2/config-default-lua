@@ -408,8 +408,8 @@ function get_place(state)
         end
     end
     if place then
-        place.grid = place.grid or layout.grid
-        place.margin = place.margin or layout.margin
+        place.grid = place.grid or (layout and layout.grid)
+        place.margin = place.margin or (layout and layout.margin)
         if app and app.add_to_state then
             for setting, value in pairs(app.add_to_state) do
                 state[setting] = value

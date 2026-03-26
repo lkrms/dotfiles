@@ -428,8 +428,8 @@ function _get_xywh(display, grid_columns, grid_rows, column1, row1, columns, row
         return
     end
     d_x, d_y, d_w, d_h = table.unpack(display_geometry)
-    d_w = d_w - margin_width * 2
-    d_h = d_h - margin_height * 2
+    d_w = d_w - (margin_width or 0) * 2
+    d_h = d_h - (margin_height or 0) * 2
     col_w = math.floor(d_w / grid_columns)
     row_h = math.floor(d_h / grid_rows)
     if column1 > 0 and row1 > 0 then
