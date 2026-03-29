@@ -91,6 +91,7 @@ _group = {
     },
     messenger = {
         ["Messenger"] = {},
+        ["Caprine"] = {},
         ["Messages"] = {},
     },
     skype = {

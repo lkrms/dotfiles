@@ -20,6 +20,9 @@ if ! scutil --get HostName &>/dev/null &&
     fi
 fi
 
+# Prevent automatic sleeping on power adapter when display is off
+maybe sudo pmset -c sleep 0
+
 # Improve behaviour
 maybe defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
 maybe defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
