@@ -1,5 +1,39 @@
 #!/usr/bin/env bash
 
+# magick-set-size (-h|-w) <size> <file>
+#
+# Use given height or width (in millimetres) to set the output DPI of <file>
+# without resizing it.
+function magick-set-size() {
+    [[ ${1-} == @(-h|-w) ]] || lk_bad_args || return
+    local side size
+    side=${1:1}
+    size=${2:-0}
+    ((size > 0)) || lk_bad_args || return
+    shift 2
+
+    [[ -f ${1-} ]] && [[ ${1##*/} == *.* ]] || lk_bad_args || return
+    local in=$1
+
+    local args=()
+
+    local output width height dpi
+    output=$(magick identify -format '%w %h\n' "$in") &&
+        IFS=' ' read -r width height <<<"$output" || return
+
+    if [[ $side == w ]]; then
+        dpi=$((width * 254 / size / 10))
+    else
+        dpi=$((height * 254 / size / 10))
+    fi
+    args+=(
+        -units PixelsPerInch
+        -density $dpi
+    )
+
+    magick "$in" "${args[@]}" "$in"
+}
+
 # magick-prepare-trace [-e|-m] [(-h|-w) <size>] <file> [<output_file> [<edge_radius> [<blend_percent> [<pre_sharpen_radius> [<post_sharpen_radius> [<debug>]]]]]]
 #
 # Create a version of <file> where edges are enhanced for hand-tracing.
