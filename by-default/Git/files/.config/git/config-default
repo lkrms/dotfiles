@@ -51,8 +51,8 @@
 	hidden = "!f() { git -C \"$GIT_PREFIX\" ls-files -v \"$@\" | awk '/^[[:lower:]]/'; }; f"
 	ignored = "!f() { git -C \"$GIT_PREFIX\" status --short --ignored \"$@\" | awk '/^!!/'; }; f"
 	recheckout = "!f() { cd \"$GIT_PREFIX\" || return; [ $# -gt 0 ] || set -- .; git ls-files -z \"$@\" | xargs -0r git rm --cached && git checkout HEAD -- \"$@\"; }; f"
-	history = reflog --date=iso
-	history-all = reflog --date=iso --all
+	get-history = reflog --date=iso
+	get-history-all = reflog --date=iso --all
 	cleanup-aggressive = gc --aggressive --prune=now
 	cleanup-aggressive-keep-largest = gc --aggressive --prune=now --keep-largest-pack
 	clear-history-test = reflog expire --expire=all --verbose --dry-run
