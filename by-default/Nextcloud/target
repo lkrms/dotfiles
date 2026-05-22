@@ -7,7 +7,11 @@ linux)
     printf '%s\n' ~/.config/Nextcloud
     ;;
 macos)
-    printf '%s\n' ~/Library/Preferences/Nextcloud
+    if [[ -e ~/Library/Containers/com.nextcloud.desktopclient ]]; then
+        printf '%s\n' ~/Library/Containers/com.nextcloud.desktopclient/Data/Library/Preferences/Nextcloud
+    else
+        printf '%s\n' ~/Library/Preferences/Nextcloud
+    fi
     ;;
 windows)
     dir=$(path_get AppData)/Nextcloud

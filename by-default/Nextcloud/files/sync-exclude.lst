@@ -31,7 +31,11 @@ System Volume Information
 .symform
 .symform-store
 .fuse_hidden*
+*.unison
 .nfs*
+.stfolder
+.stignore
+.stversions
 My Saved Places.
 \#*#
 *.sb-*
