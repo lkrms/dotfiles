@@ -34,7 +34,7 @@ function magick-set-size() {
     magick "$in" "${args[@]}" "$in"
 }
 
-# magick-prepare-trace [-e|-m] [(-h|-w) <size>] <file> [<output_file> [<edge_radius> [<blend_percent> [<pre_sharpen_radius> [<post_sharpen_radius> [<debug>]]]]]]
+# magick-prepare-trace [-e|-m] [(-h|-w) <size>] [-l] [-n] <file> [<output_file> [<edge_radius> [<blend_percent> [<pre_sharpen_radius> [<debug>]]]]]
 #
 # Create a version of <file> where edges are enhanced for hand-tracing.
 #
@@ -43,6 +43,11 @@ function magick-set-size() {
 #
 # If -h or -w are given with <size> (in millimetres), it is used to set output
 # DPI and calculate the default edge radius. No resizing is performed.
+#
+# If -l is given, `-auto-level` is used to normalise edges instead of
+# `-linear-stretch`.
+#
+# If -n is given, levels are not used to lighten output for printing.
 #
 # <file> must exist and have an extension. If <output_file> is not given,
 # "_trace" is inserted before the extension of <file>.
@@ -53,25 +58,25 @@ function magick-set-size() {
 # - blend_percent: 70; increase to 100 for trace image only, or decrease to see
 #   more of the original image
 # - pre_sharpen_radius: 0; edge_radius * 2.5 if -e is given
-# - post_sharpen_radius: 0
 # - debug: 0
 function magick-prepare-trace() {
-    local edge=0 morphology=0 side= size=0
-    [[ ${1-} != -e ]] || {
-        edge=1
+    local IFS=' ' edge=0 morphology=0 side= size=0 normalise="-linear-stretch 10x0%" lighten=1
+    while [[ ${1-} == -* ]]; do
+        case "$1" in
+        -e) edge=1 && morphology=0 ;;
+        -m) morphology=1 && edge=0 ;;
+        @(-h|-w))
+            side=${1:1}
+            size=${2:-0}
+            ((size > 0)) || lk_bad_args || return
+            shift
+            ;;
+        -l) normalise=-auto-level ;;
+        -n) lighten=0 ;;
+        *) lk_warn "invalid option: $1" || return ;;
+        esac
         shift
-    }
-    [[ ${1-} != -m ]] || {
-        morphology=1
-        edge=0
-        shift
-    }
-    [[ ${1-} != @(-h|-w) ]] || {
-        side=${1:1}
-        size=${2:-0}
-        ((size > 0)) || lk_bad_args || return
-        shift 2
-    }
+    done
 
     [[ -f ${1-} ]] && [[ ${1##*/} == *.* ]] || lk_bad_args || return
     local in=$1
@@ -85,7 +90,7 @@ function magick-prepare-trace() {
 
     local output width height dpi y_dpi p_width p_height
     output=$(magick identify -units PixelsPerInch -format '%w %h %x %y\n' "$in") &&
-        IFS=' ' read -r width height dpi y_dpi <<<"$output" || return
+        read -r width height dpi y_dpi <<<"$output" || return
 
     ((dpi == y_dpi)) || lk_err "x and y resolutions differ: $in" || return
 
@@ -100,6 +105,10 @@ function magick-prepare-trace() {
             -density $dpi
         )
     }
+    ((!lighten)) ||
+        args2+=(
+            -level "12.5,85%"
+        )
 
     p_width=$((width * 254 / dpi / 10))
     p_height=$((height * 254 / dpi / 10))
@@ -113,7 +122,7 @@ function magick-prepare-trace() {
         { ((default_edge_radius)) || default_edge_radius=1; } ||
         default_edge_radius=$(((width > height ? height : width) * 625 / 100000))
 
-    local edge_radius blend_percent pre_sharpen_radius post_sharpen_radius debug
+    local edge_radius blend_percent pre_sharpen_radius debug
     edge_radius=${1:-$default_edge_radius}
     blend_percent=${2:-70}
     if ((edge || morphology)); then
@@ -121,8 +130,7 @@ function magick-prepare-trace() {
     else
         pre_sharpen_radius=${3:-0}
     fi
-    post_sharpen_radius=${4:-0}
-    debug=${5:-0}
+    debug=${4:-0}
 
     ((debug)) && debug= || unset debug
 
@@ -131,38 +139,44 @@ function magick-prepare-trace() {
         Output "$out (${width}x${height}px at ${dpi}DPI; ${p_width}x${p_height}mm)" \
         "Edge radius" "$edge_radius"
 
+    # Remove debug output from previous run
+    rm -f \
+        "${out%.*}"_0[0-9]_unsharp".${out##*.}" \
+        "${out%.*}"_0[0-9]_blur".${out##*.}" \
+        "${out%.*}"_0[0-9]_composite".${out##*.}" \
+        "${out%.*}"_0[0-9]_edge".${out##*.}" \
+        "${out%.*}"_0[0-9]_unsharp".${out##*.}"
+
     args+=(
         -colorspace gray
     )
 
     ((!pre_sharpen_radius)) || args+=(
-        -unsharp "0x${pre_sharpen_radius}+1+0" -clamp
+        -unsharp "0x${pre_sharpen_radius}"
         ${debug+-write "${out%.*}_00_unsharp.${out##*.}"}
     )
 
     if ((edge)); then
         args+=(
-            -negate -edge "$edge_radius" -negate
-            ${debug+-write "${out%.*}_01_edge.${out##*.}"}
+            -negate -edge $((edge_radius)) -negate
         )
     elif ((morphology)); then
         args+=(
-            -morphology EdgeIn Diamond:$((edge_radius / 2)) -negate -linear-stretch 10%x0%
-            ${debug+-write "${out%.*}_01_edge.${out##*.}"}
+            -morphology EdgeIn Diamond:$((edge_radius)) -negate $normalise
         )
     else
         args+=(
-            \( +clone -blur "0x$edge_radius" \) +swap -compose DivideSrc -composite -linear-stretch 10%x0%
-            ${debug+-write "${out%.*}_01_edge.${out##*.}"}
+            \( +clone -blur "0x$((edge_radius))" ${debug+-write "${out%.*}_01_blur.${out##*.}"} \)
+            +swap -compose DivideSrc -composite
+            ${debug+-write "${out%.*}_02_composite.${out##*.}"}
+            $normalise
         )
     fi
-
-    ((!post_sharpen_radius)) || args+=(
-        -unsharp "0x${post_sharpen_radius}+1+0" -clamp
-        ${debug+-write "${out%.*}_02_unsharp.${out##*.}"}
+    args+=(
+        ${debug+-write "${out%.*}_03_edge.${out##*.}"}
     )
 
     magick "$in" "${args[@]}" "$out"
     magick composite -blend "$blend_percent" "$out" "$in" "$out"
-    magick "$out" -level "12.5,85%" ${args2+"${args2[@]}"} "$out"
+    magick "$out" ${args2+"${args2[@]}"} "$out"
 }
