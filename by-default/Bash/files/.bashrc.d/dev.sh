@@ -84,6 +84,18 @@ function git-changelog-next() {
         git-changelog "${latest}..HEAD"
 }
 
+function ollama-get-capabilities() {
+    local IFS=$'\n' m
+    for m in $(ollama ls | awk 'NR > 1 { print $1 }'); do
+        ollama show "$m" | awk -v m="$m" '
+$1 ~ /^(quantization)$/ { print $1 "=" $2, m; next }
+$1 == "Capabilities" { c = 1; next }
+!c { next }
+$1 == "" { c = 0; next }
+{ print $1, m }'
+    done
+}
+
 function php-tokenize() {
     ~/Code/lk/pretty-php/scripts/parse.php --tokenize-for-comparison --dump "$@"
 }
