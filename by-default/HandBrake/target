@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+case "$df_platform" in
+linux)
+    printf '%s\n' ~/.config/ghb
+    ;;
+macos)
+    printf '%s\n' ~/Library/Containers/fr.handbrake.HandBrake/Data/Library/Application\ Support/HandBrake
+    ;;
+*)
+    exit 3
+    ;;
+esac
