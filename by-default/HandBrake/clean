@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+. "$df_root/bin/lib/bash-helpers.sh" || exit
+
+with_each files/presets.json \
+    replace_file '{}' jq_safe --indent 4 '.PresetList[].ChildrenArray |= sort_by(.PresetName | split("(?<![0-9.])(?=[0-9.])|(?<=[0-9.])(?![0-9.])"; null) | map(. as $part | try tonumber catch $part))'
