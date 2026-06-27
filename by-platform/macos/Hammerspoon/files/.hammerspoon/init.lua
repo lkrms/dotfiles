@@ -253,6 +253,29 @@ _layouts = {
             [_zone.bottomRight23] = {xy = {11, 2}, wh = {33, 1}},
         },
     },
+    -- 4K + 1680x1050
+    ["4240.0x1440.0"] = {
+        -- <-- 33.33% --> <-- ** 33.33% ** --> <-- ** 33.33% ** -->
+        grid = {3, 2},
+        group_places = {
+            dev = {display = 1},
+            mail = {display = 1, grid = {2, 2}, xy = {1, 1}, wh = {1, 2}},
+        },
+    },
+    -- Apps pinned to secondary display
+    ["*:4240.0x1440.0"] = {
+        criteria = _criteria.pinnable,
+        place = {display = 2, wh = {2, 1}},
+        group_places = {
+            docs = {xy = {1, 1}, wh = {2, 2}},
+            teams = {xy = {3, 1}},
+            messenger = {xy = {5, 1}},
+            skype = {xy = {5, 1}},
+            time = {xy = {3, 2}},
+            todo = {xy = {3, 2}},
+            util = {xy = {5, 2}},
+        },
+    },
     -- Ultrawide + 4K
     ["6000.0x1440.0"] = {
         -- <-- 33.33% --> <-- ** 33.33% ** --> <-- ** 33.33% ** -->
