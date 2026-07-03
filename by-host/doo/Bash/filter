@@ -2,4 +2,4 @@
 
 . "$df_root/bin/lib/bash-helpers.sh" || exit
 
-[[ $1 != */@(hugin|magick|wayback).sh ]]
+[[ $1 != */@(hugin|magick|rip|wayback).sh ]]
