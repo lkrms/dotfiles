@@ -200,6 +200,11 @@ function magick-prepare-trace() {
             pre_sharpen_radius=0
         fi
 
+    ((grid < 1)) || {
+        local grid_width=$(((edge_radius + 1) / 2))
+        grid_width=$((grid_width + (3 - grid_width % 3) % 3))
+    }
+
     ((debug)) && debug= || unset debug
 
     printf '%s\t%s\n' \
@@ -207,7 +212,10 @@ function magick-prepare-trace() {
         Output "$out (${width}x${height}px at ${dpi}DPI; ${p_width}x${p_height}mm)" \
         "Edge radius" "$edge_radius" \
         "Pre-sharpen radius" "$pre_sharpen_radius" \
-        Method "$(if ((morphology)); then echo "morphology (EdgeIn with diamond kernel)"; elif ((edge)); then echo "edge detection"; else echo DivideSrc; fi)" |
+        Method "$(if ((morphology)); then echo "morphology (EdgeIn with diamond kernel)"; elif ((edge)); then echo "edge detection"; else echo DivideSrc; fi)" \
+        "Trace opacity" "${opacity}%" \
+        "Grid" "$(if ((grid < 1)); then echo "none"; else echo "${grid}mm ($((p_width / grid))x$((p_height / grid)); ${grid_width}px)"; fi)" \
+        Debugging "${debug+on}${debug-off}" |
         lk_tty_detail_pairs
 
     # Remove debug output from previous run
@@ -250,9 +258,6 @@ function magick-prepare-trace() {
     lk_tty_run_detail magick "$in" "${args[@]}" "$out" || return
     ((opacity == 100)) || lk_tty_run_detail magick composite -blend "$opacity" "$out" "$in" "$out" || return
     lk_tty_run_detail magick "$out" ${args2+"${args2[@]}"} "$out" || return
-    ((grid < 1)) || {
-        local grid_width=$(((edge_radius + 1) / 2))
-        magick-add-grid "$out" $((p_width / grid)) $((p_height / grid)) $((grid_width + (3 - grid_width % 3) % 3))
-    }
+    ((grid < 1)) || magick-add-grid "$out" $((p_width / grid)) $((p_height / grid)) $grid_width
     lk_tty_success "Ready to print:" "$(realpath "$out")"
 }
