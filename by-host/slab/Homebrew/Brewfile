@@ -45,6 +45,8 @@ brew "git"
 brew "git-cola"
 # Syntax-highlighting pager for git and diff output
 brew "git-delta"
+# Git LFS plugin that uploads and downloads using the Xet protocol
+brew "git-xet"
 # Command-line option parsing utility
 brew "gnu-getopt"
 # GNU implementation of the famous stream editor
@@ -59,6 +61,8 @@ brew "gnupg"
 brew "gpatch"
 # GNU grep, egrep and fgrep
 brew "grep"
+# Client library for huggingface.co hub
+brew "hf"
 # Tools and libraries to manipulate images in select formats
 brew "imagemagick"
 # Command-line tool to export and inspect local iMessage database
@@ -107,6 +111,8 @@ brew "perltidy"
 brew "phive"
 # Pinentry for GPG on Mac
 brew "pinentry-mac"
+# Command-line shell and scripting language
+brew "powershell", link: false
 # Command-line YAML and XML processor that wraps jq
 brew "python-yq"
 # Interpreted, interactive, object-oriented programming language
@@ -125,6 +131,8 @@ brew "rsync"
 brew "sevenzip"
 # Autoformat shell script source code
 brew "shfmt"
+# Version control system designed to be a better CVS
+brew "subversion"
 # Software TPM Emulator based on libtpms
 brew "swtpm"
 # Free software distribution for the TeX typesetting system
@@ -209,6 +217,7 @@ cask "espanso"
 cask "firefox"
 # Clipboard manager for developers
 cask "flycut"
+cask "font-fontawesome"
 cask "font-jetbrains-mono"
 cask "font-junicode"
 cask "font-source-code-pro"
@@ -256,8 +265,6 @@ cask "mockoon"
 cask "nextcloud"
 # Command-line shell and scripting language
 cask "powershell"
-# MongoDB management tool
-cask "robo-3t"
 # Detects which app receives a keyboard shortcut (hotkey)
 cask "shortcutdetective"
 # Control your Sonos system
@@ -267,6 +274,8 @@ cask "speedcrunch"
 cask "spotify"
 # System monitor for the menu bar
 cask "stats"
+# IDE, client, and GUI for MongoDB
+cask "studio-3t-community"
 # Git client
 cask "sublime-merge"
 # Text editor for code, markup and prose
