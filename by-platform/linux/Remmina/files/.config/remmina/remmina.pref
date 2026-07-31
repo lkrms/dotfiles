@@ -97,6 +97,9 @@ rdp_deviceScaleFactor=0
 rdp_desktopScaleFactor=0
 rdp_desktopOrientation=0
 recent_SPICE=localhost
+floating_toolbar_monitor=0
+toolbar_fix_position_multimon=true
+fullscreen_toolbar_delay=0
 
 [ssh_colors]
 background=rgb(213,204,186)

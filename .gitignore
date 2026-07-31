@@ -2,4 +2,6 @@
 /private
 
 # Created by byobu
+.python_cache
 .ssh-agent
+.ssh-agent-*
