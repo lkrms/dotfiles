@@ -84,7 +84,7 @@ Options:
     -s <size>       Set maximum length of output's short side when printed (in millimetres)
     -o <opacity>    Set opacity of trace image when blending with original (0-100, default 70)
     -a              Use '-auto-level' to normalise edges (default: '-linear-stretch 10x0%')
-    -n              Do not use levels to lighten output for printing
+    -n              Do not use '-gamma' to lighten output, or if given multiple times, use '-gamma' to darken output
     -g <size>       Add grid with given spacing (in millimetres)
 
 EOF
@@ -104,7 +104,8 @@ EOF
 # If -a is given, `-auto-level` is used to normalise edges instead of
 # `-linear-stretch`.
 #
-# If -n is given, levels are not used to lighten output for printing.
+# If -n is given once, `-gamma` is not used to lighten output for printing. If
+# given two or more times, `-gamma` is used to darken output.
 #
 # If -g is given with a <size> (in millimetres), a grid is added to the output
 # with the given spacing between each line.
@@ -120,7 +121,7 @@ EOF
 # - pre_sharpen_radius: 0; edge_radius * 2.5 if -e is given
 function magick-prepare-trace() {
     local OPTIND OPTARG opt
-    local IFS=' ' edge=0 morphology=0 edge_radius=-1 pre_sharpen_radius=-1 sizes=() opacity=70 normalise="-linear-stretch 10x0%" lighten=1 grid=-1 debug=0
+    local IFS=' ' edge=0 morphology=0 edge_radius=-1 pre_sharpen_radius=-1 sizes=() opacity=70 normalise="-linear-stretch 10x0%" gamma=1.2 grid=-1 debug=0
     while getopts ":emr:p:h:w:l:s:o:ang:d" opt; do
         case "$opt" in
         e) edge=1 && morphology=0 ;;
@@ -133,7 +134,7 @@ function magick-prepare-trace() {
             ;;
         o) opacity=$((OPTARG)) ;;
         a) normalise=-auto-level ;;
-        n) lighten=0 ;;
+        n) if [[ $gamma == 1.2 ]]; then gamma=1.0; else gamma=0.8; fi ;;
         g) grid=$((OPTARG)) ;;
         d) debug=1 ;;
         esac
@@ -175,9 +176,9 @@ function magick-prepare-trace() {
         -density $dpi
     )
 
-    ((!lighten)) ||
+    [[ $gamma == 1.0 ]] ||
         args2+=(
-            -level "12.5,85%"
+            -gamma $gamma
         )
 
     p_width=$((width * 254 / dpi / 10))
@@ -246,7 +247,7 @@ function magick-prepare-trace() {
     else
         args+=(
             \( +clone -blur "0x$((edge_radius))" ${debug+-write "${out%.*}_01_blur.${out##*.}"} \)
-            +swap -compose DivideSrc -composite
+            +swap -fx 'v/u'
             ${debug+-write "${out%.*}_02_composite.${out##*.}"}
             $normalise
         )
@@ -258,6 +259,58 @@ function magick-prepare-trace() {
     lk_tty_run_detail magick "$in" "${args[@]}" "$out" || return
     ((opacity == 100)) || lk_tty_run_detail magick composite -blend "$opacity" "$out" "$in" "$out" || return
     lk_tty_run_detail magick "$out" ${args2+"${args2[@]}"} "$out" || return
-    ((grid < 1)) || magick-add-grid "$out" $((p_width / grid)) $((p_height / grid)) $grid_width
+    ((grid < 1)) || magick-add-grid "$out" $((p_width / grid)) $((p_height / grid)) $grid_width || return
     lk_tty_success "Ready to print:" "$(realpath "$out")"
+}
+
+# magick-get-pdf <width> <height> <file>... <output_file>
+#
+# Create a PDF where each <file> is placed in the centre of a page with the
+# given <width> and <height> (in millimetres).
+function magick-get-pdf() {
+    (($# > 3)) || lk_bad_args || return
+    # Rotate input counter-clockwise only if landscape
+    local IFS=$' \t\n' width=$1 height=$2 rotate='-90>'
+    shift 2
+    # or if portrait when output is landscape
+    ((width < height)) || rotate='-90<'
+    local in=("${@:1:$#-1}") out=${*: -1}
+    lk_tty_run_detail magick "${in[@]}" \
+        -gravity center \
+        -rotate "$rotate" \
+        -extent "%[fx:%[x] / 2.54 * ${width} / 10]x%[fx:%[y] / 2.54 * ${height} / 10]" \
+        "$out" || return
+    lk_tty_success "Ready to print:" "$(realpath "$out")"
+    lk_tty_detail "For N-up output, consider:" \
+        "pdfjam --nup 2x1 --landscape --noautoscale true $(lk_double_quote "$out") --outfile nup.pdf"
+}
+
+# magick-diff [-f <fuzz_distance>] <file1> <file2> [<diff_file>]
+#
+# Compare two image files and report on any differences.
+function magick-diff() {
+    local fuzz
+    [[ ${1-} != -f ]] || {
+        [[ -n ${2-} ]] || lk_bad_args || return
+        fuzz=$2
+        shift 2
+    }
+    (($# > 1)) || lk_bad_args || return
+    local file1=$1 file2=$2 diff=${3-} args=()
+    [[ -n $diff ]] ||
+        { lk_mktemp_dir_with diff && diff+=/diff.png; } || return
+    args+=(
+        -metric AE
+        -highlight-color white
+        -lowlight-color black
+        -verbose
+    )
+    [[ -z ${fuzz-} ]] &&
+        [[ $file1 != *.[jJ][pP]?([eE])[gG] ]] &&
+        [[ $file2 != *.[jJ][pP]?([eE])[gG] ]] ||
+        args+=(
+            -fuzz "${fuzz:-5%}"
+        )
+    lk_tty_run_detail magick compare "${args[@]}" "$file1" "$file2" "$diff"
+    lk_pass -$? lk_tty_log "Diff image:" "$(realpath "$diff")"
 }
