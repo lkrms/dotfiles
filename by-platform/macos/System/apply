@@ -66,6 +66,7 @@ maybe defaults write com.apple.WindowManager EnableStandardClickToShowDesktop -b
 maybe defaults write com.apple.finder FXDefaultSearchScope -string SCcf
 maybe defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
 maybe defaults write com.apple.finder FXPreferredViewStyle -string clmv
+maybe defaults write com.apple.finder _FXEnableColumnAutoSizing -bool true
 maybe defaults write com.apple.finder _FXSortFoldersFirst -bool true
 maybe defaults write com.apple.finder _FXSortFoldersFirstOnDesktop -bool true
 maybe defaults write com.apple.finder NewWindowTarget -string PfHm
