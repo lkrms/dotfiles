@@ -1,60 +1,119 @@
 #!/usr/bin/env bash
 
-# magick-add-grid <file> [<columns> [<rows> [<width>]]]
+# _magick-set-vars <file>
 #
-# Add a grid to <file>.
+# Set `width`, `height`, `dpi`, `y_dpi` from <file>.
+function _magick-set-vars() {
+    local IFS=' ' output
+    output=$(magick identify -units PixelsPerInch -format '%w %h %[fx:int(%[x])] %[fx:int(%[y])]\n' "$1") &&
+        read -r width height dpi y_dpi <<<"$output"
+}
+
+function _magick-add-grid_usage() {
+    cat <<'EOF'
+Usage: magick-add-grid <file> [<columns> [<rows> [<width> [<output_file>]]]]
+
+Add a semi-transparent grid to <file>.
+
+<file> must exist and have an extension. If <output_file> is not given, <file>
+is replaced.
+
+Arguments:
+
+    <columns>       Number of columns in grid (default: 3)
+    <rows>          Number of rows in grid (default: 3)
+    <width>         Width of each grid line (in pixels; default: 3)
+
+EOF
+}
+
+# magick-add-grid <file> [<columns> [<rows> [<width> [<output_file>]]]]
+#
+# Add a semi-transparent grid to <file>.
+#
+# If <output_file> is not given, <file> is replaced.
 #
 # If <width> is less than 3 pixels, grid lines are white, otherwise up to 1/3 of
 # each grid line is black and the remainder is white. This improves grid
 # visibility in light-toned parts of <file>.
 function magick-add-grid() {
-    [[ -f ${1-} ]] && [[ ${1##*/} == *.* ]] || lk_bad_args || return
-    local in=$1 columns=$((${2:-3})) rows=$((${3:-3})) width=$((${4:-3}))
-    local shadow_width=$((width / 3))
-    local border_width=$((width - shadow_width))
+    [[ -f ${1-} ]] && [[ ${1##*/} == *.* ]] || lk_usage || return
+    local in=$1 columns=$((${2:-3})) rows=$((${3:-3})) width=$((${4:-3})) out=${5:-$1}
+    ((columns > 0 && rows > 0 && width > 0)) || lk_usage || return
+    local shadow=$((width / 3))
+    local border=$((width - shadow))
 
     local args=(
+        # Activate transparency without changing pre-existing alpha channel data
+        -alpha set
         # Divide image into equal tiles
         -crop "${columns}x${rows}@"
-        # Remove pixels from top-left of each tile
-        -chop "${width}x${width}"
-        # Add pixels with current background colour to top-left of each tile
-        -background black
-        -splice "${shadow_width}x${shadow_width}"
-        -background white
-        -splice "${border_width}x${border_width}"
+        # Draw rectangles at the top and left of each tile to:
+        # - allow the image to be seen through the grid
+        # - work around ImageMagick's lack of control over stroke placement
+        -fill "rgba(255,255,255,0.6)"
+        -draw "rectangle 0,0 %[fx:%[w]-1],$((border - 1)) rectangle 0,$border $border,%[fx:%[h]-1]"
+    )
+
+    ((!shadow)) || args+=(
+        -fill "rgba(0,0,0,0.2)"
+        -draw "rectangle $border,$border %[fx:%[w]-1],$((border + shadow - 1)) rectangle $border,$((border + shadow)) $((border + shadow - 1)),%[fx:%[h]-1]"
+    )
+
+    args+=(
+        # Merge tiles back into one image
         -flatten
     )
 
-    lk_tty_run_detail magick "$in" "${args[@]}" "$in"
+    lk_tty_run_detail magick "$in" "${args[@]}" "$out"
 }
 
-# magick-set-size (-h|-w) <size> <file>
+# magick-set-size [(-h|-w|-l|-s) <size>]... <file>
 #
-# Use given height or width (in millimetres) to set the output DPI of <file>
-# without resizing it.
+# Use given height, width, long side length or short side length (in
+# millimetres) to set the output DPI of <file> without resizing it.
 function magick-set-size() {
-    [[ ${1-} == @(-h|-w) ]] || lk_bad_args || return
-    local side size
-    side=${1:1}
-    size=${2:-0}
-    ((size > 0)) || lk_bad_args || return
-    shift 2
+    local OPTIND OPTARG opt
+    local sizes=()
+    while getopts ":h:w:l:s:" opt; do
+        case "$opt" in
+        h | w | l | s)
+            ((OPTARG > 0)) || lk_bad_args || return
+            sizes+=("$opt" "$((OPTARG))")
+            ;;
+        : | \?) lk_bad_args || return ;;
+        esac
+    done
+    shift $((OPTIND - 1))
 
     [[ -f ${1-} ]] && [[ ${1##*/} == *.* ]] || lk_bad_args || return
     local in=$1
 
     local args=()
 
-    local output width height dpi
-    output=$(magick identify -format '%w %h\n' "$in") &&
-        IFS=' ' read -r width height <<<"$output" || return
+    local width height dpi y_dpi file_dpi long short i px size_dpi
+    _magick-set-vars "$in" || return
 
-    if [[ $side == w ]]; then
-        dpi=$((width * 254 / size / 10))
-    else
-        dpi=$((height * 254 / size / 10))
-    fi
+    ((dpi == y_dpi)) || lk_err "x and y resolutions differ: $in" || return
+
+    file_dpi=$dpi
+    long=$((width > height ? width : height))
+    short=$((width > height ? height : width))
+
+    # Adopt the size with the highest DPI (smallest size)
+    for ((i = 0; i < ${#sizes[@]}; i += 2)); do
+        case "${sizes[i]}" in
+        h) px=$height ;;
+        w) px=$width ;;
+        l) px=$long ;;
+        s) px=$short ;;
+        esac
+        size_dpi=$((px * 254 / ${sizes[i + 1]} / 10))
+        dpi=$((!i || size_dpi > dpi ? size_dpi : dpi))
+    done
+
+    ((dpi != file_dpi)) || lk_err "DPI already $dpi: $in" || return 0
+
     args+=(
         -units PixelsPerInch
         -density $dpi
@@ -74,6 +133,7 @@ Create a version of <file> where edges are enhanced for hand-tracing.
 
 Options:
 
+    -c              Use '-canny' (default: '-compose DivideSrc')
     -e              Use '-edge' (default: '-compose DivideSrc')
     -m              Use '-morphology EdgeIn' (default: '-compose DivideSrc')
     -r <radius>     Set edge radius
@@ -82,7 +142,8 @@ Options:
     -w <size>       Set maximum width of output when printed (in millimetres)
     -l <size>       Set maximum length of output's long side when printed (in millimetres)
     -s <size>       Set maximum length of output's short side when printed (in millimetres)
-    -o <opacity>    Set opacity of trace image when blending with original (0-100, default 70)
+    -o <opacity>    Set opacity of trace image when blending with original (0-100; default: 70)
+    -b              Do not use '-black-threshold' to remove unseen detail from input
     -a              Use '-auto-level' to normalise edges (default: '-linear-stretch 10x0%')
     -n              Do not use '-gamma' to lighten output, or if given multiple times, use '-gamma' to darken output
     -g <size>       Add grid with given spacing (in millimetres)
@@ -90,12 +151,12 @@ Options:
 EOF
 }
 
-# magick-prepare-trace [-e|-m] [-r <edge_radius>] [-p <pre_sharpen_radius>] [(-h|-w|-l|-s) <size>]... [-o <opacity>] [-a] [-n] [-g <size>] [-d] <file> [<output_file>]
+# magick-prepare-trace [-c|-e|-m] [-r <edge_radius>] [-p <pre_sharpen_radius>] [(-h|-w|-l|-s) <size>]... [-o <opacity>] [-b] [-a] [-n] [-g <size>] [-d] <file> [<output_file>]
 #
 # Create a version of <file> where edges are enhanced for hand-tracing.
 #
-# `-compose DivideSrc` is used for edge detection unless -e or -m are given for
-# `-edge` or `-morphology EdgeIn` respectively.
+# `-compose DivideSrc` is used for edge detection unless -c, -e or -m are given
+# for `-canny`, `-edge` or `-morphology EdgeIn` respectively.
 #
 # If -h (height), -w (width), -l (long side) or -s (short side) are given with a
 # <size> (in millimetres), it is used to set the DPI of the output without
@@ -121,11 +182,12 @@ EOF
 # - pre_sharpen_radius: 0; edge_radius * 2.5 if -e is given
 function magick-prepare-trace() {
     local OPTIND OPTARG opt
-    local IFS=' ' edge=0 morphology=0 edge_radius=-1 pre_sharpen_radius=-1 sizes=() opacity=70 normalise="-linear-stretch 10x0%" gamma=1.2 grid=-1 debug=0
-    while getopts ":emr:p:h:w:l:s:o:ang:d" opt; do
+    local IFS=' ' canny=0 edge=0 morphology=0 edge_radius=-1 pre_sharpen_radius=-1 sizes=() opacity=70 threshold=1 normalise="-linear-stretch 10x0%" gamma=1.2 grid=-1 debug=0
+    while getopts ":cemr:p:h:w:l:s:o:bang:d" opt; do
         case "$opt" in
-        e) edge=1 && morphology=0 ;;
-        m) morphology=1 && edge=0 ;;
+        c) canny=1 && edge=0 && morphology=0 ;;
+        e) edge=1 && canny=0 && morphology=0 ;;
+        m) morphology=1 && canny=0 && edge=0 ;;
         r) edge_radius=$((OPTARG)) ;;
         p) pre_sharpen_radius=$((OPTARG)) ;;
         h | w | l | s)
@@ -133,10 +195,15 @@ function magick-prepare-trace() {
             sizes+=("$opt" "$((OPTARG))")
             ;;
         o) opacity=$((OPTARG)) ;;
+        b) threshold=0 ;;
         a) normalise=-auto-level ;;
         n) if [[ $gamma == 1.2 ]]; then gamma=1.0; else gamma=0.8; fi ;;
         g) grid=$((OPTARG)) ;;
         d) debug=1 ;;
+        : | \?)
+            lk_usage
+            return 1
+            ;;
         esac
     done
     shift $((OPTIND - 1))
@@ -147,16 +214,16 @@ function magick-prepare-trace() {
 
     local out=${1-}
     ((!$#)) || shift
-    [[ $out ]] || out=${in%.*}_trace.${in##*.}
+    [[ $out ]] || out=${in%.*}_trace.png
 
     local args=() args2=()
 
-    local output width height dpi y_dpi short long i px size_dpi p_width p_height
-    output=$(magick identify -units PixelsPerInch -format '%w %h %x %y\n' "$in") &&
-        read -r width height dpi y_dpi <<<"$output" || return
+    local width height dpi y_dpi long short i px size_dpi p_width p_height upscale=0
+    _magick-set-vars "$in" || return
 
     ((dpi == y_dpi)) || lk_err "x and y resolutions differ: $in" || return
 
+    local in_width=$width in_height=$height
     long=$((width > height ? width : height))
     short=$((width > height ? height : width))
 
@@ -171,6 +238,24 @@ function magick-prepare-trace() {
         size_dpi=$((px * 254 / ${sizes[i + 1]} / 10))
         dpi=$((!i || size_dpi > dpi ? size_dpi : dpi))
     done
+
+    p_width=$((width * 254 / dpi / 10))
+    p_height=$((height * 254 / dpi / 10))
+
+    if ((dpi < 192)); then
+        width=$((width * 300 / dpi))
+        height=$((height * 300 / dpi))
+        long=$((long * 300 / dpi))
+        short=$((short * 300 / dpi))
+        dpi=300
+        upscale=1
+        lk_tty_warning "DPI lower than 192 for ${p_width}x${p_height}mm; upscaling input to 300DPI"
+        args+=(
+            -filter Lanczos
+            -resize ${width}x${height}\!
+        )
+    fi
+
     args2+=(
         -units PixelsPerInch
         -density $dpi
@@ -181,21 +266,11 @@ function magick-prepare-trace() {
             -gamma $gamma
         )
 
-    p_width=$((width * 254 / dpi / 10))
-    p_height=$((height * 254 / dpi / 10))
-
-    ((dpi >= 72)) || lk_tty_warning "DPI lower than 72 for ${p_width}x${p_height}mm"
-
-    ((edge_radius > -1)) || {
-        # Look for edges in a region roughly 1.4mm across
-        edge_radius=$(bc -l <<<"$dpi * 7 / 254") &&
-            edge_radius=$(printf '%.0f' "$edge_radius") &&
-            { ((edge_radius)) || edge_radius=1; } ||
-            edge_radius=$((short * 625 / 100000))
-    }
+    ((edge_radius > -1)) ||
+        edge_radius=$((long * 17 / 10000))
 
     ((pre_sharpen_radius > -1)) ||
-        if ((edge || morphology)); then
+        if ((edge)); then
             pre_sharpen_radius=$((edge_radius * 5 / 2))
         else
             pre_sharpen_radius=0
@@ -207,13 +282,14 @@ function magick-prepare-trace() {
     }
 
     ((debug)) && debug= || unset debug
+    ((upscale)) && upscale= || unset upscale
 
     printf '%s\t%s\n' \
-        Input "$in (${width}x${height}px at ${y_dpi}DPI)" \
+        Input "$in (${in_width}x${in_height}px at ${y_dpi}DPI)" \
         Output "$out (${width}x${height}px at ${dpi}DPI; ${p_width}x${p_height}mm)" \
-        "Edge radius" "$edge_radius" \
+        "Edge radius" "$edge_radius ($(printf '%0.4f\n' "$(bc <<<"scale = 4; $edge_radius / $dpi * 25.4")")mm)" \
         "Pre-sharpen radius" "$pre_sharpen_radius" \
-        Method "$(if ((morphology)); then echo "morphology (EdgeIn with diamond kernel)"; elif ((edge)); then echo "edge detection"; else echo DivideSrc; fi)" \
+        Method "$(if ((morphology)); then echo "morphology (EdgeIn with diamond kernel)"; elif ((edge)); then echo "edge detection"; elif ((canny)); then echo "Canny edge detection"; else echo DivideSrc; fi)" \
         "Trace opacity" "${opacity}%" \
         "Grid" "$(if ((grid < 1)); then echo "none"; else echo "${grid}mm ($((p_width / grid))x$((p_height / grid)); ${grid_width}px)"; fi)" \
         Debugging "${debug+on}${debug-off}" |
@@ -221,44 +297,76 @@ function magick-prepare-trace() {
 
     # Remove debug output from previous run
     rm -f \
-        "${out%.*}"_0[0-9]_unsharp".${out##*.}" \
-        "${out%.*}"_0[0-9]_blur".${out##*.}" \
-        "${out%.*}"_0[0-9]_composite".${out##*.}" \
-        "${out%.*}"_0[0-9]_edge".${out##*.}" \
-        "${out%.*}"_0[0-9]_unsharp".${out##*.}"
+        "${out%.*}"_0[0-9]_threshold.{png,"${out##*.}"} \
+        "${out%.*}"_0[0-9]_unsharp.{png,"${out##*.}"} \
+        "${out%.*}"_0[0-9]_canny.{png,"${out##*.}"} \
+        "${out%.*}"_0[0-9]_blur.{png,"${out##*.}"} \
+        "${out%.*}"_0[0-9]_composite.{png,"${out##*.}"} \
+        "${out%.*}"_0[0-9]_edge.{png,"${out##*.}"} \
+        "${out%.*}"_0[0-9]_fill.{png,"${out##*.}"} \
+        "${out%.*}"_0[0-9]_alpha.{png,"${out##*.}"} \
+        "${out%.*}"_0[0-9]_gray.{png,"${out##*.}"}
 
     args+=(
         -colorspace gray
+        -background gray50
+        -alpha remove
+        -alpha off
+    )
+
+    ((!threshold)) || args+=(
+        -black-threshold 10%
+        ${debug+-write "${out%.*}_00_threshold.png"}
     )
 
     ((!pre_sharpen_radius)) || args+=(
         -unsharp "0x${pre_sharpen_radius}"
-        ${debug+-write "${out%.*}_00_unsharp.${out##*.}"}
+        ${debug+-write "${out%.*}_01_unsharp.png"}
     )
 
-    if ((edge)); then
+    if ((canny)); then
+        args+=(
+            -canny 0x$((edge_radius))+5%+10% -negate
+            ${debug+-write "${out%.*}_02_canny.png"}
+            -morphology Erode Diamond:$((edge_radius > 1 ? edge_radius / 2 : 1))
+        )
+    elif ((edge)); then
         args+=(
             -negate -edge $((edge_radius)) -negate
         )
     elif ((morphology)); then
         args+=(
-            -morphology EdgeIn Diamond:$((edge_radius)) -negate $normalise
+            -morphology Edge Diamond:$((edge_radius)) -negate $normalise
         )
     else
         args+=(
-            \( +clone -blur "0x$((edge_radius))" ${debug+-write "${out%.*}_01_blur.${out##*.}"} \)
+            \( +clone -blur "0x$((edge_radius))" ${debug+-write "${out%.*}_03_blur.png"} \)
             +swap -fx 'v/u'
-            ${debug+-write "${out%.*}_02_composite.${out##*.}"}
+            ${debug+-write "${out%.*}_04_composite.png"}
             $normalise
         )
     fi
     args+=(
-        ${debug+-write "${out%.*}_03_edge.${out##*.}"}
+        ${debug+-write "${out%.*}_05_edge.png"}
+        -alpha set
+        -fill transparent
+        -floodfill +0+0 black
+        -floodfill +$((width - 1))+0 black
+        -floodfill +0+$((height - 1)) black
+        -floodfill +$((width - 1))+$((height - 1)) black
+        ${debug+-write "${out%.*}_06_fill.png"}
     )
 
     lk_tty_run_detail magick "$in" "${args[@]}" "$out" || return
-    ((opacity == 100)) || lk_tty_run_detail magick composite -blend "$opacity" "$out" "$in" "$out" || return
-    lk_tty_run_detail magick "$out" ${args2+"${args2[@]}"} "$out" || return
+    ((opacity == 100)) || lk_tty_run_detail magick \
+        \( "$in" ${upscale+-filter Lanczos -resize ${width}x${height}\!} \( "$out" -alpha extract \) -alpha off -compose copy-alpha -composite \) \
+        ${debug+-write "${out%.*}_07_alpha.png"} \
+        "$out" -compose blend -define compose:args="$opacity" -composite \
+        ${debug+-write "${out%.*}_08_composite.png"} \
+        -colorspace gray -alpha off \
+        ${debug+-write "${out%.*}_09_gray.png"} \
+        "$out" || return
+    lk_tty_run_detail magick "$out" ${args2+"${args2[@]}"} "$@" "$out" || return
     ((grid < 1)) || magick-add-grid "$out" $((p_width / grid)) $((p_height / grid)) $grid_width || return
     lk_tty_success "Ready to print:" "$(realpath "$out")"
 }
