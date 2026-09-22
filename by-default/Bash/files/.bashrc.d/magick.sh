@@ -386,6 +386,7 @@ function magick-get-pdf() {
     lk_tty_run_detail magick "${in[@]}" \
         -gravity center \
         -rotate "$rotate" \
+        -units PixelsPerInch \
         -extent "%[fx:%[x] / 2.54 * ${width} / 10]x%[fx:%[y] / 2.54 * ${height} / 10]" \
         "$out" || return
     lk_tty_success "Ready to print:" "$(realpath "$out")"
