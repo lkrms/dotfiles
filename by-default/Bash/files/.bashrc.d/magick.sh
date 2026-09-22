@@ -390,7 +390,7 @@ function magick-get-pdf() {
         "$out" || return
     lk_tty_success "Ready to print:" "$(realpath "$out")"
     lk_tty_detail "For N-up output, consider:" \
-        "pdfjam --nup 2x1 --landscape --noautoscale true $(lk_double_quote "$out") --outfile nup.pdf"
+        "pdfjam --nup 2x1 --landscape --noautoscale true $(lk_double_quote "$out") --outfile $(lk_double_quote "${out%.*}_nup.pdf")"
 }
 
 # magick-diff [-f <fuzz_distance>] <file1> <file2> [<diff_file>]
